@@ -1,0 +1,11 @@
+apiVersion: v2
+name: my-project
+description: A Helm chart for my project
+type: application
+version: 0.1.0
+appVersion: "1.0"
+dependencies:
+  - name: argo-cd
+    version: "6.7.5"  
+    repository: "https://argoproj.github.io/argo-helm"
+
