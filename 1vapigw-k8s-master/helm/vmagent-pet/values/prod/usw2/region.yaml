@@ -1,0 +1,7 @@
+victoriaMetrics:
+  endpoints:
+    # PET vminsert
+    - "https://insert-us-east-1.prod.metrics.tools.vonagenetworks.net:8429/api/v1/write"
+
+region: us-west-2
+aws_region: us-west-2

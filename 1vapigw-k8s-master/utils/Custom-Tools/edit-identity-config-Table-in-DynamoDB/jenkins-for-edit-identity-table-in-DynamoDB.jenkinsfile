@@ -1,0 +1,78 @@
+def getdynamoDB() {
+    node {
+        def awsAccount = getAccountID(getActiveEnvironment(this))
+        def dynamoDB = sh(script: """
+            eval \$(aws sts assume-role --role-arn arn:aws:iam::${awsAccount}:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\\n"')
+            aws dynamodb scan --region eu-west-1 --table-name apigw-configs --select SPECIFIC_ATTRIBUTES  --attributes-to-get "key"  --query "Items[*].key"   --output text
+            """, returnStdout: true).trim()
+        return dynamoDB.tokenize('\n') 
+    }
+}
+
+pipeline {
+    agent any
+    parameters {
+        choice(
+            choices: getdynamoDB(),
+            description: 'Choose a Key',
+            name: 'SelectKey'
+        )
+        string(
+            defaultValue: '',
+            description: 'Enter the new value for the selected Key. Example: true, false, forced,force-auth',
+            name: 'NewValues'
+        )
+    }
+    stages {
+        stage('Update Value') {
+            steps {
+                script {
+                    node {
+                        def awsAccount = getAccountID(getActiveEnvironment(this))
+
+                        if (params.NewValues.trim() == "") {
+                            error "NewValues parameter is empty. Please provide value for the selected key."
+                        }
+                        else {
+
+                        sh(script: """
+                            eval \$(aws sts assume-role --role-arn arn:aws:iam::${awsAccount}:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\\n"')
+
+                           aws dynamodb update-item  --region eu-west-1 --table-name apigw-configs    --key '{"key": {"S": "${params.SelectKey}"}}'    --update-expression "SET #value = :val"     --expression-attribute-names '{"#value": "value"}' --expression-attribute-values '{":val": {"S": "${params.NewValues}"}}'
+
+                            """)
+                        echo "New values set for key: ${params.SelectKey}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+def getActiveEnvironment(jenkinsScript) {
+    def jenkinsUrl = jenkinsScript.env.JENKINS_URL
+    if (jenkinsUrl.contains("dev.nexmo") || jenkinsUrl.contains("nexmo.dev")) {
+        return "dev"
+    } else if (jenkinsUrl.contains("qa.nexmo") || jenkinsUrl.contains("nexmo.qa")) {
+        return "qa"
+    } else if (jenkinsUrl.contains("prd.nexmo") || jenkinsUrl.contains("nexmo.prd")) {
+        return "prd"
+    } else {
+        error "Invalid Jenkins instance."
+    }
+}
+
+def getAccountID(environment) {
+    switch (environment) {
+        case "dev":
+            return "684154893900"
+        case "qa":
+            return "507728974998"
+        case "prd":
+            return "275313334716"
+        default:
+            error "Invalid environment specified."
+    }
+}
+

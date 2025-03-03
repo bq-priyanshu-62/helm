@@ -1,0 +1,3 @@
+lobDelegateVirtualService:
+  auth:
+    authority: identity-euw1-c1.api-eu.prod.v1.vonagenetworks.net

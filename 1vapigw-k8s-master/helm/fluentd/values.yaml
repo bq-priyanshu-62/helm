@@ -1,0 +1,19 @@
+fluentd:
+  podAnnotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/path: '/metrics'
+    prometheus.io/port: '8080'
+
+  createPriorityClass: true
+  fullnameOverride: fluentd
+  # Enable Supergloo?
+  superglooEnabled: true
+  supergloo_only: true
+  supergloo_metrics_port: 8081
+  supergloo_log_listener_port: 3450
+
+  supergloo_collector_logpaths: |-
+      /var/log/containers/gateway-proxy*.log
+  image:
+    repository: 249662433244.dkr.ecr.us-east-1.amazonaws.com/fluentd-supergloo
+    pullPolicy: Always

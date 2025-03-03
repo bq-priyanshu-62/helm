@@ -1,0 +1,13 @@
+apiVersion: v2
+name: cert-manager
+description: Wrapper chart for cert-manager
+type: application
+version: 1
+appVersion: "1.16.2"
+dependencies:
+  - name: cert-manager
+    version: 1.16.2
+    repository: https://charts.jetstack.io
+  - name: aws-privateca-issuer
+    version: 1.4.0
+    repository: https://cert-manager.github.io/aws-privateca-issuer

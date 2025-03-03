@@ -1,0 +1,161 @@
+{{ if .Values.applications.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: applications
+  labels:
+    stack: telco
+spec:
+  replicas: 1
+  {{- if (.Values.global).enablekarpenter }}
+  strategy:
+    type: Recreate
+  {{- end }}
+  selector:
+    matchLabels:
+      app: applications
+  template:
+    metadata:
+      labels:
+        app: applications
+    spec:
+      volumes:
+        {{ if .Values.applications.interServiceAuth | default false }}
+        - name: public-keys
+          secret:
+            secretName: public-keys
+            optional: false
+        {{ end }}
+      securityContext:
+        fsGroup: 2000
+        fsGroupChangePolicy: OnRootMismatch
+      {{- if (.Values.global).enablekarpenter }}
+      nodeSelector:
+        karpenter.sh/provisioner-name: "{{ .Release.Namespace }}karpenter"
+      tolerations:
+      - key: "{{ .Release.Namespace }}karpenter"
+        effect: "NoSchedule"
+      {{- end }}
+      initContainers:
+        {{ if .Values.telcoWaitForServicesInitContainer | default false }}
+        - name: wait-for-services
+          image: "{{ .Values.global.dockerRepoPrefix }}/nexmo-wait-for-services:latest"
+          command: [ "/wait-for-image.sh" ]
+          args: [ "curl -I http://couchbase:8091/pools/default/ -u applications-service:supersecure --connect-timeout 3 --max-time 10 2>/dev/null | head -n 1 |  cut -d$' ' -f2,-eq,200" ]
+        {{ end }}
+        - name: naive-wait
+          image: "684154893900.dkr.ecr.us-east-1.amazonaws.com/ext/everpeace/curl-jq:latest"
+          command: ["/bin/sh"]
+          args: ["-c", "sleep 60"]
+      containers:
+        - image: {{ .Values.global.accountId }}.dkr.ecr.eu-west-1.amazonaws.com/nexmo-applications-service-kafka-connect:master-1.8.2
+          imagePullPolicy: Always
+          name: nexmo-applications-kafka-connect
+          env:
+            - name: CONNECT_BOOTSTRAP_SERVERS
+              value: "kafka-zookeep:9092"
+            - name: CONNECT_REST_ADVERTISED_HOST_NAME
+              value: applications
+            - name: CONNECT_REST_PORT
+              value: "8083"
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_HOST_PORT
+              value: couchbase
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_USERNAME 
+              value: applications-service
+            - name: KAFKA_COUCHBASE_PASSWORD
+              value: supersecure
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_PASSWORD
+              value: supersecure
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_BUCKET
+              value: velocity
+            - name: NEXMO_APPLICATIONS_SERVICE_CONNECT_TOPIC
+              value: service_applications-service_cb-connect-mutations
+            - name: CREATE_CONNECTOR_ON_INIT
+              value: "true"
+          ports:
+            - containerPort: 8081
+            - containerPort: 8083
+            - containerPort: 8091
+          resources:
+            requests:
+              memory: {{ (.Values.applications.kafkaConnect).resourcesRequestsMemory | default "2048Mi" }}
+              cpu: {{ (.Values.applications.kafkaConnect).resourcesRequestsCpu | default "200m" }}
+            limits:
+              memory: {{ (.Values.applications.kafkaConnect).resourcesLimitsMemory | default "2048Mi" }}
+        - image: {{ .Values.global.accountId }}.dkr.ecr.eu-west-1.amazonaws.com/nexmo-applications-service:{{ .Values.images.applications }}
+          imagePullPolicy: Always
+          name: nexmo-applications
+          env:
+            - name: HOST
+              value: localhost
+            - name: PORT
+              value: "3240"
+            - name: SERVER_PORT
+              value: "3240"
+            - name: LOGGING_LEVEL_ROOT
+              value: INFO
+            - name: MANAGEMENT_SERVER_PORT
+              value: "3242"
+            - name: NEXMO_APPLICATIONS_SERVICE_KAFKA_HOST_PORT
+              value: {{ .Values.applications.kafkaHostPort }}
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.applications.springProfile }}
+            - name: NEXMO_APPLICATIONS_SERVICE_PHUB_PROVISIONING_CONN_BASEURL
+              value: http://telco:8019/provisioning
+            - name: NEXMO_APPLICATIONS_SERVICE_AUTH_HOST
+              value: {{ .Values.applications.authHost | quote}}
+            - name: NEXMO_APPLICATIONS_SERVICE_AUTH_PORT
+              value: {{ .Values.applications.authPort | quote}}
+            - name: NEXMO_AUTH_SERVICE_SSL
+              value: "false"
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_HOST_PORT
+              value: couchbase
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_CAPELLA_HOST_PORT
+              value: couchbase
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_USERNAME
+              value: applications-service
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_CAPELLA_USERNAME
+              value: applications-service
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_CAPELLA_BUCKET
+              value: velocity
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_PASSWORD
+              value: supersecure
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_CAPELLA_PASSWORD
+              value: supersecure
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_TLSCONNECTIVITY
+              value: "false"
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_CAPELLA_CERT
+              value: "Random_String"
+            - name: NEXMO_APPLICATIONS_SERVICE_COUCHBASE_BUCKET_NAME
+              value: velocity
+            - name: NEXMO_APPLICATIONS_SERVICE_AUDIT_EVENT_KAFKA_SERVER
+              value: {{ .Values.applications.kafkaHostPort }}
+            - name: NEXMO_APPLICATIONS_SERVICE_AUDITEVENT_ENABLED
+              value: "false"
+            - name: JWT_INTER_SERVICE_AUTH_PUBLIC_KEYS
+              value: {{ .Values.applications.authPublicKeys | default "/app/dev" }}
+            - name: NEXMO_APPLICATIONS_SERVICE_AUDITEVENT_HOST
+              value: "auditevent.qa"
+            - name: NEXMO_APPLICATIONS_SERVICE_AUDITEVENT_PORT
+              value: "3240"
+            {{ if .Values.applications.interServiceAuth | default false }}
+            - name: JWT_INTER_SERVICE_AUTH_PUBLIC_KEYS
+              value: "/keys/public"
+            {{ end }}
+          ports:
+            - containerPort: 3240
+            - containerPort: 3242
+          {{ if .Values.applications.interServiceAuth | default false }}
+          volumeMounts:
+            - mountPath: "/keys/public/"
+              name: public-keys
+              readOnly: true
+          {{ end }}
+          resources:
+            requests:
+              memory: {{ .Values.applications.resourcesRequestsMemory | default "1024Mi" }}
+              cpu: {{ .Values.applications.resourcesRequestsCpu | default "200m" }}
+            limits:
+              memory: {{ .Values.applications.resourcesLimitsMemory | default "2048Mi" }}
+      hostname: applications
+  {{- end }}

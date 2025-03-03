@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "outDir": "./out",
+    "rootDir": "./test",
+    "target": "es2017",
+    "lib": ["es7", "dom"],
+    "types": ["node", "express", "reflect-metadata", "jest"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "sourceMap": true,
+    "declaration": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowJs": true
+  },
+  "exclude": ["node_modules", "out", "build", "test"]
+}

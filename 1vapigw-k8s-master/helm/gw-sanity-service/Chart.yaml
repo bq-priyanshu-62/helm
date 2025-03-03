@@ -1,0 +1,6 @@
+apiVersion: v2
+name: gw-sanity-service
+description: gw-sanity-service chart to deploy Gloo virtual service and upstream
+type: application
+version: 0.3.3
+appVersion: 3

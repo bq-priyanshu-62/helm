@@ -1,0 +1,20 @@
+endpoints:
+  - https://gw-apse1.api-ap.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-apse1-sanity.api-ap.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-apse2.api-ap.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-apse2-sanity.api-ap.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-apse3.api-ap.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-apse3-sanity.api-ap.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-mec1.api-ap.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-mec1-sanity.api-ap.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-euc1.api-eu.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-euc1-sanity.api-eu.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-euw1.api-eu.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-euw1-sanity.api-eu.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-use1.api-us.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-use1-sanity.api-us.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-usw2.api-us.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+  - https://gw-usw2-sanity.api-us.prod.v1.vonagenetworks.net/apigw/argocd/api/webhook
+aws:
+  ecr:
+    tag: 990fabe38

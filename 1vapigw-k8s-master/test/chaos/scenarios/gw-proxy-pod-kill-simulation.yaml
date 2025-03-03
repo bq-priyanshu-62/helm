@@ -1,0 +1,14 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: nexmo-gloo
+  name: gw-proxy-pod-kill-simulation
+spec:
+  selector:
+    namespaces:
+      - nexmo-gloo
+    labelSelectors:
+      k8s-app: gateway-proxy
+  mode: one
+  action: pod-kill
+  gracePeriod: 0

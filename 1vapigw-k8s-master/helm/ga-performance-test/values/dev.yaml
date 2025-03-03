@@ -1,0 +1,29 @@
+image:
+  repository: 684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-ga-performance-test 
+  tag: latest
+
+serviceAccount:
+  name: ga-performance-test-sa
+  roleArn: arn:aws:iam::684154893900:role/ga-test-app-role
+configMap:
+  gaEndpoints:
+    GA_ENDPOINTS_JSON: |
+      [
+         {"name": "idn.api.vonage.com", "threshold": "2.0"},
+         {"name": "are.api.vonage.com", "threshold": "2.0"},
+         {"name": "api-ap-4.vonage.com", "threshold": "2.0"},
+         {"name": "api-eugb.vonage.com", "threshold": "2.0"},
+         {"name": "api-ap.cc.vonage.com", "threshold": "2.0"},
+         {"name": "api-us.cc.vonage.com", "threshold": "2.0"},
+         {"name": "api-eu.cc.vonage.com", "threshold": "2.0"},
+         {"name": "api.nexmo.com", "threshold": "2.0"},
+         {"name": "api-ap.vonage.com", "threshold": "2.0"},
+         {"name": "api-ap-3.vonage.com", "threshold": "2.0"},
+         {"name": "api-us.vonage.com", "threshold": "2.0"},
+         {"name": "api-us-4.vonage.com", "threshold": "2.0"},
+         {"name": "api-us-3.vonage.com", "threshold": "2.0"},
+         {"name": "api-eu-4.vonage.com", "threshold": "2.0"},
+         {"name": "api-eu-3.vonage.com", "threshold": "2.0"},
+         {"name": "api-us.uc.vonage.com", "threshold": "2.0"},
+         {"name": "api-eu.vonage.com", "threshold": "2.0"}
+      ]

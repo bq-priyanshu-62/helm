@@ -1,0 +1,65 @@
+testkube:
+  preUpgradeHook:
+    image:
+      registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+      repository: "1v-apigw-testkube/bitnami-kubectl"
+  preUpgradeHookNATS:
+    image:
+      registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+      repository: "1v-apigw-testkube/bitnami-kubectl"
+  mongodb:
+    image:
+      registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+      repository: "1v-apigw-testkube/bitnami-compat-mongodb"
+  nats:
+    container: 
+      image:
+        registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+        repository: "1v-apigw-testkube/nats"
+    reloader:
+      image: 
+        registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+        repository: "1v-apigw-testkube/nats-server-config-reloader"
+  testkube-api:
+    serviceAccount:
+      annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::684154893900:role/gateway-tests-role
+    image:
+      registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+      repository: "1v-apigw-testkube/testkube-api-server"
+    minio:
+      image:
+        registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+        repository: "1v-apigw-testkube/minio"
+  testkube-operator:
+    image:
+      registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+      repository: "1v-apigw-testkube/testkube-operator"
+    proxy:
+      image:
+        registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+        repository: "1v-apigw-testkube/kube-rbac-proxy"
+    webhook:
+      migrate:
+        image:
+          registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+          repository: "1v-apigw-testkube/rancher-kubectl"
+      patch:
+        image:
+          registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+          repository: "1v-apigw-testkube/kube-webhook-certgen"
+    preUpgrade:
+      image:
+        registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+        repository: "1v-apigw-testkube/bitnami-kubectl"
+
+testkube_ui:
+  hostname: testkube-ui-c2.api0.v1.dev.euw1.vonagenetworks.net
+  name: testkube-ui-ingress
+  privateControllerClass: nginx-privatelink
+  
+testkube-dashboard:
+  apiServerEndpoint: "https://testkube-ui-c2.api0.v1.dev.euw1.vonagenetworks.net/v1"
+  image: 
+    registry: "684154893900.dkr.ecr.us-east-1.amazonaws.com"
+    repository: "1v-apigw-testkube/testkube-dashboard"

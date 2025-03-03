@@ -1,0 +1,8 @@
+lobDelegateVirtualService:
+  domains:
+    - api.prod.v1.vonagenetworks.net
+    - api-ap.prod.v1.vonagenetworks.net
+    - '*.api-ap.prod.v1.vonagenetworks.net'
+    - 'idn.api.vonage.com'
+    
+  serviceType: api-public

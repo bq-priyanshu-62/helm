@@ -1,0 +1,7 @@
+region: me-central-1
+
+gloo-ee:
+  redis:
+    disabled: true
+    service:
+      name: gloo-rate-limit-me-central-1.internal.prod.v1.vonagenetworks.net

@@ -1,0 +1,4 @@
+apiVersion: v2
+name: glooctl-check
+version: 1.0.1
+description: periodic glooctl check

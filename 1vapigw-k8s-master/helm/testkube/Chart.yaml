@@ -1,0 +1,13 @@
+apiVersion: v2
+name: testkube
+type: application
+description: Testkube is an open-source platform that simplifies the deployment and
+  management of automated testing infrastructure.
+version: 1.17.14
+dependencies:
+- name: testkube
+  repository: https://kubeshop.github.io/helm-charts
+  version: 1.17.99
+- name: testkube-dashboard
+  repository: https://kubeshop.github.io/helm-charts
+  version: 1.16.7

@@ -1,0 +1,5 @@
+falcon-sensor:
+
+  node:
+    image:
+      tag: 7.17.0-17005-1.falcon-linux.Release.US-2

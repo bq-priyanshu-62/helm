@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: telco
+  labels:
+    stack: telco
+spec:
+  selector:
+    app: telco
+  type: ClusterIP
+  ports:
+  - port: 3306
+    targetPort: 3306
+    name: mysql
+  - port: 3160
+    targetPort: 3160
+    name: quota
+  - port: 3600
+    targetPort: 3600
+    name: accounts
+  - port: 3603
+    targetPort: 3603
+    name: accounts-jmx-legacy
+  - port: 3604
+    targetPort: 3604
+    name: accounts-jmx
+  - port: 8019
+    targetPort: 8019
+    name: phub
+  - port: 3081
+    targetPort: 3081
+    name: auth
+  - port: 3200
+    targetPort: 3200
+    name: numbers
+  - port: 3204
+    targetPort: 3204
+    name: numbers-jmx
+  - port: 3030
+    targetPort: 3030
+    name: media
+  - port: 3031
+    targetPort: 3031
+    name: media-public

@@ -1,0 +1,14 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: nexmo-gateway-services
+  name: identity-container-kill-simulation
+spec:
+  selector:
+    namespaces:
+      - nexmo-gateway-services
+    labelSelectors:
+      app: identity
+  mode: one
+  action: container-kill
+  containerNames: ['identity']

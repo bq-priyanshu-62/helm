@@ -1,0 +1,6 @@
+apiVersion: v2
+name: alb-ingress
+description: define resources for nexmo-services (e.g. ingress)
+type: application
+version: 0.2.0
+appVersion: 1

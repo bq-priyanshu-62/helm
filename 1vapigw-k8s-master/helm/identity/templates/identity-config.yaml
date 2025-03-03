@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: identityenv
+data:
+  "NEXMO_IDENTITY_XMLCONFIG": "/config/identity.xml"
+  "NEXMO_IDENTITY_RSA_PRIVATE_KEY_PATH": "/secrets/IdentityRSAKey.pem"
+  {{- if .Values.identity.enableSsl }}
+  "NEXMO_IDENTITY_SSL_KEY_STORE_PATH": "/ssl-secrets/keystore.p12"
+  "NEXMO_IDENTITY_SSL_KEY_STORE_TYPE": "PKCS12"
+  {{- end }}
+  {{- if .Values.identity.clearCache }}
+  "NEXMO_IDENTITY_ACCOUNTS_CACHE_SIZE": "0"
+  "NEXMO_IDENTITY_ACCOUNTS_CAPABILITY_CACHE_SIZE": "0"
+  "NEXMO_IDENTITY_NUMBERS_CACHE_SIZE": "0"
+  {{- end }}
+  "NEXMO_IDENTITY_PORT": "4150"
+  "NEXMO_IDENTITY_PORT_ADMIN": "4152"
+  "NEXMO_IDENTITY_SSL_PORT": "4160"
+
+  "NEXMO_IDENTITY_CONFIG_DYNAMODB_REGION": "{{ .Values.identity.configDynamoDB.region | default "eu-west-1" }}"
+  "NEXMO_IDENTITY_CONFIG_DYNAMODB_TABLE_NAME": "{{ .Values.identity.configDynamoDB.tableName | default "apigw-configs" }}"
+
+  "NEXMO_IDENTITY_LOG_LEVEL": "{{ .Values.identity.logLevel }}"
+  "NEXMO_IDENTITY_DB_ENABLED": "{{ .Values.identity.auth.config_db_enabled }}"
+  "NEXMO_IDENTITY_DB_LOGGING_ENABLED": "{{ .Values.identity.auth.config_db_db_sql_logging }}"
+  "NEXMO_IDENTITY_DB_URL": "{{ .Values.identity.auth.config_db_db_url }}"
+  "NEXMO_IDENTITY_DB_SCHEMA": "{{ .Values.identity.auth.config_db_db_schema }}"
+  "NEXMO_IDENTITY_DB_MIN_CONNECTIONS": "{{ .Values.identity.auth.config_db_db_min_connections }}"
+  "NEXMO_IDENTITY_DB_MAX_CONNECTIONS": "{{ .Values.identity.auth.config_db_db_max_connections }}"
+  "NEXMO_IDENTITY_DB_SSL_ENABLED": "{{ .Values.identity.auth.config_db_db_ssl }}"
+  {{- if .Values.identity.routing }}
+  "NEXMO_IDENTITY_ROUTE_ALL_SMS_TO_SMS_LEGACY": "{{ .Values.identity.routing.routeAllRequestsToSmsLegacy }}"
+  {{- end }}
+  "NEXMO_KAFKA_HQ_HOST": "{{ .Values.identity.kafkaHost }}"
+  "NEXMO_IDENTITY_KAFKA_VOLGA_ACCOUNTS_TOPIC": "{{ .Values.identity.accountCacheKafkaTopic }}"
+  "NEXMO_JWT_ISSUER": "{{ .Values.identity.auth.jwt_issuer }}"
+  "NEXMO_DEFAULT_TTL_UNIT": "{{ .Values.identity.auth.jwt_default_ttl_unit }}"
+  "NEXMO_DEFAULT_TTL_COUNT": "{{ .Values.identity.auth.jwt_default_ttl_count }}"
+
+  {{- if .Values.identity.healthCheck }}
+  "NEXMO_IDENTITY_HEALTH_ENABLE_DELAYED_SHUTDOWN": "{{ .Values.identity.healthCheck.enableDelayedShutdown }}"
+  "NEXMO_IDENTITY_HEALTH_SHUTDOWN_WAIT_PERIOD": "{{ .Values.identity.healthCheck.shutdownWaitPeriodInSeconds }}s"
+  {{- end }}
+
+  "AI_AUTH_ROOT_URL": "{{ .Values.identity.auth.third_party.ai_root_url }}"
+  "TOKBOX_AUTH_BASE_URL": "{{ .Values.identity.auth.third_party.tokbox_auth_base_url }}"
+  "TOKBOX_HEALTH_CHECK_URL": "{{ .Values.identity.auth.third_party.tokbox_health_check_url }}"
+  "TOKBOX_HEALTH_CHECK_ENABLE": "{{ .Values.identity.auth.third_party.tokbox_health_check_enable }}"
+
+  "NUMBER_SERVICE_HOST": "{{ tpl (.Values.identity.services.numbers_service.host | toString) $ }}"
+  "NUMBER_SERVICE_PORT": "{{ .Values.identity.services.numbers_service.port }}"
+  "NUMBER_SERVICE_ENABLE_SSL": "{{ .Values.identity.services.numbers_service.enable_ssl }}"
+  "NUMBER_SERVICE_HEALTH_CHECK_ENABLE": "{{ .Values.identity.services.numbers_service.enable_health_check }}"
+
+  "ACCOUNTS_SERVICE_HOST": "{{ tpl (.Values.identity.services.accounts_service.host | toString) $ }}"
+  "ACCOUNTS_SERVICE_PORT": "{{ .Values.identity.services.accounts_service.port }}"
+  "ACCOUNTS_SERVICE_ENABLE_SSL": "{{ .Values.identity.services.accounts_service.enable_ssl }}"
+  "ACCOUNTS_SERVICE_KEY": "{{ .Values.identity.services.accounts_service.service_key }}"
+  "ACCOUNTS_SERVICE_HEALTH_CHECK_ENABLE": "{{ .Values.identity.services.accounts_service.enable_health_check }}"
+
+  "APPLICATIONS_SERVICE_HOST": "{{ tpl (.Values.identity.services.applications_service.host | toString) $ }}"
+  "APPLICATIONS_SERVICE_PORT": "{{ .Values.identity.services.applications_service.port }}"
+  "APPLICATIONS_SERVICE_ENABLE_SSL": "{{ .Values.identity.services.applications_service.enable_ssl }}"
+  "APPLICATIONS_SERVICE_JWT": "{{ .Values.identity.services.applications_service.service_jwt }}"
+  "APPLICATIONS_SERVICE_HEALTH_CHECK_ENABLE": "{{ .Values.identity.services.applications_service.enable_health_check }}"
+
+  "VONAGE_QUOTA_CHECKER_PRIORITY_NODE": "{{ .Values.identity.services.quota_checker.priority_node }}"
+  "VONAGE_QUOTA_CHECKER_DATACENTER": "{{ .Values.identity.services.quota_checker.data_center }}"
+  "VONAGE_QUOTA_CHECKER_OTHER_REGIONS": "{{ .Values.identity.services.quota_checker.other_regions }}"
+  "VONAGE_QUOTA_CHECKER_KAFKA_TOPIC": "{{ .Values.identity.services.quota_checker.kafka_topic }}"
+  "VONAGE_QUOTA_CHECKER_BOOTSTRAP_BROKERS": "{{ .Values.identity.services.quota_checker.boot_strap_brokers }}"

@@ -1,0 +1,5 @@
+aws-ebs-csi-driver:
+  controller:
+    serviceAccount:
+      annotations: 
+        eks.amazonaws.com/role-arn: arn:aws:iam::275313334716:role/ebs-csi-me-api-role

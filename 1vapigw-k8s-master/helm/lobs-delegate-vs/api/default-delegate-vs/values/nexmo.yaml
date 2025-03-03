@@ -1,0 +1,64 @@
+lobDelegateVirtualService:
+  businessUnit: nexmo
+  extractors:
+    - envoyTraceId:
+        header: x-request-id
+        regex: (.*)
+    - originalClientIpAddress:
+        header: x-envoy-external-address
+        regex: (.*)
+    - authority:
+        header: ':authority'
+        regex: '(.*)'
+  responseExtractors:
+    type:
+      header: 'x-identity-error-type'
+      regex: '.*'
+    title:
+      header: 'x-identity-error-title'
+      regex: '.*'
+    detail:
+      header: 'x-identity-error-detail'
+      regex: '.*'
+    instance:
+      header: 'x-identity-error-instance'
+      regex: '.*'
+  responseHeaders:
+    Content-Type:
+      text: application/json
+    # in order to clear the headers, the following is used, as headers to remove isn't functioning as expected
+    x-identity-auth-error: {}
+    x-identity-error-detail: {}
+    x-identity-error-instance: {}
+    x-identity-error-title: {}
+    x-identity-error-type: {}
+    x-identity-error-code: {}
+    x-identity-error-extras: {}
+    x-sms-use-sms-fe: {}
+    x-nexmo-capabilities: {}
+    x-disable-per-sender-throttling: {}
+  headersToRemove:
+    - x-original-client-ip-address
+    - x-identity-auth-error
+    - x-identity-error-detail
+    - x-identity-error-instance
+    - x-identity-error-title
+    - x-identity-error-type
+    - x-identity-error-code
+    - x-identity-error-extras
+    - x-sms-use-sms-fe
+    - x-nexmo-capabilities
+    - x-disable-per-sender-throttling
+  headersToAdd:
+    - name: 'x-frame-options'
+      value: 'deny'
+      append: false
+    - name: 'x-xss-protection'
+      value: '1; mode=block'
+      append: false
+    - name: 'strict-transport-security'
+      value: 'max-age=31536000; includeSubdomains'
+      append: false
+    - name: 'x-content-type-options'
+      value: 'nosniff'
+      append: false

@@ -1,0 +1,82 @@
+accountName: "1v-apigw-dev"
+accountId: "684154893900"
+clusterName: "dev"
+region: "us-east-1"
+teamTag: "1v-api-gw"
+
+global:
+    dockerRepoPrefix: 564623767830.dkr.ecr.eu-west-1.amazonaws.com
+    mapVolumes: false
+    logPath: /nexmo
+    createNginxIngress: false
+    createALBIngress: true
+    ingress:
+        publicControllerClass: alb
+        publicExtension: .qa.api-eu.vonage.com
+        privateControllerClass: alb
+        privateExtension: .qa.api-eu.vonage.com
+identity:
+    dockerTag: latest
+    serviceName: identity
+    clearCache: true
+    enableRemoteDebug: true
+    replicas: 1
+    singleSecret: false
+    secret:
+        create: true
+        external: false
+    publicRestPort: 4150
+    adminRestPort: 4152
+    logLevel: INFO
+    healthCheck:
+        enableDelayedShutdown: true
+        shutdownWaitPeriodInSeconds: 1
+    kafkaHost: kafka:9092
+    accountCacheKafkaTopic: volga_account_cache_invalidation
+    routing:
+        routeAllRequestsToSmsLegacy: false
+    configDynamoDB:
+        region: us-east-1
+        tableName: apigw-configs
+    auth:
+        config_db_enabled: true
+        config_db_db_url: jdbc:mysql://telco:3306/config
+        config_db_db_schema: config
+        config_db_db_sql_logging: false
+        config_db_db_min_connections: 2
+        config_db_db_max_connections: 200
+        config_db_db_ssl: false
+        jwt_issuer: Nexmo
+        jwt_default_ttl_unit: minute
+        jwt_default_ttl_count: 15
+        third_party:
+            ai_root_url: "https://ziuc1198hb.execute-api.eu-west-1.amazonaws.com"
+            tokbox_auth_base_url: "https://athena.main0.api.dev.usw2.vonagenetworks.net"
+            tokbox_health_check_url: "https://athena.main0.api.dev.usw2.vonagenetworks.net/server/health"
+            tokbox_health_check_enable: false
+    services:
+        numbers_service:
+            host: "numbers-{{ .Release.Namespace }}-use1-c1.api-us.dev.v1.vonagenetworks.net"
+            port: 443
+            enable_ssl: true
+            enable_health_check: true
+        accounts_service:
+            host: telco
+            port: 3600
+            enable_ssl: false
+            service_key: 93rgb30p9wgwb3pa938bgvabq38q92334gbakq2332qf
+            enable_health_check: true
+        applications_service:
+            host: applications
+            port: 3240
+            enable_ssl: false
+            service_jwt: Bearer eyJraWQiOiIyMDE3MDgyMzIxNDM1MCIsImFsZyI6IlJTMjU2In0.eyJqdGkiOiJkYWQ2OTg1Ni00YjNhLTRkNTctOTdkMi01NzVmYWVlMDQ5YTgiLCJpYXQiOjE1NjgzOTA3NjIsInN1YiI6ImRldmFwaSIsImlzcyI6ImRldiJ9.MKJbFm9-WVN3FImxu81v2E--m8HuVcF2RetLKyyNJi9ALtgSY9Sk5k5Mvrz6tSByx5nPoareV9uYf6Z0jIhnNYIRRIhHYohXjvS4fKWw7SsYCSS9Bb7_hjIX541XhIWfScJgvikXQi2Oja-qM87q3dwjH8w1DRd0V1PxJhFa1Cm8-qdv4ZtUKq3Mc9E46J5ixG3QtFN0lv3B568858lmC4uCUX5D2IhveaUaNYXmUWKKvdCDbJ-XUMPOTN2kNDBDxfkxzmqVWoZcsxzi1F5IMTztXZ-tFwHZYIUWUB3MpcpzizF0KlJqOpaxTn8fSRebxP4DJDzQED2qcFVTno4HCg
+            enable_health_check: true
+        quota_checker:
+            data_center: aws-nexmo-dev-us-east-1-ci
+            kafka_topic: quota-checker-ban-unban
+            boot_strap_brokers: kafka:9092
+    upstream:
+        create: false
+autoscaler:
+    enabled: false

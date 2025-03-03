@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Nexmo Helm Chart for Volga
+name: volga
+version: 1.0.6

@@ -1,0 +1,12 @@
+nodeExporter:
+  imageVersion: 0.18.1
+
+prometheus:
+  imageVersion: 2.15.2
+
+podLabels:
+  tailed_path: prometheus.log
+  team: 1v-api-gw
+  role: prometheus
+  logging: true
+  k8s-app: prometheus

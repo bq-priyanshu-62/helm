@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    options {
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Push Docker image to ECRs') {
+            steps {
+                script {
+                    def activeEnvironment  = getActiveEnvironment(this)
+
+                    def envVars          = getEnvVars(activeEnvironment)
+                    def destAwsAccount   = envVars.destAwsAccount
+                    def destRepo         = envVars.destRepo
+                    
+
+                    pushToEnvironment("couchbase/operator:2.6.1", destAwsAccount, destRepo, "1v-apigw-couchbase-operator:2.6.1")
+                    pushToEnvironment("couchbase/admission-controller:2.6.1", destAwsAccount, destRepo, "1v-apigw-couchbase-admin-controller:2.6.1")
+                    pushToEnvironment("couchbase/server:7.2.3", destAwsAccount, destRepo, "1v-apigw-couchbase-server:7.2.3")
+                    pushToEnvironment("bitnami/kafka:3.5.1-debian-11-r1", destAwsAccount, destRepo, "1v-apigw-kafka:3.5.1-debian-11-r1")
+                }
+            }
+        }
+    }
+}
+
+def getActiveEnvironment(jenkinsScript) {
+    if (jenkinsScript.env.JENKINS_URL.contains("dev.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.dev")) {
+        return "dev"
+    }else {
+        echo "Invalid jenkins instance. Only valid in dev"
+        exit 1
+    }
+}
+
+def getEnvVars(environment) {
+    def envVars = [destAwsAccount: "", destRepo: ""]
+    if (environment == "dev") {
+        envVars.destAwsAccount = "684154893900"
+        envVars.destRepo       = "684154893900.dkr.ecr.us-east-1.amazonaws.com/"
+    }
+    return envVars
+}
+
+def pushToEnvironment(originImage, destAwsAccount, destRepo, destImage) {
+    sh """
+        eval \$(aws sts assume-role --role-arn arn:aws:iam::${destAwsAccount}:role/nexmo-jenkins-role  --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\n"')
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${destAwsAccount}.dkr.ecr.us-east-1.amazonaws.com
+
+        docker pull ${originImage}
+        docker tag ${originImage} ${destRepo}${destImage}
+
+        docker push ${destRepo}${destImage}
+    """
+}

@@ -1,0 +1,107 @@
+name: revert_argo_and_branch_protection_changes
+
+on:  
+  workflow_run:
+    workflows: 
+      - Update_route_table
+      - progressive_rollout
+    types: [completed]   
+
+jobs:
+  set_config:
+    runs-on: ["self-hosted", "routes-deployment"]
+    outputs:
+      ENV_VAR: ${{ steps.environment-var.outputs.ENV_VAR }}
+      regions-list: ${{ steps.environment-var.outputs.regions-list }}
+      TARGET_BRANCH: ${{ steps.environment-var.outputs.TARGET_BRANCH }}    
+    steps:
+      - name: Download artifact
+        uses: actions/github-script@v6
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "inputdata"
+            })[0];
+            let download = await github.rest.actions.downloadArtifact({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                artifact_id: matchArtifact.id,
+                archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/inputdata.zip`, Buffer.from(download.data));
+
+      - name: Set variables
+        id: environment-var
+        run: |-
+          unzip inputdata.zip
+          echo "TARGET_BRANCH=$(cat targetbranch)" >> "$GITHUB_OUTPUT"
+          echo "ENV_VAR=$(cat environment)" >> "$GITHUB_OUTPUT"
+          if [ $(cat environment) == "dev" ]; then
+            REGIONS='
+              {"region": "use1"},
+              {"region": "euw1"},
+            '
+          elif [ $(cat environment) == "qa" ]; then
+            REGIONS='
+              {"region": "euw1"},
+            '
+          elif [ $(cat environment) == "prod" ]; then
+            REGIONS='
+              {"region": "mec1"},
+              {"region": "apse3"},
+              {"region": "apse2"},
+              {"region": "apse1"},
+              {"region": "usw2"},
+              {"region": "euc1"},
+              {"region": "euw1"},
+              {"region": "use1"},
+            '
+          fi
+          echo ::set-output name=regions-list::{\"include\":[$REGIONS]}
+
+  revert_argo_changes:
+    runs-on: ["self-hosted", "routes-deployment"]
+    needs: [set_config]
+    strategy:
+      matrix: ${{ fromJson(needs.set_config.outputs.regions-list) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: Vonage/1vapigw-k8s
+          token: ${{ secrets.GH_PAT }}
+          ref: master
+
+      - name: Revert Argocd target branch C2
+        if: ${{ github.event.workflow.name == 'Update_route_table' }}
+        env:
+          KUBE_HOST: ${{ needs.set_config.outputs.ENV_VAR }}_${{ matrix.region }}_C2_HOST
+          AUTHORIZATION_TOKEN: ${{ needs.set_config.outputs.ENV_VAR }}_${{ matrix.region }}_C2_TOKEN
+        run: |-
+          KUBE_HOST=${{ secrets[env.KUBE_HOST] }}
+          AUTHORIZATION_TOKEN=${{ secrets[env.AUTHORIZATION_TOKEN] }}
+          python3 scripts/argo_target_update.py master
+
+      - name: Revert Argocd target branch C1
+        env:
+          KUBE_HOST: ${{ needs.set_config.outputs.ENV_VAR }}_${{ matrix.region }}_C1_HOST
+          AUTHORIZATION_TOKEN: ${{ needs.set_config.outputs.ENV_VAR }}_${{ matrix.region }}_C1_TOKEN
+        run: |-
+          KUBE_HOST=${{ secrets[env.KUBE_HOST] }}
+          AUTHORIZATION_TOKEN=${{ secrets[env.AUTHORIZATION_TOKEN] }}
+          python3 scripts/argo_target_update.py master
+
+  revert_branch_protection_changes:
+    runs-on: ["self-hosted", "routes-deployment"]
+    needs: [set_config]
+    steps:
+      - name: Delete PR branch Protection rule
+        run: |-
+          pip3 install jq
+          curl -L -X DELETE -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GH_PAT }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/Vonage/1vapigw-k8s/branches/${{ needs.set_config.outputs.TARGET_BRANCH }}/protection

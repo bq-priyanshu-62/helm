@@ -1,0 +1,10 @@
+lobDelegateVirtualService:
+  headers:
+    - x-nexmo-trace-id:
+        text: '{% if header("x-nexmo-trace-id") == "" %}{{ envoyTraceId }}{% else %}{{ header("x-nexmo-trace-id") }}{% endif %}'
+    - x-original-client-ip-address:
+        text: '{% if header("x-original-client-ip-address") == "" %}{{ originalClientIpAddress }}{% else %}{{ header("x-original-client-ip-address") }}{% endif %}'
+    - X-Forwarded-Host:
+        text: '{{ authority }}'
+    - x-ignore-auth-result:
+        text: 'false'

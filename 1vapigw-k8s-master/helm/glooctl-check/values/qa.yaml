@@ -1,0 +1,7 @@
+slack:
+  webhook: https://hooks.slack.com/services/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
+
+aws:
+  ecr:
+    repo: 1v-apigw-glooctl-check
+    tag: latest

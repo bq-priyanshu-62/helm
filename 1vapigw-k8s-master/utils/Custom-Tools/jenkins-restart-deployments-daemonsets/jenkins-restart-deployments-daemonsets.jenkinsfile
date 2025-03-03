@@ -1,0 +1,172 @@
+pipeline {
+    agent any
+    parameters {
+        choice(name: 'AWS_REGION', choices: getChoices()[0], description: 'Select AWS Region')
+        choice(name: 'CLUSTER_NAME', choices: getChoices()[1], description: 'Select Cluster Name')
+        string(name: 'Namespace', defaultValue: '', description: 'Namespace of the workload')
+        choice(name: 'WORKLOAD_TYPE', choices: ['deployment', 'daemonset'], description: 'Type of workload to restart')
+        string(name: 'WORKLOAD_NAME', defaultValue: '', description: 'Name of the workload to restart')
+    }
+    stages {
+        stage('Restart Workload') {
+            steps {
+                script {
+                    def region = params.AWS_REGION
+                    def clusterName = params.CLUSTER_NAME
+                    def namespace = params.Namespace
+                    def workloadType = params.WORKLOAD_TYPE
+                    def workloadName = params.WORKLOAD_NAME
+                    def activeCluster = getActiveCluster()
+                    def activeEnvironment = getActiveEnvironment(this)
+
+                    def restrictedWorkloads = [
+                        'extauth', 'gateway-proxy', 'gloo', 'gloo-fed-console', 'gw-sanity-service', 'rate-limit',
+                        'identity', 'identity-config-monitor'
+                    ]
+
+                    if (clusterName == activeCluster && restrictedWorkloads.contains(workloadName) && activeEnvironment == "prd") {
+                        error "Restarting restricted workloads '${workloadName}' in production is not allowed."
+                    } else if (clusterName == activeCluster) {
+                        def userInput = input(
+                            message: "The selected cluster '${clusterName}' is currently active. Do you want to restart the deployment/daemonset in this active cluster in ${region}?",
+                            parameters: [choice(name: 'CONFIRMATION', choices: ['No', 'Yes'], description: 'Confirm action', defaultValue: 'No')]
+                        )
+                        if (userInput == 'No') {
+                            error 'User aborted the restart deployment/daemonset.'
+                        }
+                    }
+
+                    if (workloadName.trim() == '') {
+                        error("Workload name cannot be empty. Please specify a valid workload name.")
+                    }
+                    if (namespace.trim() == '') {
+                        error("Namespace cannot be empty. Please specify a valid namespace.")
+                    }
+                    echo "Restarting ${workloadType} '${workloadName}' in namespace '${namespace}' on cluster '${clusterName}' in region '${region}'..."
+                    restartWorkload(region, clusterName, namespace, workloadName, workloadType)
+                }
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
+
+def constructUrl(activeEnvironment, activeRegion) {
+    def regionCode = ""
+    if (activeEnvironment == "prd") {
+        activeEnvironment = "prod"
+    }
+
+    switch (activeRegion) {
+        case "eu-west-1":
+            regionCode = "euw1"
+            break
+        case "eu-central-1":
+            regionCode = "euc1"
+            break
+        case "ap-southeast-1":
+            regionCode = "apse1"
+            break
+        case "ap-southeast-2":
+            regionCode = "apse2"
+            break
+        case "ap-southeast-3":
+            regionCode = "apse3"
+            break
+        case "us-west-2":
+            regionCode = "usw2"
+            break
+        case "us-east-1":
+            regionCode = "use1"
+            break
+        case "me-central-1":
+            regionCode = "mec1"
+            break
+        default:
+            error "Invalid AWS region specified: '${activeRegion}'."
+    }
+
+    return "https://gw-${regionCode}.api-${activeRegion.substring(0, 2)}.${activeEnvironment}.v1.vonagenetworks.net/gateway/ping"
+}
+
+def getActiveCluster() {
+    def activeEnvironment = getActiveEnvironment(this)
+    def activeRegion = params.AWS_REGION
+    def url = constructUrl(activeEnvironment, activeRegion)
+    def activeCluster = ""
+    try {
+        def response = sh(script: "curl -s ${url}", returnStdout: true).trim()
+        def jsonResponse = readJSON text: response
+        activeCluster = jsonResponse.cluster
+    } catch (Exception e) {
+        echo "Error fetching data from '${url}': ${e.message}"
+        error "Failed to fetch the active cluster from the specified URL."
+    }
+
+    return activeCluster
+}
+
+def getChoices() {
+    def activeEnv = getActiveEnvironment(this)
+    def regionChoices = []
+    def clusterChoices = []
+
+    if (activeEnv == "dev") {
+        regionChoices = ['eu-west-1', 'us-east-1']
+        clusterChoices = ['1vapi-1', '1vapi-2', '1vapi-nexmo-ci']
+    } else if (activeEnv == "qa") {
+        regionChoices = ['eu-west-1', 'us-east-1', 'eu-central-1']
+        clusterChoices = ['1vapi-1', '1vapi-2']
+    } else if (activeEnv == "prd") {
+        regionChoices = ['eu-west-1', 'eu-central-1', 'us-west-2', 'us-east-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-southeast-3', 'me-central-1']
+        clusterChoices = ['1vapi-1', '1vapi-2']
+    } else {
+        error("Invalid environment specified.")
+    }
+
+    return [regionChoices, clusterChoices]
+}
+
+def getActiveEnvironment(jenkinsScript) {
+    def jenkinsUrl = jenkinsScript.env.JENKINS_URL
+    if (jenkinsUrl.contains("dev.nexmo") || jenkinsUrl.contains("nexmo.dev")) {
+        return "dev"
+    } else if (jenkinsUrl.contains("qa.nexmo") || jenkinsUrl.contains("nexmo.qa")) {
+        return "qa"
+    } else if (jenkinsUrl.contains("prd.nexmo") || jenkinsUrl.contains("nexmo.prd")) {
+        return "prd"
+    } else {
+        error "Invalid Jenkins instance: '${jenkinsUrl}'."
+    }
+}
+
+
+def getAccountID(environment) {
+    if (environment == "dev") {
+        return "684154893900"
+    } else if (environment == "qa") {
+        return "507728974998"
+    } else if (environment == "prd") {
+        return "275313334716"
+    } else {
+        echo "Invalid environment specified."
+        exit 1
+    }
+    return awsAccount
+}
+
+def restartWorkload(region, clusterName, namespace, workloadName, workloadType) {
+    def awsAccount = getAccountID(getActiveEnvironment(this))
+    def resourceType = workloadType == 'daemonset' ? 'daemonset' : 'deployment'
+
+    sh(script: """
+         eval \$(aws sts assume-role --role-arn arn:aws:iam::${awsAccount}:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\\n"')
+         aws eks update-kubeconfig --name ${clusterName} --region ${region}
+         kubectl rollout restart -n ${namespace} ${resourceType} ${workloadName}
+    """)
+}
+

@@ -1,0 +1,33 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: vmagent-pet
+  namespace: monitoring
+  labels:
+    k8s-app: vmagent
+    {{- include "vmagent.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints", "nodes", "nodes/proxy"]
+    verbs: ["list","watch","get"]
+  - nonResourceURLs: ["/metrics", "/metrics/*"]
+    verbs:
+      - get
+  
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: vmagent-pet
+  namespace: monitoring
+  labels:
+    k8s-app: vmagent
+    {{- include "vmagent.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: vmagent-pet
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: monitoring

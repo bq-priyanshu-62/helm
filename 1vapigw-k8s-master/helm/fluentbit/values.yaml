@@ -1,0 +1,35 @@
+fluent-bit:
+  ppriorityClassName: "node-logging"
+  existingConfigMap: "fluentbit-cl-configmap"
+
+  image:
+    repository: 249662433244.dkr.ecr.us-east-1.amazonaws.com/fluentbit-sre
+    pullPolicy: Always
+
+  serviceAccount:
+    create: true
+
+  luaScripts:
+    add_timestamps.lua: |
+      function append(tag, timestamp, record)
+          new_record = record
+          
+          -- Get current time details
+          local current_time = os.time()
+          local milliseconds = (os.clock() % 1) * 1000
+          local iso_8601_format = os.date("!%Y-%m-%dT%H:%M:%S", current_time)
+
+          -- Construct full formatted string for current time
+          local formatted_time = string.format("%s.%03d+00:00", iso_8601_format, milliseconds)
+
+          new_record["timestamp"] = formatted_time
+          new_record["@timestamp"] = formatted_time
+
+          return 1, timestamp, new_record
+      end
+
+fluentbit-cl-cm-chart:
+  configmap:
+    name: "fluentbit-cl-configmap"
+  namespace:
+    create: false

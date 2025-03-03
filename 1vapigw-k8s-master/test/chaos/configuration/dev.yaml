@@ -1,0 +1,14 @@
+tests:
+  regions:
+    - region: eu-west-1
+      clusters:
+        - cluster: 1vapi-1
+          domain: gw-euw1.api-eu.dev.v1.vonagenetworks.net
+        - cluster: 1vapi-2
+          domain: gw-euw1-sanity.api-eu.dev.v1.vonagenetworks.net
+    - region: us-east-1
+      clusters:
+        - cluster: 1vapi-1
+          domain: gw-use1.api-us.dev.v1.vonagenetworks.net
+        - cluster: 1vapi-2
+          domain: gw-use1-sanity.api-us.dev.v1.vonagenetworks.net

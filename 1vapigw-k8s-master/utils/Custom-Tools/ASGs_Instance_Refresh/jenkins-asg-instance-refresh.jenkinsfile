@@ -1,0 +1,232 @@
+def getChoices() {
+    def activeEnv = getActiveEnvironment(this)
+    def regionChoices = []
+    def clusterChoices = []
+
+    if (activeEnv == "dev") {
+        regionChoices = ['eu-west-1', 'us-east-1']
+        clusterChoices = ['1vapi-1', '1vapi-2', '1vapi-nexmo-ci']
+    } else if (activeEnv == "qa") {
+        regionChoices = ['eu-west-1', 'us-east-1', 'eu-central-1']
+        clusterChoices = ['1vapi-1', '1vapi-2']
+    } else if (activeEnv == "prd") {
+        regionChoices = ['eu-west-1', 'eu-central-1', 'us-west-2','us-east-1','ap-southeast-1','ap-southeast-2','ap-southeast-3','me-central-1']
+        clusterChoices = ['1vapi-1', '1vapi-2']
+    }  else {
+        echo "Invalid environment specified."
+        exit 1
+    }
+
+    return [regionChoices, clusterChoices]
+}
+def choices = getChoices()
+def regionChoices = choices[0]
+def clusterChoices = choices[1]
+
+pipeline {
+    agent any
+    parameters {
+        choice(name: 'AWS_REGION', choices: regionChoices, description: 'Select AWS Region')
+        choice(name: 'CLUSTER_NAME', choices: clusterChoices, description: 'Select Cluster Name')
+    }
+
+    stages {
+        stage('Trigger Instance Refresh') {
+            steps {
+                script {
+                    def region = params.AWS_REGION
+                    def clusterName = params.CLUSTER_NAME
+                    def activeCluster = getActiveCluster()
+
+                    def autoScalingGroups = getAutoScalingGroups(region, clusterName)
+
+                    if (clusterName == activeCluster) {
+                        def userInput = input(message: "Do you want to trigger instance refresh for Active Cluster $clusterName in $region ?", parameters: [choice(name: 'CONFIRMATION', choices: ['No', 'Yes'], description: 'Confirm action', defaultValue: 'No')])
+                        if (userInput == 'No') {
+                            error 'User aborted the instance refresh.'
+                        }
+                    }
+
+                    def parallelStages = [:]
+
+                    autoScalingGroups.each { asg ->
+                        parallelStages["Instance Refresh for $asg"] = {
+                            echo "Cluster Name: $clusterName, Auto Scaling Group: $asg"
+                            triggerInstanceRefresh(region, asg)
+                            waitForInstanceRefresh(region, asg)
+                        }
+                    }
+
+                    parallel parallelStages
+                }
+            }
+        }
+        stage('Restart Deployment') {
+            steps {
+                script {
+                    restartDeployment(params.AWS_REGION, params.CLUSTER_NAME, "nexmo-gloo", "extauth")
+                }
+            }
+        }
+    }
+}
+
+def getActiveEnvironment(jenkinsScript) {
+    if (jenkinsScript.env.JENKINS_URL.contains("dev.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.dev")) {
+        return "dev"
+    } else if (jenkinsScript.env.JENKINS_URL.contains("qa.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.qa")) {
+        return "qa"
+    } else if (jenkinsScript.env.JENKINS_URL.contains("prd.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.prd")) {
+        return "prd"
+    } else {
+        echo "Invalid Jenkins instance."
+        exit 1
+    }
+}
+
+def getAccountID(environment) {
+    if (environment == "dev") {
+        return "684154893900"
+    } else if (environment == "qa") {
+        return "507728974998"
+    } else if (environment == "prd") {
+        return "275313334716"
+    } else {
+        echo "Invalid environment specified."
+        exit 1
+    }
+    return awsAccount
+}
+
+def getAutoScalingGroups(region, clusterName) {
+    def awsAccount = getAccountID(getActiveEnvironment(this))
+    return sh(script: """
+        eval \$(aws sts assume-role --role-arn arn:aws:iam::${awsAccount}:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\\n"') > a.txt
+
+        aws autoscaling describe-auto-scaling-groups --region $region --query "AutoScalingGroups[?starts_with(AutoScalingGroupName, '${clusterName}')].AutoScalingGroupName" | jq -r '.[]'
+    """, returnStdout: true).trim().split('\n')
+}
+
+def triggerInstanceRefresh(region, asg) {
+    def awsAccount = getAccountID(getActiveEnvironment(this))
+
+    try {
+        sh(script: """
+             eval \$(aws sts assume-role --role-arn arn:aws:iam::${awsAccount}:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\\n"')
+
+            aws autoscaling start-instance-refresh --region $region --auto-scaling-group-name $asg --preferences MinHealthyPercentage=100,MaxHealthyPercentage=200,InstanceWarmup=300
+        """, returnStatus: true)
+        echo "Instance refresh initiated successfully for $asg in $region."
+    } catch (Exception e) {
+        error "Failed to initiate instance refresh for $asg in $region. Error: ${e.getMessage()}"
+    }
+}
+
+def waitForInstanceRefresh(region, asg) {
+    def awsAccount = getAccountID(getActiveEnvironment(this))
+    def pollingInterval = 10
+    def maxWaitTime = 1800
+    def elapsedTime = 0
+
+    while (elapsedTime < maxWaitTime) {
+        def status = sh(script: """
+           eval \$(aws sts assume-role --role-arn arn:aws:iam::${awsAccount}:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\\n"')
+
+            aws autoscaling describe-instance-refreshes --region $region --auto-scaling-group-name $asg --query 'InstanceRefreshes[0].Status' --output text
+        """, returnStdout: true).trim()
+
+        if (status == 'Successful') {
+            echo "Instance refresh completed successfully for $asg in $region."
+            break
+        } else if (status == 'Failed') {
+            error "Instance refresh failed for $asg in $region."
+        }
+	echo "######  Instance Refreshing Still in Progress #######"
+        sleep pollingInterval
+        elapsedTime += pollingInterval
+    }
+
+    if (elapsedTime >= maxWaitTime) {
+        error "Timeout: Instance refresh did not complete within the specified time for $asg in $region."
+    }
+}
+
+def constructUrl(activeEnvironment, activeRegion) {
+    def regionCode = ""
+
+    if(activeEnvironment== "prd"){
+        activeEnvironment="prod"
+    }
+    switch (activeRegion) {
+        case "eu-west-1":
+            regionCode = "euw1"
+            break
+
+        case "eu-central-1":
+            regionCode = "euc1"
+            break
+
+        case "ap-southeast-1":
+            regionCode = "apse1"
+            break
+
+        case "ap-southeast-2":
+            regionCode = "apse2"
+            break
+
+        case "ap-southeast-3":
+            regionCode = "apse3"
+            break
+
+        case "us-west-2":
+            regionCode = "usw2"
+            break
+
+        case "us-east-1":
+            regionCode = "use1"
+            break
+
+        case "me-central-1":
+            regionCode = "mec1"
+            break
+
+        default:
+            error "Invalid region specified."
+    }
+
+return "https://gw-${regionCode}.api-${activeRegion.substring(0,2)}.${activeEnvironment}.v1.vonagenetworks.net/gateway/ping"
+
+}
+
+def getActiveCluster() {
+    def activeEnvironment = getActiveEnvironment(this)
+    def activeRegion = params.AWS_REGION
+    def urls = constructUrl(activeEnvironment, activeRegion)
+    def activeCluster = ""
+    try {
+        def response = sh(script: "curl -s $urls", returnStdout: true).trim()
+        def jsonResponse = readJSON text: response
+
+        activeCluster = jsonResponse.cluster
+    } catch (Exception e) {
+        echo "Error fetching data from $urls: ${e.message}"
+    }
+
+    if (!activeCluster) {
+        error "Failed to fetch the active cluster from the specified URL."
+    }
+
+    return activeCluster
+}
+
+def restartDeployment(region, clusterName, namespace, deployment){
+    def awsAccount = getAccountID(getActiveEnvironment(this))
+    return sh(script: """
+         rm -rf "/var/jenkins_home/.kube/config"
+         eval \$(aws sts assume-role --role-arn arn:aws:iam::${awsAccount}:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\\n"')
+         aws eks update-kubeconfig --name ${clusterName} --region ${region}
+         echo "Sleeping for 5 minutes before restarting deployment..."
+         sleep 300
+         kubectl rollout restart -n ${namespace} deploy ${deployment}
+    """, returnStdout: true).trim()
+}

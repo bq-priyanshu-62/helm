@@ -1,0 +1,4 @@
+yace:
+  role: yace-us-api-role
+  cloudfront_enabled: true
+  globalaccelerator_enabled: true

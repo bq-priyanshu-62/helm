@@ -1,0 +1,596 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "A dashboard that monitors ArgoCD with a focus on Application status. It is created using the [argo-cd-mixin](https://github.com/adinhodovic/argo-cd-mixin). Requires custom configuration to add application badges. Please refer to the mixin.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "gnetId": 19974,
+  "graphTooltip": 0,
+  "id": 2835,
+  "links": [
+    {
+      "tags": [
+        "ci/cd",
+        "argo-cd"
+      ],
+      "targetBlank": true,
+      "title": "ArgoCD Dashboards",
+      "type": "dashboards"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(argocd_app_info{aws_account=~\"$aws_account\",\nregion=~'$region',cluster_id=~'$cluster_id',namespace=~\"argocd\",dest_server=~\"https://kubernetes.default.svc\",health_status=~\"$health_status\",sync_status=~\"$sync_status\",health_status!=\"\"}) by (region, cluster_id,job, dest_server, project,health_status,name)",
+          "instant": true,
+          "legendFormat": "{{ project }}/{{region}}/{{cluster_id}}/{{name}} - {{ health_status }}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Application Health Status",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(argocd_app_info{aws_account=~\"$aws_account\",\nregion=~'$region',cluster_id=~'$cluster_id',namespace=~\"argocd\",dest_server=~\"https://kubernetes.default.svc\",health_status=~\"$health_status\",sync_status=~\"$sync_status\",health_status!=\"\"}) by (region, cluster_id,job, dest_server, project,health_status,name, sync_status)",
+          "instant": true,
+          "legendFormat": "{{ project }}/{{region}}/{{cluster_id}}/{{name}} - {{sync_status}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Application Sync Status",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "autosync_enabled"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background-solid"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 6,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(\n  argocd_app_info{aws_account=~\"$aws_account\",\nregion=~'$region',\nnamespace=~'argocd',\ndest_server=~'https://kubernetes.default.svc',\nautosync_enabled!=\"true\"\n  }\n) by (project, autosync_enabled, region, cluster_id ) > 0",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Applications With Auto Sync Disabled",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 5,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(\n  argocd_app_info{aws_account=~\"$aws_account\",\nregion=~'$region',\nnamespace=~'argocd',\ndest_server=~'https://kubernetes.default.svc',\nsync_status!=\"Synced\"\n  }\n) by (sync_status, region, cluster_id,project, name) > 0",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Applications Out Of Sync",
+      "type": "table"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [
+    "ci/cd",
+    "argo-cd"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "description": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "health_status",
+        "multi": true,
+        "name": "health_status",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "Healthy",
+            "value": "Healthy"
+          },
+          {
+            "selected": false,
+            "text": "Progressing",
+            "value": "Progressing"
+          },
+          {
+            "selected": false,
+            "text": "Suspended",
+            "value": "Suspended"
+          },
+          {
+            "selected": false,
+            "text": "Missing",
+            "value": "Missing"
+          },
+          {
+            "selected": false,
+            "text": "Degraded",
+            "value": "Degraded"
+          },
+          {
+            "selected": false,
+            "text": "Unknown",
+            "value": "Unknown"
+          }
+        ],
+        "query": "\tHealthy,Progressing,Suspended,Missing,Degraded,Unknown",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "hide": 0,
+        "includeAll": true,
+        "label": "sync_status",
+        "multi": true,
+        "name": "sync_status",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "Synced",
+            "value": "Synced"
+          },
+          {
+            "selected": false,
+            "text": "OutOfSync",
+            "value": "OutOfSync"
+          },
+          {
+            "selected": false,
+            "text": "Unknown",
+            "value": "Unknown"
+          }
+        ],
+        "query": "Synced,OutOfSync,Unknown",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "1v-apigw-prod",
+          "value": "1v-apigw-prod"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "ytCXWfM4k"
+        },
+        "definition": "label_values(gloo_solo_io_setups_run{gloo=\"gloo\"},aws_account)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "aws_account",
+        "multi": false,
+        "name": "aws_account",
+        "options": [],
+        "query": {
+          "query": "label_values(gloo_solo_io_setups_run{gloo=\"gloo\"},aws_account)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "eu-central-1",
+          "value": "eu-central-1"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "ytCXWfM4k"
+        },
+        "definition": "label_values(gloo_solo_io_setups_run{gloo=\"gloo\", aws_account=~\"$aws_account\"},region)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "region",
+        "multi": false,
+        "name": "region",
+        "options": [],
+        "query": {
+          "query": "label_values(gloo_solo_io_setups_run{gloo=\"gloo\", aws_account=~\"$aws_account\"},region)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "1vapi-1"
+          ],
+          "value": [
+            "1vapi-1"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "ytCXWfM4k"
+        },
+        "definition": "label_values(gloo_solo_io_setups_run{gloo=\"gloo\", aws_account=\"$aws_account\", region=\"$region\"},cluster_id)\t",
+        "hide": 0,
+        "includeAll": true,
+        "label": "cluster_id",
+        "multi": true,
+        "name": "cluster_id",
+        "options": [],
+        "query": {
+          "query": "label_values(gloo_solo_io_setups_run{gloo=\"gloo\", aws_account=\"$aws_account\", region=\"$region\"},cluster_id)\t",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "utc",
+  "title": "ArgoCD/Application/Overview",
+  "uid": "argo-cd-application-overview-kask",
+  "version": 36,
+  "weekStart": ""
+}

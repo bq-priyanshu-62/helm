@@ -1,0 +1,316 @@
+#        searchTags:
+#          - key: monitoring
+#            value: enabled
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yace-config-{{ .Chart.Version }}
+  namespace: monitoring
+data:
+  config.yml: |-
+    apiVersion: v1alpha1
+    discovery:
+      exportedTagsOnMetrics:
+        AWS/ApplicationELB:
+          - kubernetes.io/namespace
+          - environment
+          - registered-clusters
+      jobs:
+      - type:  "AWS/ApplicationELB"
+        regions:
+          - {{ .Values.region| default "us-east-1" }}
+        searchTags:
+          - key: monitoring
+            value: true
+        length: 120
+        metrics:
+          - name: ActiveConnectionCount
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: NewConnectionCount
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: HTTPCode_ELB_500_Count
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: HTTPCode_ELB_502_Count
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: HTTPCode_ELB_503_Count
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: HTTPCode_ELB_504_Count
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: HTTPCode_ELB_3XX_Count
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: HTTPCode_ELB_4XX_Count
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: HTTPCode_ELB_5XX_Count
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: RejectedConnectionCount
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: RequestCount
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: RequestCountPerTarget
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: HealthyHostCount
+            statistics:
+              - Minimum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: UnHealthyHostCount
+            statistics:
+              - Maximum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: HTTPCode_Target_2XX_Count
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: HTTPCode_Target_3XX_Count
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: HTTPCode_Target_4XX_Count
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: HTTPCode_Target_5XX_Count
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: TargetConnectionErrorCount
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: TargetResponseTime
+            statistics:
+              - Average
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: TargetResponseTime
+            statistics:
+              - p95
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: TargetResponseTime
+            statistics:
+              - p99
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: ClientTLSNegotiationErrorCount
+            statistics:
+              - Sum
+            period: 60
+            addCloudwatchTimestamp: true
+          - name: TargetTLSNegotiationErrorCount
+            statistics:
+              - Sum
+            period: 60
+            addCloudwatchTimestamp: true
+      - type: "AWS/WAFV2"
+        regions:
+          - {{ .Values.region| default "us-east-1" }}
+        searchTags:
+          - key: monitoring
+            value: true
+        length: 140
+        metrics:
+          - name: CountedRequests
+            statistics:
+              - Sum
+            period: 60
+            addCloudwatchTimestamp: true
+          - name: AllowedRequests
+            statistics:
+              - Sum
+            period: 60
+            addCloudwatchTimestamp: true
+          - name: BlockedRequests
+            statistics:
+              - Sum
+            period: 60
+            addCloudwatchTimestamp: true
+          - name: PassedRequests
+            statistics:
+              - Sum
+            period: 60
+            addCloudwatchTimestamp: true
+{{- if .Values.yace.globalaccelerator_enabled }}
+      - type: "AWS/GlobalAccelerator"
+        regions:
+          - us-west-2
+        length: 120
+        metrics:
+          - name: NewFlowCount
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: ProcessedBytesIn
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: ProcessedBytesOut
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+          - name: ActiveFlowCount
+            statistics:
+              - Sum
+            period: 60
+            nilToZero: true
+            addCloudwatchTimestamp: true
+{{ end }}
+{{- if .Values.yace.cloudfront_enabled }}
+      - type: "AWS/CloudFront"
+        regions:
+          - us-east-1
+        metrics:
+          - name: 4xxErrorRate
+            statistics:
+              - Average
+            period: 60
+            length: 600
+          - name: 401ErrorRate
+            statistics:
+              - Average
+            period: 60
+            length: 600
+          - name: 403ErrorRate
+            statistics:
+              - Average
+            period: 60
+            length: 600
+          - name: 404ErrorRate
+            statistics:
+              - Average
+            period: 60
+            length: 600
+          - name: 404ErrorRate
+            statistics:
+              - Average
+            period: 60
+            length: 600
+          - name: 5xxErrorRate
+            statistics:
+              - Average
+            period: 60
+            length: 600
+          - name: 5xxErrorRate
+            statistics:
+              - Average
+            period: 60
+            length: 600
+          - name: 502ErrorRate
+            statistics:
+              - Average
+            period: 60
+            length: 600
+          - name: 503ErrorRate
+            statistics:
+              - Average
+            period: 60
+            length: 600
+          - name: 504ErrorRate
+            statistics:
+              - Average
+            period: 60
+            length: 600
+          - name: BytesDownloaded
+            statistics:
+              - Sum
+            period: 60
+            length: 600
+          - name: BytesUploaded
+            statistics:
+              - Sum
+            period: 60
+            length: 600
+          - name: CacheHitRate
+            statistics:
+              - Average
+            period: 60
+            length: 600
+          - name: OriginLatency
+            statistics:
+              - p50
+              - p80
+              - p95
+              - p99
+            period: 60
+            length: 600
+          - name: Requests
+            statistics:
+              - Sum
+            period: 60
+            length: 600
+          - name: TotalErrorRate
+            statistics:
+              - Average
+            period: 60
+            length: 600
+{{ end }}

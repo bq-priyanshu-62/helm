@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(
+            name: 'SECRET_ARN',
+            description: 'The full ARN of the secret in AWS SSM; this should be the one output by atlantis-ci apply',
+            defaultValue: ''
+        )
+        password(
+            name: 'SECRET_VALUE',
+            description: 'The secret value in plaintext',
+            defaultValue: ''
+        )
+    }
+
+    stages {
+        stage('git') {
+            steps {
+                dir('io') {
+                    git url: 'https://github.com/vonage/1vapigw-k8s.git', branch: 'master', credentialsId: "global/api-gw/jenkins/api-gw-github-vonageorg"  
+                }
+            }
+       }
+        stage("env") {
+            steps {
+                script {
+                    def job = Jenkins.getInstance().getItemByFullName(env.JOB_BASE_NAME, Job.class)
+                    def build = job.getBuildByNumber(env.BUILD_ID as int)
+                    env.BUILD_USERNAME = build.getCause(Cause.UserIdCause).getUserId()
+                }
+            }
+        }
+        stage('upload') {
+            steps {
+                sh """
+                    pipenv --python 3.11
+                    pipenv install boto3                    
+                    pipenv run python io/jenkins/SRE-populate-secret-new-value-aws/copy_secret.py
+                """
+            }
+        }
+    }
+}

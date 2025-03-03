@@ -1,0 +1,37 @@
+{{ if .Values.numbers.ingress.createALBIngress}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: numbers-ingress
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30
+    alb.ingress.kubernetes.io/tags: "environment=dev, monitoring=true, kubernetes.io/namespace={{ .Release.Namespace }}"
+    alb.ingress.kubernetes.io/security-groups: sg-01ff5e34998b54752,sg-0a72d69a4ddad14b7
+
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:684154893900:certificate/84c8d7aa-89fe-4180-8d22-890300e9ee74,arn:aws:acm:us-east-1:684154893900:certificate/45e2ebbc-1d2e-45b6-9716-6e6c8bfcc3a5,arn:aws:acm:us-east-1:684154893900:certificate/c89efd1a-3549-4dbb-b5f9-4753c5d803df,arn:aws:acm:us-east-1:684154893900:certificate/32c60819-ae78-4abf-bfde-6593b3b7d771
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "5"
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "2"
+    alb.ingress.kubernetes.io/healthcheck-path: /ping
+    alb.ingress.kubernetes.io/success-codes: "200"
+
+    external-dns.alpha.kubernetes.io/hostname: numbers-{{ .Release.Namespace}}-use1-c1.api-us.dev.v1.vonagenetworks.net
+    external-dns.alpha.kubernetes.io/ttl: "10"
+
+spec:
+  rules:
+    - host: "numbers-{{ .Release.Namespace}}-use1-c1.api-us.dev.v1.vonagenetworks.net"
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: telco
+                port:
+                  number: 3200
+{{ end }}

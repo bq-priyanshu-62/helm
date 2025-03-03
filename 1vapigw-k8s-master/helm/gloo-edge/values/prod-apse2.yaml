@@ -1,0 +1,7 @@
+region: ap-southeast-2
+
+gloo-ee:
+  redis:
+    disabled: true
+    service:
+      name: gloo-rate-limit-ap-southeast-2.internal.prod.v1.vonagenetworks.net

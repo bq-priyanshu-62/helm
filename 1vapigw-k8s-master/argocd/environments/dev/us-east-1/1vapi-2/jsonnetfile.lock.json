@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "dependencies": [
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/Vonage/1vapigw-k8s.git",
+          "subdir": "argocd/lib"
+        }
+      },
+      "version": "d58bd0ff571bb68d6e0e7d2aaeddb371927fc813",
+      "sum": "8YVrC9qjG17NpNa1Iig31meYdk+fBBtYrl0kGpJ9B98="
+    }
+  ],
+  "legacyImports": false
+}

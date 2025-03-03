@@ -1,0 +1,10 @@
+apiVersion: v2
+name: external-dns
+description: Wrapper chart for external-dns
+type: application
+version: 1
+appVersion: "0.15.1"
+dependencies:
+  - name: external-dns
+    version: 8.7.1
+    repository: https://charts.bitnami.com/bitnami

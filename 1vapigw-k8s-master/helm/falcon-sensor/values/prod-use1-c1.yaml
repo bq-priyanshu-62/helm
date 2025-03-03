@@ -1,0 +1,4 @@
+falcon-sensor:
+
+  falcon:
+    tags: Vonage,Vonage_prod,Vonage_cluster_1v-apigw-prod-use1-1vapi-c1

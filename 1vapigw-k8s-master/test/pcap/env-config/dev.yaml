@@ -1,0 +1,9 @@
+aws_config:
+  role: arn:aws:iam::684154893900:role/nexmo-jenkins-role
+  ecr: 684154893900.dkr.ecr.us-east-1.amazonaws.com
+  ecr_region: us-east-1
+  ecr_image: 1v-apigw-pcap
+  s3_bucket: 1v-apigw-pcap
+
+notification:  
+  slack_channel: api-gw-notify-dev

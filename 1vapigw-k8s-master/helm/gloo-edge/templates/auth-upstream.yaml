@@ -1,0 +1,24 @@
+{{- if .Values.auth }}
+{{- if .Values.auth.enabled }}
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: {{ regexFind "(\\w+)" .Release.Namespace }}-auth
+  namespace: {{ .Release.Namespace }}
+spec:
+  kube:
+    selector:
+      vonage_app: {{ .Values.auth.kubeApp }}
+    serviceName: {{ .Values.auth.kubeServiceName }}
+    serviceNamespace: {{ .Values.auth.kubeNamespace }}
+    servicePort: {{ int .Values.auth.kubePort | default "4150" }}
+  healthChecks:
+    - httpHealthCheck:
+        path: /health-check
+      timeout: 2s
+      interval: 5s
+      unhealthyThreshold: 3
+      healthyThreshold: 1
+  ignoreHealthOnHostRemoval: true
+{{- end }}
+{{- end }}

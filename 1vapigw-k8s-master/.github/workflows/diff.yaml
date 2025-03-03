@@ -1,0 +1,372 @@
+name: diff
+
+on: [ pull_request ]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.check-prod-updates.outputs.result }}
+    steps:
+      - name: checkout PR branch
+        uses: actions/checkout@v3
+
+      - name: retrieve updated deployment config - prod routes only
+        uses: technote-space/get-diff-action@v6.0.1
+        with:
+          FORMAT: json
+          RELATIVE: argocd/routes/prod
+          BASE: refs/heads/master
+
+      - name: check have prod updates
+        id: check-prod-updates
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            const gitDiffFiltered = JSON.parse(process.env.GIT_DIFF_FILTERED)
+            console.log(gitDiffFiltered)
+            return gitDiffFiltered.length > 0 ? 'have-changes' : 'no-changes'
+
+  diff:
+    runs-on: ubuntu-latest
+    needs: check
+    if: needs.check.outputs.result == 'have-changes'
+    steps:
+      - name: checkout PR branch
+        uses: actions/checkout@v3
+
+      - name: setup go 1.18
+        uses: actions/setup-go@v3
+        with:
+          go-version: ^1.18.x
+
+      - name: download tools
+        run: |
+          go install github.com/google/go-jsonnet/cmd/jsonnet@latest
+          go install github.com/josephburnett/jd@latest
+
+      - name: download diff
+        run: sudo apt-get install -y diffutils
+
+      - name: declare constant
+        uses: actions/github-script@v6
+        id: apigw-infra
+        with:
+          script: |
+            return {
+              "prod": {
+                "ap-southeast-1": ["1vapi-1", "1vapi-2"],
+                "ap-southeast-2": ["1vapi-1", "1vapi-2"],
+                "eu-central-1": ["1vapi-1", "1vapi-2"],
+                "eu-west-1": ["1vapi-1", "1vapi-2"],
+                "us-east-1": ["1vapi-1", "1vapi-2"],
+                "us-west-2": ["1vapi-1", "1vapi-2"]
+              }
+            }
+
+      - name: render updated cluster configs
+        shell: python
+        run: |
+          import os
+          import json
+          import subprocess
+
+          json_string = json.dumps(${{ steps.apigw-infra.outputs.result }})
+          apigw_infra = json.loads(json_string)
+
+
+          def render(revision):
+              for env, regions in apigw_infra.items():
+                  for region, clusters in regions.items():
+                      for cluster in clusters:
+                          render_cmd = f"jsonnet -J argocd argocd/environments/{env}/{region}/{cluster}/cluster.jsonnet " \
+                                       f"> diff/{revision}_{env}_{region}_{cluster}.json"
+                          exit_code = subprocess.call(render_cmd, shell=True)
+                          if exit_code != 0:
+                              raise SyntaxError(f"Unable to render {env} {region} {cluster}")
+
+
+          os.system('mkdir diff')
+          render("pr")
+          os.system('git fetch origin && git reset --hard origin/master')
+          render("master")
+
+      - name: remove identical cluster configs
+        shell: python
+        run: |
+          import os
+          import json
+          import subprocess
+
+          json_string = json.dumps(${{ steps.apigw-infra.outputs.result }})
+          apigw_infra = json.loads(json_string)
+
+          for env, regions in apigw_infra.items():
+              for region, clusters in regions.items():
+                  for cluster in clusters:
+                      diff_cmd = f"diff diff/master_{env}_{region}_{cluster}.json diff/pr_{env}_{region}_{cluster}.json"
+                      exit_code = subprocess.call(diff_cmd, shell=True)
+                      if exit_code == 0:
+                          print(f"No diff in {env} {region} {cluster}")
+                          os.remove(f"diff/master_{env}_{region}_{cluster}.json")
+                          os.remove(f"diff/pr_{env}_{region}_{cluster}.json")
+
+      - name: identify updated clusters   
+        id: updated-clusters
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs')
+            const { execSync } = require('child_process')
+            
+            const files = await fs.readdirSync('./diff')
+            console.log(files)
+            
+            const pathToClusterInfo = (path) => {
+              const [env, region, cluster] = path.replaceAll(/(pr_|\.json)/g, '').split('_')
+              return { env, region, cluster }
+            }
+            
+            const getRevision = ({ branch, env, region, cluster, rawPath }) => {
+              const path = rawPath.split('/').slice(1)
+              const jsonString = fs.readFileSync(`diff/${branch}_${env}_${region}_${cluster}.json`, 'utf-8')
+              let json = JSON.parse(jsonString)
+              for (const cursor of path) {
+                json = json[cursor]
+              }
+              return json
+            }
+            
+            const findDiffResources = ({ env, region, cluster }) => {
+              const cmd = `jd -f=patch diff/master_${env}_${region}_${cluster}.json diff/pr_${env}_${region}_${cluster}.json || true`
+              const stdout = execSync(cmd).toString()
+              const changedPaths = [...new Set(JSON.parse(stdout).map(o => o.path.replace(/\/revision/, '')))]
+              const changes = changedPaths.map(rawPath => {
+                const pathArray = rawPath.split('/')
+                const route = pathArray[pathArray.length - 1]
+                const master = getRevision({ branch: 'master', env, region, cluster, rawPath })
+                const pr = getRevision({ branch: 'pr', env, region, cluster, rawPath })
+                return { rawPath, route, master, pr }
+              })
+              return { env, region, cluster, changes }
+            }
+            
+            const exclude = []
+
+            const removeRoutesInExclude = (cluster) => {
+              cluster.changes = cluster.changes.filter(c => !exclude.includes(c.route))
+              return cluster
+            }
+            
+            return files.filter(f => f.startsWith('pr'))
+              .map(pathToClusterInfo)
+              .map(findDiffResources)
+              .map(removeRoutesInExclude)
+              .filter(o => o.changes.length > 0)
+
+      - name: Checkout 1vapigw-routes repo
+        uses: actions/checkout@v3
+        with:
+          repository: Vonage/1vapigw-routes
+          path: 1vapigw-routes
+          token: ${{ secrets.VONAGE_GITHUB_ACCESS_TOKEN }}
+
+      - name: render updated cluster configs
+        shell: python
+        run: |
+          import os
+          import json
+          import subprocess
+          
+          json_string = json.dumps(${{ steps.updated-clusters.outputs.result }})
+          updated_clusters = json.loads(json_string)
+          print(updated_clusters)
+          
+          os.chdir("1vapigw-routes")
+          os.system("pwd")
+          os.system("mkdir diff markdown")
+          os.system("ls -lah")
+          os.system("git config --global init.defaultBranch master")
+          os.system("git fetch --all --tags")
+          
+          
+          def render(_branch, _route, _env, _region, _cluster, _revision, _lib_version):
+              # `jsonnet-bundler` does not support GitHub token & basic auth in jsonnetfile.json. This following mimics how jb creates the vendor folder.
+              # https://github.com/jsonnet-bundler/jsonnet-bundler/issues/141
+              print("clean up vendor")
+              os.system("rm -rf vendor && mkdir vendor")
+              print(f"switch to {_lib_version} for lib")
+              os.system(f"git switch {_lib_version} || git switch -d {_lib_version}")
+              os.system('git status')
+              print(f"copy lib to vendor/lib")
+              os.system("cp -r lib vendor/lib")
+              print(f"switch to {_revision} for routes")
+              os.system(f"git checkout master")
+              os.system(f"git switch {_revision} || git switch -d {_revision}")
+              os.system('git status')
+              print(f"copy routes to vendor/routes")
+              os.system("cp -r routes vendor/routes")
+              
+              render_cmd = f"jsonnet -J vendor routes/{_route}/manifest.jsonnet --ext-str routeEnv='{_env}' --ext-str routeRegion='{_region}' > diff/{_branch}_{_route}_{_env}_{_region}_{_cluster}.json"
+              print(render_cmd)
+              exit_code = subprocess.call(render_cmd, shell=True)
+              if exit_code != 0:
+                  raise SyntaxError(f"Unable to render {_branch}")
+          
+          if updated_clusters and updated_clusters[0]["changes"][0].get("master") and updated_clusters[0]["changes"][0].get("pr"):
+            for updated_cluster in updated_clusters:
+                env = updated_cluster.get("env")
+                region = updated_cluster.get("region")
+                cluster = updated_cluster.get("cluster")
+                changes = updated_cluster.get("changes")
+            
+                for change in changes:
+                    route = change.get("route")
+                    pr = change.get("pr")
+                    master = change.get("master")
+                    pr_revision = pr.get("revision")
+                    pr_lib_version = pr.get("routeLibVersion")
+                    master_revision = master.get("revision")
+                    master_lib_version = master.get("routeLibVersion")
+            
+                    render("pr", route, env, region, cluster, pr_revision, pr_lib_version)
+                    render("master", route, env, region, cluster, master_revision, master_lib_version)
+            
+                    try:
+                        cmd = "diff -y -W250 -t " \
+                              f"diff/master_{route}_{env}_{region}_{cluster}.json diff/pr_{route}_{env}_{region}_{cluster}.json " \
+                              "| grep -E -C3 '^.{123} [|<>]( |$)'" \
+                              f"| split -d -b 63k - markdown/{route}_{env}_{region}_{cluster}_"
+                        subprocess.check_output(cmd, shell=True)
+                    except subprocess.CalledProcessError:
+                        # grep exit 1 if both files are identical. Hence, CalledProcessError
+                        print(f"No diff in {route} {env} {region} {cluster}")
+
+      - name: check if there is any upstream changes
+        uses: actions/github-script@v6
+        id: check-upstream-changes
+        with:
+          result-encoding: string
+          script: |
+            const fs = require('fs')
+            const crypto = require('crypto')
+
+            const files = await fs.readdirSync('1vapigw-routes/diff')
+            console.log(files)
+
+            const getHash = (config) => {
+              const concatString = config
+                .filter(o => o.kind === 'Upstream')
+                .map(o => `${o.metadata.namespace}_${o.metadata.name}`)
+                .sort()
+                .reduce((acc, cur) => acc + cur, '')
+              return crypto.createHash('sha1').update(concatString).digest('hex')
+            }
+            
+            const changeLists = files.filter(f => f.startsWith('pr'))
+              .map(path => {
+                const [route, env, region, cluster] = path.replaceAll(/(pr_|\.json)/g, '').split('_')
+                return { route, env, region, cluster }
+              })
+
+            for (const { route, env, region, cluster } of changeLists) {
+              const master = JSON.parse(await fs.readFileSync(`1vapigw-routes/diff/master_${route}_${env}_${region}_${cluster}.json`, 'utf-8'))
+              const pr = JSON.parse(await fs.readFileSync(`1vapigw-routes/diff/pr_${route}_${env}_${region}_${cluster}.json`, 'utf-8'))
+              const masterHash = getHash(master)
+              const prHash = getHash(pr)
+              console.log(`master_${route}_${env}_${region}_${cluster}: ${masterHash}, pr_${route}_${env}_${region}_${cluster}: ${prHash}`)
+              if (masterHash !== prHash) {
+                return 'upstream-changed'
+              }
+            }
+            return 'upstream-not-changed'
+
+      - name: clean up all previous github-actions comments
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const resp = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            })
+            const allComments = resp.data
+            const commentIdsByGitHubAction = allComments
+              .filter(c => c.user?.login === 'github-actions[bot]')
+              .map(c => c.id)
+            for (const id of commentIdsByGitHubAction) {
+              await github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: id
+              })
+            }
+
+      - name: post diff on pr
+        id: post-diff
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: |
+            const fsp = require('fs').promises
+
+            const files = await fsp.readdir('1vapigw-routes/markdown')
+
+            if (files.length > 50) {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '⚠️ Diff is too large to display in PR. Please refer to [Render Route Config From Local](https://github.com/Vonage/1vapigw-routes/#render-route-config-from-local) to compare from local.'
+              })
+              return 'diff-too-large'
+            }
+
+            for (const file of files) {
+              const [route, env, region, cluster, i] = file.split('_')
+              const rawMd = await fsp.readFile(`1vapigw-routes/markdown/${route}_${env}_${region}_${cluster}_${i}`, 'utf-8')
+              const md = `
+              diff:
+              <details><summary>${route}, ${env}, ${region}, ${cluster}, part ${Number.parseInt(i) + 1}</summary>
+              master_${route}_${env}_${region}_${cluster}.json, pr_${route}_${env}_${region}_${cluster}.json
+
+              \`\`\`
+              ${rawMd}
+              \`\`\`
+
+              </details>
+              `
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: md
+              })
+            }
+
+            return files.length > 0 ? 'have-comments' : 'no-comment'
+
+      - name: post note on pr
+        if: steps.post-diff.outputs.result == 'have-comments'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ Note that you might have to scroll right to view the full diff.'
+            })
+
+      - name: post comment on pr if upstream change detected
+        if: steps.check-upstream-changes.outputs.result == 'upstream-changed'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ Adding/Removing Upstream detected. Please refer to the [upstream documentation](https://github.com/Vonage/1vapigw-routes/blob/master/doc/upstreams.md#removal-of-upstreams) regarding the removal of upstreams.'
+            })

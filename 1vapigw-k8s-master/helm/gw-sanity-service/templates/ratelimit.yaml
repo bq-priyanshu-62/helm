@@ -1,0 +1,113 @@
+apiVersion: ratelimit.solo.io/v1alpha1
+kind: RateLimitConfig
+metadata:
+  name: sanity-service-remote-address-120-rpm
+  namespace: {{ .Release.Namespace }}
+spec:
+  raw:
+    descriptors:
+    - descriptors:
+      - key: user_agent
+        rateLimit:
+          requestsPerUnit: 120
+          unit: MINUTE
+        value: 1vapigw-gateway-smokes-test
+        weight: 1
+      - key: user_agent
+        rateLimit:
+          requestsPerUnit: 240
+          unit: MINUTE
+        value: 1vapigw-sanity-test
+        weight: 1
+      {{- if .Values.rateLimit.addOSS | default false }}
+      - key: user_agent
+        rateLimit:
+          requestsPerUnit: 500
+          unit: MINUTE
+        value: oss-e2e-tests
+        weight: 1
+      {{- end }}
+      key: remote_address
+      rateLimit:
+        requestsPerUnit: 120
+        unit: MINUTE
+    rateLimits:
+    - actions:
+      - remoteAddress: {}
+    - actions:
+      - remoteAddress: {}
+      - requestHeaders:
+          descriptorKey: user_agent
+          descriptorValue: 1vapigw-gateway-smokes-test
+          headerName: user-agent
+    - actions:
+      - remoteAddress: {}
+      - requestHeaders:
+          descriptorKey: user_agent
+          descriptorValue: 1vapigw-sanity-test
+          headerName: user-agent
+    {{- if .Values.rateLimit.addOSS | default false }}
+    - actions:
+      - remoteAddress: {}
+      - requestHeaders:
+          descriptorKey: user_agent
+          descriptorValue: oss-e2e-tests
+          headerName: user-agent
+    {{- end }}
+---
+apiVersion: ratelimit.solo.io/v1alpha1
+kind: RateLimitConfig
+metadata:
+  name: sanity-service-remote-address-10-rps
+  namespace: {{ .Release.Namespace }}
+spec:
+  raw:
+    descriptors:
+    - descriptors:
+      - key: user_agent
+        rateLimit:
+          requestsPerUnit: 10
+          unit: SECOND
+        value: 1vapigw-gateway-smokes-test
+        weight: 1
+      - key: user_agent
+        rateLimit:
+          requestsPerUnit: 40
+          unit: SECOND
+        value: 1vapigw-sanity-test
+        weight: 1
+      {{- if .Values.rateLimit.addOSS | default false }}
+      - key: user_agent
+        rateLimit:
+          requestsPerUnit: 50
+          unit: SECOND
+        value: oss-e2e-tests
+        weight: 1
+      {{- end }}
+      key: remote_address
+      rateLimit:
+        requestsPerUnit: 10
+        unit: SECOND
+    rateLimits:
+    - actions:
+      - remoteAddress: {}
+    - actions:
+      - remoteAddress: {}
+      - requestHeaders:
+          descriptorKey: user_agent
+          descriptorValue: 1vapigw-gateway-smokes-test
+          headerName: user-agent
+    - actions:
+      - remoteAddress: {}
+      - requestHeaders:
+          descriptorKey: user_agent
+          descriptorValue: 1vapigw-sanity-test
+          headerName: user-agent
+    {{- if .Values.rateLimit.addOSS | default false }}
+    - actions:
+      - remoteAddress: {}
+      - requestHeaders:
+          descriptorKey: user_agent
+          descriptorValue: oss-e2e-tests
+          headerName: user-agent
+    {{- end }}

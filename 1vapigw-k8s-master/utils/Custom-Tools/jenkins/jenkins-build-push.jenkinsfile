@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+
+    environment {
+
+        GIT_COMMIT_SHORT = sh(
+                script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
+                returnStdout: true
+        )
+    }
+
+    parameters{
+        string(name: 'JENKINS_NEXMO_IMAGE_TAG', defaultValue: '2.440.2-lts-jdk17', description: 'Choose the IMAGE TAG for this IMAGE, Note: can be the same as JENKINS_VERSION ')
+        string(name: 'JENKINS_VERSION', defaultValue: '2.440.2-lts-jdk17', description: 'Note: Version lts uses Debian 11 as the base image for jenkins..')
+        choice(
+            name: 'ECR_REPO',
+            choices: 'dev',
+            description: 'Choose the ECR repository: dev'
+        )
+    }
+    options {
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('BuildBuild jenkins Docker image and push to ECR in eu-west-1') {
+            steps {
+                dir('utils/Custom-Tools/jenkins') {
+                    script {
+                        def ecrUrlMap = [
+                            dev: '564623767830.dkr.ecr.eu-west-1.amazonaws.com',
+                        ]
+
+                        def ecrUrl = ecrUrlMap[params.ECR_REPO]
+                        if (ecrUrl == null) {
+                            error "Invalid ECR repository selected"
+                        }
+                        sh(returnStdout: true,
+                                script: """echo "### Building Docker Image ###"
+
+                                          docker build -f Dockerfile --build-arg JENKINS_VERSION=$params.JENKINS_VERSION -t "nexmo-jenkins:apigw-$params.JENKINS_NEXMO_IMAGE_TAG" .
+	                                  docker tag nexmo-jenkins:apigw-${params.JENKINS_NEXMO_IMAGE_TAG} ${ecrUrl}/nexmo-jenkins:apigw-${params.JENKINS_NEXMO_IMAGE_TAG}
+
+                       			  docker push ${ecrUrl}/nexmo-jenkins:apigw-${params.JENKINS_NEXMO_IMAGE_TAG}
+                                        """)
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    parameters{
+        string(name: 'TAG', defaultValue: 'apigw-2.440.2-lts-jdk17', description: 'Choose the IMAGE TAG for the nexmo-jenkins repository to push')
+    }
+
+    options {
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Push Docker image to ECR') {
+            steps {
+                dir('utils/Custom-Tools/jenkins') {
+                    script {
+                        sh "make ${getActiveEnvironment(this)} TAG=${TAG}"
+                    }
+                }
+            }
+        }
+    }
+}
+
+def getActiveEnvironment(jenkinsScript) {
+    if(jenkinsScript.env.JENKINS_URL.contains("dev.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.dev")) {
+        return "dev"
+    } else if (jenkinsScript.env.JENKINS_URL.contains("qa.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.qa")) {
+        return "qa"
+    }else {
+        return "prod"
+    }
+}

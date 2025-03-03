@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pytest = "*"
+requests = "*"
+pytest-xdist = "*"
+pytest-rerunfailures = "*"
+allure-pytest = "*"
+boto3 = "*"
+aws_secretsmanager_caching = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7.8"

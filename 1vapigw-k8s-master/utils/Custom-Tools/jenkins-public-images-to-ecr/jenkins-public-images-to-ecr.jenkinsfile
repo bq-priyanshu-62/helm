@@ -1,0 +1,338 @@
+def getDockerImages() {
+    return [
+        'aws-ebs-csi-driver-main',
+        'aws-ebs-csi-driver-external-provisioner',
+        'aws-ebs-csi-driver-external-attacher',
+        'aws-ebs-csi-driver-external-snapshotter',
+        'aws-ebs-csi-driver-external-resizer',
+        'aws-ebs-csi-driver-livenessprobe',
+        'aws-ebs-csi-driver-node-driver-registrar',
+        'aws-ebs-csi-driver-volume-modifier-for-k8s',
+        'aws-load-balancer-controller',
+        'cert-manager-controller',
+        'cert-manager-webhook',
+        'cert-manager-cainjector',
+        'cert-manager-acmesolver',
+        'cert-manager-startupapicheck',
+        'cert-manager-aws-privateca-issuer',
+        'cluster-autoscaler',
+        'custom-metrics-server',
+        'external-dns',
+        'kube-state-metrics',
+        'victoria-metrics-single-server',
+        'metrics-server',
+        'test-kube-bitnami-kubectl',
+        'test-kube-rancher-kubectl',
+        'test-kube-mongodb',
+        'test-kube-api-server',
+        'test-kube-nats',
+        'test-kube-nats-reloader',
+        'test-kube-minio',
+        'test-kube-operator',
+        'test-kube-rbac-proxy',
+        'test-kube-webhook-patch',
+        'test-kube-dashboard',
+        'oauth2',
+        'vmagent',
+        'yace',
+        'argocd',
+        'argocd-redis',
+        'external-secrets',
+        'nginx-privatelink',
+    ]
+}
+
+pipeline {
+    agent any
+
+    parameters {
+        choice( name: 'Docker_Image', choices: getDockerImages(), description: 'Choose which Docker image to pull')
+        string( name: 'Image_Tag', defaultValue: '', description: 'The tag of the image to pull')
+    }
+
+    options {
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Push Docker image to ECRs') {
+            steps {
+                script {
+                    def activeEnvironment  = getActiveEnvironment(this)
+
+                    def imageName        = params.Docker_Image
+                    def imageDetails     = getImageDetails(imageName)
+                    def imageTag         = params.Image_Tag
+                    def envVars          = getEnvVars(activeEnvironment, imageDetails.imagename, imageDetails.repo, imageDetails.targetname)
+                    def originAwsAccount = envVars.originAwsAccount
+                    def originRepo       = envVars.originRepo
+                    def destAwsAccount   = envVars.destAwsAccount
+                    def destRepo         = envVars.destRepo
+                    def destImage        = envVars.destImage
+
+                    pushToEnvironment(originAwsAccount, originRepo, destAwsAccount, destRepo, imageTag)
+                }
+            }
+        }
+    }
+}
+
+def getActiveEnvironment(jenkinsScript) {
+    if (jenkinsScript.env.JENKINS_URL.contains("dev.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.dev")) {
+        return "dev"
+    } else if (jenkinsScript.env.JENKINS_URL.contains("qa.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.qa")) {
+        return "qa"
+    } else if (jenkinsScript.env.JENKINS_URL.contains("prd.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.prd")) {
+        return "prd"
+    } else {
+        echo "Invalid jenkins instance."
+        exit 1
+    }
+}
+
+def getImageDetails(imageName) {
+    def images = [
+            "aws-ebs-csi-driver-main": [ 
+                repo: "public.ecr.aws/ebs-csi-driver/", 
+                imagename: "aws-ebs-csi-driver", 
+                targetname: "1v-apigw-aws-ebs-csi-driver/aws-ebs-csi-driver" 
+            ],
+            "aws-ebs-csi-driver-external-provisioner": [ 
+                repo: "public.ecr.aws/eks-distro/kubernetes-csi/", 
+                imagename: "external-provisioner",
+                targetname: "1v-apigw-aws-ebs-csi-driver/external-provisioner" 
+            ],
+            "aws-ebs-csi-driver-external-attacher": [ 
+                repo: "public.ecr.aws/eks-distro/kubernetes-csi/", 
+                imagename: "external-attacher", 
+                targetname: "1v-apigw-aws-ebs-csi-driver/external-attacher" 
+                ],
+            "aws-ebs-csi-driver-external-snapshotter": [
+                repo: "public.ecr.aws/eks-distro/kubernetes-csi/external-snapshotter/", 
+                imagename: "csi-snapshotter", 
+                targetname: "1v-apigw-aws-ebs-csi-driver/csi-snapshotter"
+            ],
+            "aws-ebs-csi-driver-external-resizer": [ 
+                repo: "public.ecr.aws/eks-distro/kubernetes-csi/", 
+                imagename: "external-resizer", 
+                targetname: "1v-apigw-aws-ebs-csi-driver/external-resizer"
+            ],
+            "aws-ebs-csi-driver-livenessprobe": [ 
+                repo: "public.ecr.aws/eks-distro/kubernetes-csi/", 
+                imagename: "livenessprobe", 
+                targetname: "1v-apigw-aws-ebs-csi-driver/livenessprobe"
+            ],
+            "aws-ebs-csi-driver-node-driver-registrar": [ 
+                repo: "public.ecr.aws/eks-distro/kubernetes-csi/", 
+                imagename: "node-driver-registrar", 
+                targetname: "1v-apigw-aws-ebs-csi-driver/node-driver-registrar"
+            ],
+            "aws-ebs-csi-driver-volume-modifier-for-k8s": [ 
+                repo: "public.ecr.aws/ebs-csi-driver/", 
+                imagename: "volume-modifier-for-k8s", 
+                targetname: "1v-apigw-aws-ebs-csi-driver/volume-modifier-for-k8s"
+            ],
+            "aws-load-balancer-controller": [
+                repo: "public.ecr.aws/eks/",
+                imagename: "aws-load-balancer-controller",
+                targetname: "1v-apigw-aws-load-balancer-controller"
+            ],
+            "cert-manager-controller": [
+                repo: "quay.io/jetstack/",
+                imagename: "cert-manager-controller",
+                targetname: "1v-apigw-cert-manager/cert-manager-controller"
+            ],
+            "cert-manager-webhook": [
+                repo: "quay.io/jetstack/",
+                imagename: "cert-manager-webhook",
+                targetname: "1v-apigw-cert-manager/cert-manager-webhook"                
+            ],
+            "cert-manager-cainjector": [
+                repo: "quay.io/jetstack/",
+                imagename: "cert-manager-cainjector",
+                targetname: "1v-apigw-cert-manager/cert-manager-cainjector"
+            ],
+            "cert-manager-acmesolver": [
+                repo: "quay.io/jetstack/",
+                imagename: "cert-manager-acmesolver",
+                targetname: "1v-apigw-cert-manager/cert-manager-acmesolver"
+            ],
+            "cert-manager-startupapicheck": [
+                repo: "quay.io/jetstack/",
+                imagename: "cert-manager-startupapicheck",
+                targetname: "1v-apigw-cert-manager/cert-manager-startupapicheck"
+            ],
+            "cert-manager-aws-privateca-issuer": [
+                repo: "public.ecr.aws/k1n1h4h4/",
+                imagename: "cert-manager-aws-privateca-issuer",
+                targetname: "1v-apigw-cert-manager/cert-manager-aws-privateca-issuer"
+            ],
+            "cluster-autoscaler": [
+                repo: "registry.k8s.io/autoscaling/", 
+                imagename: "cluster-autoscaler", 
+                targetname: "1v-apigw-cluster-autoscaler"
+            ],
+            "custom-metrics-server": [ 
+                repo: "registry.k8s.io/prometheus-adapter/",
+                imagename: "prometheus-adapter",
+                targetname: "1v-apigw-prometheus-adapter"
+            ],
+            "external-dns": [
+                repo: "docker.io/bitnami/",
+                imagename: "external-dns",
+                targetname: "1v-apigw-external-dns"
+            ],
+            "vmagent": [
+                repo: "victoriametrics/", 
+                imagename: "vmagent", 
+                targetname: "1v-apigw-vmagent" 
+            ],
+            "kube-state-metrics": [
+                repo: "registry.k8s.io/kube-state-metrics/",
+                imagename: "kube-state-metrics",
+                targetname: "1v-apigw-kube-state-metrics"
+            ],
+            "victoria-metrics-single-server": [
+                repo: "victoriametrics/",
+                imagename: "victoria-metrics", 
+                targetname: "1v-apigw-victoria-metrics-single-server"
+            ],
+            "metrics-server": [
+                repo: "registry.k8s.io/metrics-server/",
+                imagename: "metrics-server",
+                targetname: "1v-apigw-metrics-server"
+            ],
+            "test-kube-bitnami-kubectl": [
+                repo: "docker.io/bitnami/",
+                imagename: "kubectl",
+                targetname: "1v-apigw-testkube/bitnami-kubectl"
+            ],
+            "test-kube-rancher-kubectl": [
+                repo: "docker.io/rancher/",
+                imagename: "kubectl",
+                targetname: "1v-apigw-testkube/rancher-kubectl"
+            ],
+            "test-kube-mongodb": [
+                repo: "docker.io/zcube/",
+                imagename: "bitnami-compat-mongodb",
+                targetname: "1v-apigw-testkube/bitnami-compat-mongodb"
+            ],
+            "test-kube-api-server": [
+                repo: "docker.io/kubeshop/",
+                imagename: "testkube-api-server",
+                targetname: "1v-apigw-testkube/testkube-api-server"
+            ],
+            "test-kube-nats": [
+                repo: "docker.io/library/",
+                imagename: "nats",
+                targetname: "1v-apigw-testkube/nats"
+            ],
+            "test-kube-nats-reloader": [
+                repo: "natsio/",
+                imagename: "nats-server-config-reloader",
+                targetname: "1v-apigw-testkube/nats-server-config-reloader"
+            ],
+            "test-kube-minio": [
+                repo: "docker.io/minio/",
+                imagename: "minio",
+                targetname: "1v-apigw-testkube/minio"
+            ],
+            "test-kube-operator": [
+                repo: "docker.io/kubeshop/",
+                imagename: "testkube-operator",
+                targetname: "1v-apigw-testkube/testkube-operator"
+            ],
+            "test-kube-rbac-proxy": [
+                repo: "gcr.io/kubebuilder/",
+                imagename: "kube-rbac-proxy",
+                targetname: "1v-apigw-testkube/kube-rbac-proxy"
+            ],
+            "test-kube-webhook-patch": [
+                repo: "docker.io/dpejcev/",
+                imagename: "kube-webhook-certgen",
+                targetname: "1v-apigw-testkube/kube-webhook-certgen"
+            ],
+            "test-kube-dashboard": [
+                repo: "docker.io/kubeshop/",
+                imagename: "testkube-dashboard",
+                targetname: "1v-apigw-testkube/testkube-dashboard"
+            ],
+            "oauth2": [
+                repo: "quay.io/oauth2-proxy/",
+                imagename: "oauth2-proxy",
+                targetname: "1v-apigw-oauth2"
+            ],
+            "yace": [
+                repo: "ghcr.io/nerdswords/",
+                imagename: "yet-another-cloudwatch-exporter",
+                targetname: "1v-apigw-yet-another-cloudwatch-exporter"
+            ],
+            "argocd": [ 
+                repo: "quay.io/argoproj/", 
+                imagename: "argocd", 
+                targetname: "1v-apigw-argocd/argocd" 
+            ],
+            "argocd-redis": [
+                repo: "public.ecr.aws/docker/library/",
+                imagename: "redis",
+                targetname: "1v-apigw-argocd/redis"
+            ],
+            "external-secrets": [
+                repo: "ghcr.io/external-secrets/",
+                imagename: "external-secrets",
+                targetname: "1v-apigw-external-secrets"
+            ],
+            "nginx-privatelink": [
+                repo: "registry.k8s.io/",
+                imagename: "ingress-nginx/controller",
+                targetname: "1v-apigw-nginx-ingress"
+            ]
+    ]
+    return images[imageName]
+}
+
+def getEnvVars(environment, imageName, repo, vonageName) {
+    def envVars = [originAwsAccount: "", originRepo: "", destAwsAccount: "", destRepo: ""]
+    if (environment == "dev") {
+        envVars.originAwsAccount = "684154893900"
+        envVars.originRepo       = repo + imageName
+        envVars.destAwsAccount   = "684154893900"
+        envVars.destRepo         = "684154893900.dkr.ecr.us-east-1.amazonaws.com/" + vonageName
+    }
+      else if (environment == "qa") {
+        envVars.originAwsAccount = "684154893900"
+        envVars.originRepo       = "684154893900.dkr.ecr.us-east-1.amazonaws.com/" + vonageName
+        envVars.destAwsAccount   = "507728974998"
+        envVars.destRepo         = "507728974998.dkr.ecr.us-east-1.amazonaws.com/" + vonageName
+    } else if (environment == "prd") {
+        envVars.originAwsAccount = "507728974998"
+        envVars.originRepo       = "507728974998.dkr.ecr.us-east-1.amazonaws.com/" + vonageName
+        envVars.destAwsAccount   = "275313334716"
+        envVars.destRepo         = "275313334716.dkr.ecr.us-east-1.amazonaws.com/" + vonageName
+    } else {
+        echo "Invalid environment specified."
+        exit 1
+    }
+    return envVars
+}
+
+def pushToEnvironment(originAwsAccount, originRepo, destAwsAccount, destRepo, imageTag) {
+    sh """
+        eval \$(aws sts assume-role --role-arn arn:aws:iam::${originAwsAccount}:role/nexmo-jenkins-role  --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\n"')
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${originAwsAccount}.dkr.ecr.us-east-1.amazonaws.com
+
+        docker pull ${originRepo}:${imageTag}
+        docker tag ${originRepo}:${imageTag} ${destRepo}:${imageTag}
+        
+
+        unset AWS_ACCESS_KEY_ID
+        unset AWS_SECRET_ACCESS_KEY
+        unset AWS_SESSION_TOKEN
+
+        eval \$(aws sts assume-role --role-arn arn:aws:iam::${destAwsAccount}:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\n"')
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${destAwsAccount}.dkr.ecr.us-east-1.amazonaws.com
+
+        docker push ${destRepo}:${imageTag}
+        docker image prune -a -f
+    """
+}

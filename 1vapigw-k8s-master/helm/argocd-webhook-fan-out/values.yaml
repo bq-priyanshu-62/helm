@@ -1,0 +1,4 @@
+aws:
+  ecr:
+    repo: 1v-apigw-argocd-webhook-fan-out
+    tag: latest

@@ -1,0 +1,15 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: nexmo-gateway-services
+  name: identity-pod-failure-simulation
+spec:
+  selector:
+    namespaces:
+      - nexmo-gateway-services
+    labelSelectors:
+      app: identity
+  mode: one
+  action: pod-failure
+  duration: 180s
+  gracePeriod: 0

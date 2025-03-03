@@ -1,0 +1,10 @@
+apiVersion: v2
+name: OAuth2-Proxy
+description: Oauth2 proxy for testkube 
+type: application
+version: 7.10.2
+appVersion: 7.8.1
+dependencies:
+  - name: oauth2-proxy
+    version: "7.10.2"
+    repository: "https://oauth2-proxy.github.io/manifests"

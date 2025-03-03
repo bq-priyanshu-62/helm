@@ -1,0 +1,19 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: glooctl-check-{{ .Release.Namespace }}
+rules:
+  - apiGroups:
+      - ""
+      - "apps"
+      - "extensions"
+      - "enterprise.gloo.solo.io"
+      - "gloo.solo.io"
+      - "gateway.solo.io"
+      - "ratelimit.solo.io"
+    resources:
+      - "*"
+    verbs:
+      - "get"
+      - "list"
+      - "watch"

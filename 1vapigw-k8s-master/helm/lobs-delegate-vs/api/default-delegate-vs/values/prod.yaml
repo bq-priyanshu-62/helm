@@ -1,0 +1,10 @@
+lobDelegateVirtualService:
+  headers:
+    - x-nexmo-trace-id:
+        text: '{{ envoyTraceId }}'
+    - x-original-client-ip-address:
+        text: '{{ originalClientIpAddress }}'
+    - X-Forwarded-Host:
+        text: '{{ authority }}'
+    - x-nexmo-capabilities:
+        text: ""

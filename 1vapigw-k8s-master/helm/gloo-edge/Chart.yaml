@@ -1,0 +1,10 @@
+apiVersion: v2
+name: gateway
+description: Vonage Helm Chart for Gloo Edge
+version: 1.18.3
+appVersion: 1.18.3
+dependencies:
+  - name: gloo-ee
+    version: 1.18.3
+    repository: https://storage.googleapis.com/gloo-ee-helm
+ 

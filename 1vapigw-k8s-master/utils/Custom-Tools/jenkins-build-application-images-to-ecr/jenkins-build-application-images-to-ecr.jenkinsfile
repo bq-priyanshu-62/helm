@@ -1,0 +1,84 @@
+pipeline {
+    agent any
+    options {
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+        choice(
+            name: 'APPLICATION',
+            choices: ['ga-performance test', 'gw-sanity-service', 'glooctl-check', 'Identity Config Monitor','argocd-webhook-fan-out'],
+            description: 'Select the type of test to run.'
+        )
+        string(
+            name: 'BRANCH',
+            defaultValue: 'master',
+            description: 'Branch to use for the selected application.'
+        )
+    }
+
+    stages {
+        stage('Run Makefile') {
+            steps {
+                script {
+                    def environment = getActiveEnvironment(this)
+                    def awsAccount = getAccountID(environment)
+                    def appPath = ''
+
+                    switch (params.APPLICATION) {
+                        case 'ga-performance test':
+                            appPath = 'helm/ga-performance-test/app'
+                            break
+                        case 'gw-sanity-service':
+                            appPath = 'helm/gw-sanity-service/sanity-service-docker'
+                            break
+                        case 'glooctl-check':
+                            appPath = 'helm/glooctl-check/app'
+                            break
+                        case 'Identity Config Monitor':
+                            appPath = 'helm/identity-config-monitor/app'
+                            break
+                        case 'argocd-webhook-fan-out':
+                            appPath = 'helm/argocd-webhook-fan-out/app'
+                            break
+                        default:
+                            error("Unsupported APPLICATION selected.")
+                    }
+
+                    dir(appPath) {
+                        sh """
+                        git checkout ${params.BRANCH}
+                        eval \$(aws sts assume-role --role-arn arn:aws:iam::${awsAccount}:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\\n"')
+                        make ${environment}
+                        """
+                    }
+                }
+            }
+        }
+    }
+}
+
+def getActiveEnvironment(jenkinsScript) {
+    if (jenkinsScript.env.JENKINS_URL.contains("dev.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.dev")) {
+        return "dev"
+    } else if (jenkinsScript.env.JENKINS_URL.contains("qa.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.qa")) {
+        return "qa"
+    } else {
+        return "prod"
+    }
+}
+
+def getAccountID(environment) {
+    if (environment == "dev") {
+        return "684154893900"
+    } else if (environment == "qa") {
+        return "507728974998"
+    } else if (environment == "prod") {
+        return "275313334716"
+    } else {
+        error("Invalid environment specified.")
+    }
+}
+
+
+

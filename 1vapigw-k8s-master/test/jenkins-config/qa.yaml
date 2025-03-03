@@ -1,0 +1,32 @@
+tests:
+    test_interval: 30
+    regions:
+      - region: euw1
+        environment: qa
+        cluster: 1
+      - region: euw1
+        environment: qa
+        cluster: 2
+      - region: euc1
+        environment: qa
+        cluster: 1
+      - region: use1
+        environment: qa
+        cluster: 1
+
+account:
+  environment: 'vonage-vng-v1-api-qa'
+  accountID: '507728974998'
+
+notification:
+  slack_channel: api-gw-tests-qa
+  email_list: nexmo.gateway.dev@vonage.com
+  allow_emails: false
+
+report_portal:
+  enabled: true
+  rp_api_key: rp-api-key-apigw_4nvZ87aJQBK0aayEk3d7dgl1gxg6mem-zjOoeMlNapkcUVJgRK6DInhdn9Tpkj44
+  rp_endpoint: https://reportportal-nexmo-qa-1-euw1.main0.api.nexmo.qa.euw1.vonagenetworks.net/api/v1
+  rp_project: api-gw-team-sanity
+  rp_launch: APIGW-Sanity-Tests
+  rp_launch_attributes: "type:sanity,service:gateway"

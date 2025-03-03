@@ -1,0 +1,6 @@
+ingress:
+  defaults:
+    healthCheckPath: "/ping"
+    backendServicePath: "/*"
+    groupName: nexmo-services
+    groupOrder: "1"

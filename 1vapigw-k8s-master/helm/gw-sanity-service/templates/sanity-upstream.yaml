@@ -1,0 +1,26 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: gw-sanity-upstream
+  namespace: {{ .Release.Namespace }}
+spec:
+  kube:
+    selector:
+      app: gw-sanity-service
+    serviceName: gw-sanity-service
+    serviceNamespace: {{ .Release.Namespace }}
+    servicePort: 8080
+  healthChecks:
+    - httpHealthCheck:
+        path: /healthcheck
+      timeout: 2s
+      interval: 5s
+      unhealthyThreshold: 3
+      healthyThreshold: 1
+  connectionConfig:
+    commonHttpProtocolOptions:
+      idleTimeout: {{ .Values.upstream.sanity.httpIdleTimeout | default "50s" | squote }}
+  circuitBreakers:
+    maxConnections: 4000
+    maxPendingRequests: 10000
+    maxRequests: 20000

@@ -1,0 +1,39 @@
+cert-manager:
+  fullnameOverride: cert-manager
+
+  installCRDs: true
+  replicaCount: 1
+
+  serviceAccount:
+    create: true
+
+  prometheus:
+    enabled: true
+
+  podLabels:
+    tailed_path: cert-manager.log
+    role: cert-manager
+    team: 1v-api-gw
+
+aws-privateca-issuer:
+  fullnameOverride: aws-privateca-issuer
+  disableApprovedCheck: true
+  replicaCount: 1
+  serviceAccount:
+    create: true
+  rbac:
+    create: true
+  serviceMonitor:
+    create: false
+  
+  approverRole:
+    enabled: true
+    serviceAccountName: cert-manager
+    namespace: nexmo-gloo
+
+  podAnnotations:
+    prometheus.io/path: "/metrics"
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '8080'
+  securityContext:
+    allowPrivilegeEscalation: false

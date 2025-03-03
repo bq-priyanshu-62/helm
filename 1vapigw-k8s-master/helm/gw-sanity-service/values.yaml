@@ -1,0 +1,6 @@
+gwSanityService:
+  autoscaling:
+    enabled: true
+
+rateLimit:
+  addOSS: false

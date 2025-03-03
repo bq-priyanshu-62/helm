@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: applications
+  labels:
+    stack: telco
+spec:
+  selector:
+    app: applications
+  type: ClusterIP
+  ports:
+  - port: 3240
+    targetPort: 3240
+    name: applications
+  - port: 3242
+    targetPort: 3242
+    name: applications-monitoring
+  - port: 8083
+    targetPort: 8083
+    name: connect-rest-port

@@ -1,0 +1,5 @@
+cluster:
+  name: viam
+
+autoscaler:
+  role: eks-eu-autoscaler-role

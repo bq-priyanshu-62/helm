@@ -1,0 +1,17 @@
+ingress:
+  targetGroupBindings:
+    - targetGroupBindingName: vbc-gw-external-tgb-1vapi-1
+      targetGroupARN: arn:aws:elasticloadbalancing:us-east-1:275313334716:targetgroup/uc-gw-1vapi-1-tBRaHLMl/049d58c41bf2839d
+
+auth:
+  enabled: false
+
+gloo-ee:
+  gloo-fed:
+    glooFedApiserver:
+      enable: false
+    rbac:
+      create: false
+
+gloo_ui:
+  hostname: null

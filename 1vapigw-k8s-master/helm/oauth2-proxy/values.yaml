@@ -1,0 +1,102 @@
+oauth2-proxy:
+  ## Override the deployment namespace
+  ##
+  namespaceOverride: ""
+  kubeVersion:
+
+  # Oauth client configuration specifics
+  config:
+    clientID: $CLIENT_ID
+    clientSecret: $CLIENT_SECRET
+    cookieSecret: c29tZS1yYW5kb20tc2VjcmV2
+    # Add config annotations
+    annotations: {}
+    cookieName: ""
+    google: {}
+    configFile: |-
+      cookie_expire = "12h"
+      email_domains = [ "*" ]
+      upstreams = [ "file:///dev/null" ]
+      http_address = "0.0.0.0:4180"
+
+  image:
+    # appVersion is used by default
+    tag: v7.8.1
+    pullPolicy: "IfNotPresent"
+
+  extraArgs:
+    provider: oidc
+    provider-display-name: DEX OIDC
+    reverse-proxy: true
+    cookie-secure: false
+    insecure-oidc-skip-issuer-verification: true
+    ssl-insecure-skip-verify: true
+    ssl-upstream-insecure-skip-verify: true
+    scope: openid profile email groups
+    # allowed-group: "team_gateway"
+    upstream: http://testkube-testkube-dashboard.testkube.svc:8080
+    # cookie_domains: ".vonagenetworks.net"
+    # whitelist_domains: ".vonagenetworks.net"
+    # auth-logging: trueoauth-oauth2-proxy-66964cccbd-jqh6n 
+    # standard-logging: true
+    # request-logging: true
+    # cookie-csrf-per-request: true
+    # cookie-csrf-expire: 5m
+
+  extraEnv:
+    - name: CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          name: oauth-oauth2-proxy
+          key: client-id
+    - name: CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: oauth-oauth2-proxy
+          key: client-secret
+    - name: COOKIE_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: oauth-oauth2-proxy
+          key: cookie-secret
+
+  envFrom: []
+  customLabels: {}
+
+  service:
+    type: ClusterIP
+    portNumber: 80
+    appProtocol: http
+    annotations: {}
+    externalTrafficPolicy: ""
+    internalTrafficPolicy: ""
+
+  ## Create or use ServiceAccount
+  serviceAccount:
+    ## Specifies whether a ServiceAccount should be created
+    enabled: true
+    ## The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the fullname template
+    name:
+    automountServiceAccountToken: true
+    annotations: {}
+
+  resources:
+    limits:
+      cpu: 50m
+      memory: 128Mi
+    requests:
+      cpu: 10m
+      memory: 64Mi
+
+  livenessProbe:
+    enabled: false
+    initialDelaySeconds: 0
+    timeoutSeconds: 1
+
+  readinessProbe:
+    enabled: false
+    initialDelaySeconds: 0
+    timeoutSeconds: 5
+    periodSeconds: 10
+    successThreshold: 1

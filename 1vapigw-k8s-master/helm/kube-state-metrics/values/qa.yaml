@@ -1,0 +1,18 @@
+---
+replicas: 2
+resources:
+  limits:
+    cpu: 300m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 68Mi
+
+kube-state-metrics:
+  image:
+    registry: 507728974998.dkr.ecr.us-east-1.amazonaws.com
+    repository: 1v-apigw-kube-state-metrics
+  kubeRBACProxy:
+    image:
+      registry: 507728974998.dkr.ecr.us-east-1.amazonaws.com
+      repository: 1v-apigw-kube-rbac-proxy

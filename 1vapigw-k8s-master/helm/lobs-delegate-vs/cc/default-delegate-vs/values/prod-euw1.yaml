@@ -1,0 +1,5 @@
+lobDelegateVirtualService:
+  domains:
+    - 'api.cc.vonage.com'
+    - 'api-eu.cc.vonage.com'
+    - '*.api-eu.cc.vonage.com'

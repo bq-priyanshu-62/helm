@@ -1,0 +1,63 @@
+environment: prod
+
+accountId: "275313334716"
+accountName: 1v-apigw-prod
+gloo_ui:
+  name: gloo-ui-ingress
+  privateControllerClass: nginx-privatelink
+
+global:
+  extensions:
+    extAuth:
+      requestTimeout: 20s
+      existingSecret: true
+      requestBody:
+        maxRequestBytes: 16384
+        allowPartialMessage: true
+        packAsBytes: true
+autoscaler:
+  rateLimit:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 12
+    averageCpu: 70
+
+  extAuth:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 12
+    averageCpu: 70
+
+gloo-ee:
+  gloo:
+    settings:
+      invalidConfigPolicy:
+        invalidRouteResponseCode: 404
+        invalidRouteResponseBody: "<html><head><title>404 Not Found</title></head><body><center><h1>404
+                Not Found</h1></center><hr><center>envoy</center></body></html>"
+      kubeResourceOverride:
+        spec:
+          namedExtauth:
+            extAuthHeadersOnly:
+              clearRouteCache: true
+              extauthzServerRef:
+                name: anubis-nexmo-auth
+                namespace: viam
+              transportApiVersion: V3
+              grpcService:
+                authority: anubis-header-only
+              requestTimeout: 20s
+              statusOnError: 403
+            extAuthBodyPassthrough:  # ext auth body pass-through
+              clearRouteCache: true
+              extauthzServerRef:
+                name: anubis-nexmo-auth
+                namespace: viam
+              transportApiVersion: V3
+              grpcService:
+                authority: anubis-body-passthrough
+              requestBody:
+                maxRequestBytes: 16384
+                packAsBytes: true
+              requestTimeout: 20s
+              statusOnError: 403

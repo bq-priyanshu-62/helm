@@ -1,0 +1,20 @@
+gloo-ee:
+  gloo:
+    gatewayProxies:
+      gatewayProxy:
+        horizontalPodAutoscaler:
+          apiVersion: autoscaling/v2
+          minReplicas: 1
+          maxReplicas: 1
+autoscaler:
+  rateLimit:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 1
+    averageCpu: 70
+
+  extAuth:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 1
+    averageCpu: 70

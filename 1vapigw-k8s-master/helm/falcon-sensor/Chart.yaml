@@ -1,0 +1,10 @@
+apiVersion: v2
+name: falcon-sensor
+description: A Helm chart to deploy CrowdStrike Falcon sensors into Kubernetes clusters
+type: application
+version: 1.29.1
+appVersion: 1.29.1
+dependencies:
+  - name: falcon-sensor
+    version: 1.29.1
+    repository: https://crowdstrike.github.io/falcon-helm/

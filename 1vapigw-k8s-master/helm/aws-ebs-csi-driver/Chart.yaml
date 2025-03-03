@@ -1,0 +1,10 @@
+apiVersion: v2
+name: aws-ebs-csi-driver
+type: application
+description: A Helm chart for AWS EBS CSI Driver
+version: 1
+appVersion: "1.16.1"
+dependencies:
+  - name: aws-ebs-csi-driver
+    version: 2.17.1
+    repository: https://charts.deliveryhero.io/

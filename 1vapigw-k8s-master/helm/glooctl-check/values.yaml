@@ -1,0 +1,8 @@
+aws:
+  ecr:
+    repo: 1v-apigw-glooctl-check
+    tag: 3fe015625
+
+app:
+  cronSchedule: "*/10 * * * *"
+  maxAttempts: 2

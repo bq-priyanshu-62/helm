@@ -1,0 +1,77 @@
+name: check-active-clusters
+
+on:
+  push:
+    branches-ignore:
+      - '**'
+#  push:
+#    branches:
+#      - master
+#      - staging
+#      - trying
+#  pull_request:
+#    branches:
+#      - master
+#  # Allows to run this workflow manually from the Actions tab
+#  workflow_dispatch:
+
+jobs:
+  check-active-clusters:
+    name: CheckActiveClusters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        uses: technote-space/get-diff-action@v4.2.0
+        with:
+          PATTERNS: |
+            argocd/environments/prod/*
+            argocd/environments/prod/**
+            !argocd/environments/prod/*-geo.jsonnet
+          FORMAT: json
+          BASE: refs/heads/master
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Python build cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ hashFiles('utils/active-cluster-check/requirements.txt') }}
+      - name: Install dependencies
+        run: pip install -r utils/active-cluster-check/requirements.txt
+      - name: Check Active Clusters
+        id: check_active_clusters_py
+        run: |
+          result_json=$(python utils/active-cluster-check/main.py)
+
+          pr_num=$(echo $result_json | jq '.pr_num')
+          title=$(echo $result_json | jq '.title')
+          msg=$(echo $result_json | jq '.msg')
+          has_error=$(echo $result_json | jq '.has_error')
+
+          echo "::set-output name=PR_NUM::$pr_num"
+          echo "::set-output name=TITLE::$title"
+          echo "::set-output name=MSG::$msg"
+          echo "::set-output name=HAS_ERROR::$has_error"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+          ACTIVE_CLUSTERS_ENDPOINT: ${{ secrets.ACTIVE_CLUSTERS_ENDPOINT }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+          AFFECTED_FILES: ${{ env.GIT_DIFF }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: ActiveClusterCheckReport
+        uses: actions-ecosystem/action-create-comment@v1.0.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ steps.check_active_clusters_py.outputs.PR_NUM }}
+          body: |
+              Active Cluster Check Report: ${{ steps.check_active_clusters_py.outputs.MSG }}
+      - name: ActiveClusterCheckFail
+        if: env.SHOULD_FAIL == 'true'
+        run: exit 1
+        env:
+          SHOULD_FAIL: ${{ steps.check_active_clusters_py.outputs.HAS_ERROR }}

@@ -1,0 +1,6 @@
+# Chart.yaml
+apiVersion: v2
+name: ga-performance-test-chart
+description: A Helm chart for Docker image and Python script for GA test
+version: 0.1.0
+

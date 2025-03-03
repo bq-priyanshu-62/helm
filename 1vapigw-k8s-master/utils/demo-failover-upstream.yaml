@@ -1,0 +1,26 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: gw-sanity-upstream
+  namespace: {{ .Release.Namespace }}
+spec:
+  static:
+    hosts:
+      - addr: primary-host.com
+        port: 443
+  healthChecks:
+    - httpHealthCheck:
+        path: /gateway/ping
+      timeout: 2s
+      interval: 1s
+      unhealthyThreshold: 10
+      healthyThreshold: 1
+  failover:
+    prioritizedLocalities:
+      - localityEndpoints:
+          - lbEndpoints:
+              - address: secondary-host.com
+                port:  secondary-host-port
+                healthCheckConfig:
+                  hostname: secondary-host.com
+                  portValue:  secondary-host-port

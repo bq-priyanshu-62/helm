@@ -1,0 +1,33 @@
+# argocd attributes: clusterName
+environment: qa
+
+targetGroupBindings:
+  - name: "public-echo"
+    serviceName: "gw-sanity-service"
+    servicePort: 8080
+    targetGroupARN: "arn:aws:elasticloadbalancing:ap-southeast-1:507728974998:targetgroup/intl-svc-c1-pub-gw-sanity-servic/754919c831b950ea"
+
+ecrService:
+  host: 507728974998.dkr.ecr.us-east-1.amazonaws.com # todo should we mode docker images to tolling account?
+  repo: '1v-apigw-sanity'
+  tag: latest
+
+gwSanityService:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 12
+    averageCpu: 70
+    averageMemory: 70
+  load:
+    enabled: true
+  region: ap-southeast-1
+  keepAliveTimeoutSeconds: 60
+
+upstream:
+  sanity:
+    timeout: "2s"
+    httpIdleTimeout: 70s
+  load:
+    auth:
+      enabled: true

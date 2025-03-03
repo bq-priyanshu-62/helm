@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: iris-config
+data:
+  config.json: |
+    {
+      "channels": [{
+          "name": "nexmo_quota_iris_sidecar",
+          "source": "file",
+          "dest": "kafka",
+          "service": "nexmo_quota_iris_sidecar",
+          "payload": "sample.v1",
+          "destProp": {
+            "topic": "quota-checker-ban-unban",
+            "zookeeper.connect": "kafka-zookeeper:2181",
+            "props": {
+              "bootstrap.servers": "kafka:9092"
+            }
+          },
+          "sourceProp": {
+            "path": "/opt/runtime/nexmo/testing/npe/services/quota/logs/",
+            "regex": "quota-block-activity.*"
+          }
+        }],
+        "schemas": [], "functions": []
+    }

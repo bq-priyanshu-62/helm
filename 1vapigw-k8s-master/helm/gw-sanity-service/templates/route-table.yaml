@@ -1,0 +1,259 @@
+apiVersion: gateway.solo.io/v1
+kind: RouteTable
+metadata:
+  name: gateway-sanity-rt
+  namespace:  {{ .Release.Namespace }}
+  labels:
+    businessUnit: {{ .Values.businessUnit | default (regexFind "(\\w+)" .Release.Namespace)  }}
+    serviceType: api-public
+spec:
+  routes:
+    - matchers:
+        - exact: '/gateway/ping-protected'
+      routeAction:
+        single:
+          upstream:
+            name: gw-sanity-upstream
+            namespace: {{ .Release.Namespace }}
+      options:
+        extauth:
+          customAuth:
+            name: extAuthHeadersOnly
+        retries:
+          numRetries: 5
+          retryOn: gateway-error
+        rateLimitConfigs:
+          refs:
+            - name: sanity-service-remote-address-120-rpm
+              namespace: {{ .Release.Namespace }}
+            - name: sanity-service-remote-address-10-rps
+              namespace: {{ .Release.Namespace }}
+        timeout: {{ .Values.upstream.sanity.timeout | default "2s" | squote }}
+    - matchers:
+        - exact: '/gateway/ping'
+        - exact: '/health'
+      routeAction:
+        single:
+          upstream:
+            name: gw-sanity-upstream
+            namespace: {{ .Release.Namespace }}
+      options:
+        retries:
+          numRetries: 5
+          retryOn: gateway-error
+        rateLimitConfigs:
+          refs:
+            - name: sanity-service-remote-address-120-rpm
+              namespace: {{ .Release.Namespace }}
+            - name: sanity-service-remote-address-10-rps
+              namespace: {{ .Release.Namespace }}
+        timeout: {{ .Values.upstream.sanity.timeout | default "2s" | squote }}
+        extauth:
+          disable: true
+    {{- if .Values.gwSanityService.load.enabled | default false }}
+    - matchers:
+        - exact: '/gateway/load'
+      routeAction:
+        single:
+          upstream:
+            name: gw-sanity-upstream
+            namespace: {{ .Release.Namespace }}
+      options:
+        retries:
+          numRetries: 5
+          retryOn: gateway-error
+        timeout: {{ .Values.upstream.load.timeout | default "60s" | squote }}
+        extauth:
+          disable: true
+
+    - matchers:
+        - exact: '/gateway/load-protected'
+      routeAction:
+        single:
+          upstream:
+            name: gw-sanity-upstream
+            namespace: {{ .Release.Namespace }}
+      options:
+        retries:
+          numRetries: 5
+          retryOn: gateway-error
+        extauth:
+          customAuth:
+            name: extAuthHeadersOnly
+        timeout: {{ .Values.upstream.load.timeout | default "60s" | squote }}
+
+    - matchers:
+        - exact: '/gateway/load-body-protected'
+      routeAction:
+        single:
+          upstream:
+            name: gw-sanity-upstream
+            namespace: {{ .Release.Namespace }}
+      options:
+        retries:
+          numRetries: 5
+          retryOn: gateway-error
+        extauth:
+          customAuth:
+            name: extAuthBodyPassthrough
+        timeout: {{ .Values.upstream.load.timeout | default "60s" | squote }}
+
+    - matchers:
+        - exact: '/gateway/ws'
+      routeAction:
+        single:
+          upstream:
+            name: gw-sanity-upstream
+            namespace: {{ .Release.Namespace }}
+      options:
+        retries:
+          numRetries: 5
+          retryOn: reset
+        timeout: {{ .Values.upstream.load.timeout | default "60s" | squote }}
+        extauth:
+          disable: true
+        waf:
+          disabled: true
+        stagedTransformations:
+          early:
+            requestTransforms:
+            - requestTransformation:
+                transformationTemplate:
+                  extractors:
+                    authority:
+                      header: ':authority'
+                      regex: (.*)
+                    envoyTraceId:
+                      header: x-request-id
+                      regex: (.*)
+                    originalClientIpAddress:
+                      header: x-envoy-external-address
+                      regex: (.*)
+                    originalPath:
+                      header: ':path'
+                      regex: .*
+                  headers:
+                    x-forwarded-host:
+                      text: {{ "'{{ authority }}'" }}
+                    x-original-path:
+                      text: {{ "'{{ originalPath }}'" }}
+                    x-nexmo-trace-id:
+                      text: {{ "'{% if header(\"x-nexmo-trace-id\") == \"\" %}{{ envoyTraceId }}{% else %}{{ header(\"x-nexmo-trace-id\") }}{% endif %}'" }}
+                    x-original-client-ip-address:
+                      text: {{ "'{% if header(\"x-original-client-ip-address\") == \"\" %}{{ originalClientIpAddress }}{% else %}{{ header(\"x-original-client-ip-address\") }}{% endif %}'" }}
+                  passthrough: {}
+          regular:
+            requestTransforms:
+            - requestTransformation:
+                transformationTemplate:
+                  extractors:
+                    account_id:
+                      header: nexmo-authorization
+                      regex: (.*ApiKey=([^,]*).*)
+                      subgroup: 2
+                    application_id:
+                      header: nexmo-authorization
+                      regex: (.*Application=([^,]*).*)
+                      subgroup: 2
+                    authority:
+                      header: ':authority'
+                      regex: (.*)
+                    originalClientIpAddress:
+                      header: x-envoy-external-address
+                      regex: (.*)
+                    originalPath:
+                      header: ':path'
+                      regex: .*
+                  headers:
+                    x-account-id:
+                      text: {{ "'{{ account_id }}'" }}
+                    x-application-id:
+                      text: {{ "'{{ application_id }}'" }}
+                    x-forwarded-host:
+                      text: {{ "'{{ authority }}'" }}
+                    x-original-path:
+                      text: {{ "'{{ originalPath }}'" }}
+                    x-original-client-ip-address:
+                      text: {{ "'{% if header(\"x-original-client-ip-address\") == \"\" %}{{ originalClientIpAddress }}{% else %}{{ header(\"x-original-client-ip-address\") }}{% endif %}'" }}
+                  passthrough: {}
+
+    - matchers:
+        - exact: '/gateway/ws-protected'
+      routeAction:
+        single:
+          upstream:
+            name: gw-sanity-upstream
+            namespace: {{ .Release.Namespace }}
+      options:
+        retries:
+          numRetries: 5
+          retryOn: reset
+        timeout: {{ .Values.upstream.load.timeout | default "60s" | squote }}
+        extauth:
+          customAuth:
+            name: extAuthHeadersOnly
+        waf:
+          disabled: true
+        stagedTransformations:
+          early:
+            requestTransforms:
+            - requestTransformation:
+                transformationTemplate:
+                  extractors:
+                    authority:
+                      header: ':authority'
+                      regex: (.*)
+                    envoyTraceId:
+                      header: x-request-id
+                      regex: (.*)
+                    originalClientIpAddress:
+                      header: x-envoy-external-address
+                      regex: (.*)
+                    originalPath:
+                      header: ':path'
+                      regex: .*
+                  headers:
+                    x-forwarded-host:
+                      text: {{ "'{{ authority }}'" }}
+                    x-original-path:
+                      text: {{ "'{{ originalPath }}'" }}
+                    x-nexmo-trace-id:
+                      text: {{ "'{% if header(\"x-nexmo-trace-id\") == \"\" %}{{ envoyTraceId }}{% else %}{{ header(\"x-nexmo-trace-id\") }}{% endif %}'" }}
+                    x-original-client-ip-address:
+                      text: {{ "'{% if header(\"x-original-client-ip-address\") == \"\" %}{{ originalClientIpAddress }}{% else %}{{ header(\"x-original-client-ip-address\") }}{% endif %}'" }}
+                  passthrough: {}
+          regular:
+            requestTransforms:
+            - requestTransformation:
+                transformationTemplate:
+                  extractors:
+                    account_id:
+                      header: nexmo-authorization
+                      regex: (.*ApiKey=([^,]*).*)
+                      subgroup: 2
+                    application_id:
+                      header: nexmo-authorization
+                      regex: (.*Application=([^,]*).*)
+                      subgroup: 2
+                    authority:
+                      header: ':authority'
+                      regex: (.*)
+                    originalClientIpAddress:
+                      header: x-envoy-external-address
+                      regex: (.*)
+                    originalPath:
+                      header: ':path'
+                      regex: .*
+                  headers:
+                    x-account-id:
+                      text: {{ "'{{ account_id }}'" }}
+                    x-application-id:
+                      text: {{ "'{{ application_id }}'" }}
+                    x-forwarded-host:
+                      text: {{ "'{{ authority }}'" }}
+                    x-original-path:
+                      text: {{ "'{{ originalPath }}'" }}
+                    x-original-client-ip-address:
+                      text: {{ "'{% if header(\"x-original-client-ip-address\") == \"\" %}{{ originalClientIpAddress }}{% else %}{{ header(\"x-original-client-ip-address\") }}{% endif %}'" }}
+                  passthrough: {}
+    {{- end }}

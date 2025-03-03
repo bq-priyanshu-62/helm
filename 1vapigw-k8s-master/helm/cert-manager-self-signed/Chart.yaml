@@ -1,0 +1,6 @@
+apiVersion: v2
+name: cert-manager-self-signed-ca
+description: Chart for provisioning self signed certificates with cert-manager
+type: application
+version: 1
+appVersion: "1.0.0"

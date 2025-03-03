@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: volgaenv
+data:
+  "NEXMO_DATACENTER": "dev"
+  "NEXMO_CONSUL_HTTP_PORT": "7005"
+  "NEXMO_VOLGA_SECRET": "secret"
+  "NEXMO_CONSUL_HOST": {{ .Values.volga.consulHost }}
+  "LOG_LEVEL": "DEBUG"
+  "JAVA_TOOL_OPTIONS": "-Dlogback.configurationFile=logback.xml"

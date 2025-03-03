@@ -1,0 +1,6 @@
+lobDelegateVirtualService:
+  serviceType: 'api-public'
+  businessUnit: vcc
+
+sanityPorts:
+  - '*'

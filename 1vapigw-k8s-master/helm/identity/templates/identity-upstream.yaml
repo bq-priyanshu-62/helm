@@ -1,0 +1,21 @@
+{{ if .Values.identity.upstream.create }}
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: {{ .Release.Namespace }}-{{ .Values.global.upstreamTag }}identity-4150
+  namespace: {{ .Release.Namespace }}
+spec:
+  kube:
+    selector: 
+      app: identity
+    serviceName: identity
+    serviceNamespace: {{ .Release.Namespace }}
+    servicePort: 4150
+  healthChecks: 
+  - httpHealthCheck:
+      path: /ping
+    timeout: 2s
+    interval: 5s
+    unhealthyThreshold: 3
+    healthyThreshold: 1
+{{ end }}

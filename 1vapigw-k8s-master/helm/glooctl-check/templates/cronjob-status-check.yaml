@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: check-error-status
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: glooctl-check
+          containers:
+          - name: check-error-status
+            image: {{ .Values.aws.accountId }}.dkr.ecr.us-east-1.amazonaws.com/{{ .Values.aws.ecr.repo }}:{{ .Values.aws.ecr.tag }}
+            env:
+              - name: SLACK_WEBHOOK
+                value: {{ .Values.slack.webhook | quote }}
+              - name: CLUSTER_NAME
+                value: {{ .Values.app.clusterName }}
+              - name: APIGW_ENV
+                value: {{ .Values.environment }}
+            command:
+              - /bin/sh
+              - -c
+              - |
+                vsoutput=$(kubectl get rt --all-namespaces -o=json | jq '[.items[] | {status: .status["statuses"]}]')
+                vsoutput=$(echo "$vsoutput" | jq -r '.[] | "\(.status)"')
+                IFS=$'\n'
+                for row in $vsoutput; do
+                  if echo "$row" | grep -q "Rejected"; then
+                    vsregion=$(kubectl get nodes -o jsonpath='{.items[0].metadata.labels.topology\.kubernetes\.io/region}')
+                    msg=$(echo $row | jq -r 'to_entries | .[].value.subresourceStatuses | to_entries | .[].value.reason' | sed 's/\([&/\"]\)/\\\1/g')
+                    vserrormsg="Error has been detected in VirtualServices and RouteTable ('$APIGW_ENV' '$vsregion' '$CLUSTER_NAME'):\n$msg"
+                    break
+                  fi
+                done
+
+                if [[ -n "$vserrormsg" ]]; then
+                    curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$vserrormsg\"}" $SLACK_WEBHOOK
+                fi
+
+          restartPolicy: OnFailure

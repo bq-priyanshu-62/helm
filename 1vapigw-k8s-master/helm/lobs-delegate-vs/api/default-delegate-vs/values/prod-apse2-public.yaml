@@ -1,0 +1,40 @@
+lobDelegateVirtualService:
+  domains:
+    - rest.nexmo.com
+    - rest.nexmocn.com
+    # supports customer paidly who see significant latency via GA. They are in Tokyo and connecting to SNG so only support this in apse-1
+    # https://jira.vonage.com/browse/OPS-24578
+    - rest-ap.nexmo.com
+
+    - api.nexmo.cloud
+    - api.nexmo.com
+    - api.nexmocn.com
+    - api-sg-1.nexmo.com
+    - api-ap-3.vonage.com
+    - api-ap-4.vonage.com
+    - api-ap.vonage.com
+    - api-vcp.vonage.com
+    - messages.nexmo.com
+    - messages-ap.vonage.com
+    - messages.vonage.com
+    - messages-sandbox.nexmo.com
+    - whatsapp-manager.nexmo.cloud
+    - docs.nexmo.com
+    - blog.nexmo.com
+    - api.prod.v1.vonagenetworks.net
+    - api-ap.prod.v1.vonagenetworks.net
+    - '*.api-ap.prod.v1.vonagenetworks.net'
+    - 'api.management.vonage.com'
+    - api-global.vonage.com
+
+    - ws-sg-1.nexmo.com
+    - ws.nexmo.com
+    - ws-vcp.vonage.com
+    - ws-ap.vonage.com
+    - ws-ap-3.vonage.com
+    - ws-ap-4.vonage.com
+
+    - video.api.vonage.com
+    - tools.vonage.com
+    - learn.vonage.com
+  serviceType: api-public

@@ -1,0 +1,52 @@
+gatewayProxies:
+  gatewayProxy:
+    gatewaySettings:
+      customHttpGateway:
+        virtualServiceSelector:
+          businessUnit: nexmo
+
+gloo-ee:
+  gloo:
+    gatewayProxies:
+      gatewayProxy:
+        gatewaySettings:
+          customHttpGateway:
+            options:
+              httpConnectionManagerSettings:
+                properCaseHeaderKeyFormat: true
+          options:
+            accessLoggingService:
+              accessLog:
+                - fileSink:
+                    path: /dev/stdout
+                    jsonFormat:
+                      nexmo_account: "%REQ(X-ACCOUNT-ID?NEXMO-AUTHORIZATION)%"
+                      nexmo_application: "%REQ(X-APPLICATION-ID)%"
+                      customer_ip: "%REQ(X-ORIGINAL-CLIENT-IP-ADDRESS)%"
+                      request_time: "%START_TIME%"
+                      method: "%REQ(:METHOD)%"
+                      path: "%REQ(X-ORIGINAL-PATH?:PATH)%"
+                      bytes_received: "%BYTES_RECEIVED%"
+                      bytes_sent: "%BYTES_SENT%"
+                      duration: "%DURATION%"
+                      protocol: "%PROTOCOL%"
+                      target_service: "%UPSTREAM_CLUSTER%"
+                      target_host: "%UPSTREAM_HOST%"
+                      trace_id: "%REQ(X-NEXMO-TRACE-ID?X-REQUEST-ID)%"
+                      aws_trace_id: "%REQ(X-AMZN-TRACE-ID)%"
+                      remote_addr: "%REQ(X-FORWARDED-FOR)%"
+                      remote_addr_with_port: "%DOWNSTREAM_REMOTE_ADDRESS%"
+                      hostname: "%REQ(X-FORWARDED-HOST)%"
+                      target_hostname: "%REQ(:AUTHORITY)%"
+                      response_code: "%RESPONSE_CODE%"
+                      response_details: "%RESPONSE_CODE_DETAILS%"
+                      response_flags: "%RESPONSE_FLAGS%"
+                      user_agent: "%REQ(USER-AGENT)%"
+                      nexmo_status_code: "%RESP(X-NEXMO-STATUSCODE)%"
+                      request_tx_duration: "%REQUEST_TX_DURATION%"
+                      response_tx_duration: "%RESPONSE_TX_DURATION%"
+                      request_rate_limit_description: "%RESP(X-RATELIMIT-LIMIT)%"
+                      request_rate_limit_remaining: "%RESP(X-RATELIMIT-REMAINING)%"
+                      request_rate_limit_reset: "%RESP(X-RATELIMIT-RESET)%"
+                      upstream_remote_address: "%UPSTREAM_REMOTE_ADDRESS%"
+

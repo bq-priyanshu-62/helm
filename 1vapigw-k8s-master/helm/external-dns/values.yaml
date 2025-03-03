@@ -1,0 +1,24 @@
+external-dns:
+  fullnameOverride: aws-external-dns
+
+  podLabels:
+    tailed_path: external-dns.log
+    role: aws-external-dns
+    team: 1v-api-gw
+
+  rbac:
+    create: true
+    apiVersion: v1
+
+  serviceAccount:
+    create: true
+
+  sources:
+    - ingress
+  aws:
+    preferCNAME: false
+    evaluateTargetHealth: false
+
+  logLevel: info
+  interval: 60s
+  policy: sync

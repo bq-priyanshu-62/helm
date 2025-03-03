@@ -1,0 +1,12 @@
+lobDelegateVirtualService:
+  allowOrigin:
+    - https://app.vonage.com
+    - https://localhost:9090
+    - http://localhost:8080
+  allowOriginRegex:
+    - https://.+.vocal-qa.com
+    - https://.+.vonage.com
+    - https://.+.netlify.app
+    - https://.+.amplifyapp.com
+    - https://.+.vocal-dev.com
+    - https?://[a-zA-Z0-9_]*[.]?livecycle.dev

@@ -1,0 +1,11 @@
+victoria-metrics-single:
+  server:
+    image:
+      repository: 507728974998.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-victoria-metrics-single-server
+    resources:
+      limits:
+        cpu: 3
+        memory: 3G
+      requests:
+        cpu: 2
+        memory: 2G

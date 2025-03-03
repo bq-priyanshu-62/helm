@@ -1,0 +1,60 @@
+global:
+  accountId: "564623767830"
+  tld: "dev.nexmo.xxx"
+  dockerRepoPrefix: 684154893900.dkr.ecr.eu-west-1.amazonaws.com
+images:
+  phub: npe-latest
+  quota: 1a40cd1c5f6cbb8ab2f58eaaa3d5d92711c75f4b_not_tested
+  quota_iris: v20241101
+  accounts: latest
+  mysql: latest
+  networks: latest
+  auth: latest
+  applications: latest
+  numbers: latest
+accounts:
+  enabled: true
+  applicationKey: 98eg9e8gbwe9g4vvbviesv7evoevbsie75ise7sv7eosebv
+  resourcesLimitsCpu: 1
+  ingress:
+    createALBIngress: true
+phub:
+  enabled: true
+  resourcesLimitsCpu: 1
+  ingress:
+    createALBIngress: true
+  authHost: identity
+  authPort: 4152
+quota:
+  enabled: true
+  resourcesLimitsCpu: 1
+  ingress:
+    createALBIngress: true
+quota_iris:
+  enabled: true
+  resourcesLimitsCpu: 1
+  services:
+    zookeeper: kafka-zookeeper:2181
+    kafka: kafka:9092
+networks:
+  enabled: false
+  resourcesLimitsCpu: 1
+  ingress:
+    createALBIngress: true
+mysql:
+  enabled: true
+  password: password
+applications:
+  enabled: true
+  springProfile: qa
+  authHost: identity
+  authPort: 4152
+  ingress:
+    createALBIngress: true
+  authPublicKeys: /app/resources/
+  kafkaHostPort: kafka-zookeep:9092
+numbers:
+  enabled: true
+  ingress:
+    createNginxIngress: false
+    createALBIngress: true

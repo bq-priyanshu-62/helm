@@ -1,0 +1,275 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telco
+  labels:
+    stack: telco
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telco
+  template:
+    metadata:
+      labels:
+        app: telco
+    spec:
+      volumes:
+        - name: telco
+          persistentVolumeClaim:
+            claimName: telco
+        - name: mysql-config
+          configMap:
+            name: mysql-config
+            items:
+              - key: configuration
+                path: my.cnf
+        - name: iris-config-volume
+          configMap:
+            name: iris-config
+      securityContext:
+        fsGroup: 2000
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        {{ if .Values.phub.enabled }}
+        - image: {{ .Values.global.dockerRepoPrefix }}/nexmo-provisioning-hub:{{ .Values.images.phub }}
+          workingDir: /opt/runtime/nexmo/testing/npe/services/phub
+          imagePullPolicy: Always
+          name: nexmo-provisioning-hub
+          env:
+            - name: HOST
+              value: localhost
+            - name: PORT
+              value: "8019"
+            - name: MYSQL_CONFIG_HOST
+              value: localhost
+            - name: MYSQL_CONFIG_PORT
+              value: "3306"
+            - name: MYSQL_CONFIG_USER
+              value: config
+            - name: MYSQL_CONFIG_PASSWORD
+              value: Kh0onPh3eg
+            - name: MYSQL_CONFIG_DB_NAME
+              value: config
+            - name: MYSQL_SHORTCODES_HOST
+              value: localhost
+            - name: MYSQL_SHORTCODES_PORT
+              value: "3306"
+            - name: MYSQL_SHORTCODES_USER
+              value: shortcodes
+            - name: MYSQL_SHORTCODES_PASSWORD
+              value: Sz0rteei3z
+            - name: MYSQL_SHORTCODES_DB_NAME
+              value: shortcodes
+            - name: ENALBE_HLR_LOOKUP
+              value: "false"
+            - name: NEXMO_NETWORKS_HOST
+              value: networks-atmos.lb.main0.api.telco.dev.euw1.vonagenetworks.net
+            - name: NEXMO_NETWORKS_PORT
+              value: "80"
+            - name: NEXMO_NETWORKS_KEY
+              value: vrboeboq50n4b4w9b94n4wnnv84n
+            - name: VOICE_HOST1
+              value: localhost
+            - name: VOICE_PORT1
+              value: "7713"
+            - name: VOICE_HOST2
+              value: localhost
+            - name: VOICE_PORT2
+              value: "7713"
+            - name: ACCOUNTS_HOST
+              value: localhost
+            - name: QUOTA_HOST
+              value: localhost
+            - name: AUTH_HOST
+              value: {{ .Values.phub.authHost | quote}}
+            - name: TELCO_SERVICE_PORT_AUTH
+              value: {{ .Values.phub.authPort | quote}}
+            - name: NUMBERS_HOST
+              value: localhost
+          volumeMounts:
+            - name: telco
+              mountPath: /home
+          ports:
+            - containerPort: 8019
+            - containerPort: 8010
+            - containerPort: 8012
+            - containerPort: 8015
+          resources:
+            requests:
+              memory: {{ .Values.phub.resourcesRequestsMemory | default "1536Mi" }}
+              cpu: {{ .Values.phub.resourcesRequestsCpu | default "200m" }}
+            limits:
+              memory: {{ .Values.phub.resourcesLimitsMemory | default "2048Mi" }}
+              cpu: {{ .Values.phub.resourcesLimitsCpu | default "4000m" }}
+        {{- end }}
+        {{ if .Values.mysql.enabled }}
+        - image: {{ .Values.global.dockerRepoPrefix }}/nexmo-core-mysql:{{ .Values.images.mysql }}
+          imagePullPolicy: Always
+          name: nexmo-core-mysql
+          volumeMounts:
+            - name: telco
+              mountPath: /var/lib/mysql
+            - name: mysql-config
+              mountPath: /etc/mysql/my.cnf
+              subPath: my.cnf
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: {{ .Values.mysql.password }}
+          ports:
+            - containerPort: 3306
+          resources:
+            requests:
+              memory: {{ .Values.mysql.resourcesRequestsMemory | default "512Mi" }}
+              cpu: {{ .Values.mysql.resourcesRequestsCpu | default "200m" }}
+            limits:
+              memory: {{ .Values.mysql.resourcesLimitsMemory | default "1024Mi" }}
+              cpu: {{ .Values.mysql.resourcesLimitsCpu | default "4000m" }}
+        {{- end }}
+        {{ if .Values.quota.enabled }}
+        - image: {{ .Values.global.dockerRepoPrefix }}/nexmo-quota:{{ .Values.images.quota }}
+          imagePullPolicy: Always
+          name: nexmo-quota
+          env:
+            - name: HOST
+              value: localhost
+            - name: PORT
+              value: "3160"
+            - name: MYSQL_CONFIG_HOST
+              value: localhost
+            - name: MYSQL_CONFIG_PORT
+              value: "3306"
+            - name: MYSQL_CONFIG_USER
+              value: config
+            - name: MYSQL_CONFIG_PASSWORD
+              value: Kh0onPh3eg
+            - name: MYSQL_CONFIG_DB_NAME
+              value: config
+            - name: MYSQL_QUOTA_HOST
+              value: localhost
+            - name: MYSQL_QUOTA_PORT
+              value: "3306"
+            - name: MYSQL_QUOTA_USER
+              value: hub1
+            - name: MYSQL_QUOTA_PASSWORD
+              value: HhoO0UuBbb1
+            - name: MYSQL_QUOTA_DB_NAME
+              value: config
+          ports:
+            - containerPort: 3160
+            - containerPort: 3162
+            - containerPort: 3163
+            - containerPort: 3165
+          resources:
+            requests:
+              memory: {{ .Values.quota.resourcesRequestsMemory | default "512Mi" }}
+              cpu: {{ .Values.quota.resourcesRequestsCpu | default "200m" }}
+            limits:
+              memory: {{ .Values.quota.resourcesLimitsMemory | default "1024Mi" }}
+              cpu: {{ .Values.quota.resourcesLimitsCpu | default "4000m" }}
+          volumeMounts:
+            - mountPath: /opt/runtime/nexmo/testing/npe/services/quota/logs
+              name: telco
+        {{- end }}
+        {{ if .Values.quota_iris.enabled }}
+        - image: {{ .Values.global.dockerRepoPrefix }}/nexmo-iris-sidecar:{{ .Values.images.quota_iris }}
+          imagePullPolicy: Always
+          name: nexmo-quota-iris-sidecar
+          args: [ "--default-mode", "/etc/iris-config/config.json" ]
+          resources:
+            requests:
+              memory: {{ .Values.quota_iris.resourcesRequestsMemory | default "512Mi" }}
+              cpu: {{ .Values.quota_iris.resourcesRequestsCpu | default "200m" }}
+            limits:
+              memory: {{ .Values.quota_iris.resourcesLimitsMemory | default "1024Mi" }}
+              cpu: {{ .Values.quota_iris.resourcesLimitsCpu | default "4000m" }}
+          volumeMounts:
+            - mountPath: /opt/runtime/nexmo/testing/npe/services/quota/logs/iris
+              name: telco
+            - mountPath: /etc/iris-config/config.json
+              name: iris-config-volume
+              subPath: config.json
+        {{- end }}
+        {{ if .Values.accounts.enabled }}
+        - image: {{ .Values.global.dockerRepoPrefix }}/nexmo-accounts:{{ .Values.images.accounts }}
+          imagePullPolicy: Always
+          name: nexmo-accounts
+          ports:
+            - containerPort: 3600
+            - containerPort: 3602
+            - containerPort: 3603
+            - containerPort: 3604
+            - containerPort: 3605
+          env:
+            - name: HOST
+              value: localhost
+            - name: PORT
+              value: "3600"
+            - name: MYSQL_CONFIG_HOST
+              value: localhost
+            - name: MYSQL_CONFIG_PORT
+              value: "3306"
+            - name: MYSQL_CONFIG_USER
+              value: config
+            - name: MYSQL_CONFIG_PASSWORD
+              value: Kh0onPh3eg
+            - name: ACCOUNTS_VAPI_KEY
+              value: {{ .Values.accounts.applicationKey }}
+            - name: TELCO_JMX_JAVA_OPTS
+              value: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=3604 -Dcom.sun.management.jmxremote.rmi.port=3604 -Dcom.sun.management.jmxremote.authenticate=false"
+          resources:
+            requests:
+              memory: {{ .Values.accounts.resourcesRequestsMemory | default "512Mi" }}
+              cpu: {{ .Values.accounts.resourcesRequestsCpu | default "200m" }}
+            limits:
+              memory: {{ .Values.accounts.resourcesLimitsMemory | default "1024Mi" }}
+              cpu: {{ .Values.accounts.resourcesLimitsCpu | default "4000m" }}
+        {{- end }}
+        {{ if .Values.networks.enabled }}
+        - image: {{ .Values.global.dockerRepoPrefix }}/nexmo-networks:{{ .Values.images.networks }}
+          imagePullPolicy: Always
+          name: nexmo-networks
+          ports:
+            - containerPort: 3100
+            - containerPort: 3102
+            - containerPort: 3103
+            - containerPort: 3105
+          resources:
+            requests:
+              memory: {{ .Values.networks.resourcesRequestsMemory | default "1024Mi" }}
+              cpu: {{ .Values.networks.resourcesRequestsCpu | default "200m" }}
+            limits:
+              memory: {{ .Values.networks.resourcesLimitsMemory | default "2048Mi" }}
+              cpu: {{ .Values.networks.resourcesLimitsCpu | default "4000m" }}
+        {{- end }}
+        {{ if .Values.numbers.enabled }}
+        - image: {{ .Values.global.dockerRepoPrefix }}/nexmo-numbers:{{ .Values.images.numbers }}
+          imagePullPolicy: Always
+          name: nexmo-numbers
+          ports:
+            - containerPort: 3200
+            - containerPort: 3202
+            - containerPort: 3203
+            - containerPort: 3204
+            - containerPort: 3205
+          env:
+            - name: MYSQL_SHORTCODES_HOST
+              value: localhost
+            - name: MYSQL_SHORTCODES_PORT
+              value: "3306"
+            - name: MYSQL_SHORTCODES_USER
+              value: shortcodes
+            - name: MYSQL_SHORTCODES_PASSWORD
+              value: Sz0rteei3z
+            - name: TELCO_JMX_JAVA_OPTS
+              value: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=3204 -Dcom.sun.management.jmxremote.rmi.port=3204 -Dcom.sun.management.jmxremote.authenticate=false"
+          resources:
+            requests:
+              memory: {{ .Values.numbers.resourcesRequestsMemory | default "512Mi" }}
+              cpu: {{ .Values.numbers.resourcesRequestsCpu | default "200m" }}
+            limits:
+              memory: {{ .Values.numbers.resourcesLimitsMemory | default "1024Mi" }}
+              cpu: {{ .Values.numbers.resourcesLimitsCpu | default "4000m" }}
+        {{- end }}
+
+      hostname: telco

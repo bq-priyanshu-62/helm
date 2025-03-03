@@ -1,0 +1,11 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: {{ .Values.targetGroupBinding.name }}
+  namespace: {{ default .Release.Namespace .Values.targetGroupBinding.namespace }}
+spec:
+  serviceRef:
+    name: {{ .Values.targetGroupBinding.serviceName }}
+    port: {{ .Values.targetGroupBinding.servicePort }}
+  targetGroupARN: {{ .Values.targetGroupBinding.targetGroupARN }}
+  targetType: {{ .Values.targetGroupBinding.targetType | default "ip" }}

@@ -1,0 +1,72 @@
+environment: qa
+
+accountId: "507728974998"
+accountName: 1v-apigw-qa
+gloo_ui:
+  name: gloo-ui-ingress
+  privateControllerClass: nginx-privatelink
+
+global:
+  extensions:
+    extAuth:
+      requestTimeout: 20s
+      existingSecret: true
+      requestBody:
+        maxRequestBytes: 16384
+        allowPartialMessage: true
+        packAsBytes: true
+    rateLimit:
+      deployment:
+        resources:
+          requests:
+            memory: "1G"
+          limits:
+            memory: "1G"
+autoscaler:
+  rateLimit:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 12
+    averageCpu: 70
+
+  extAuth:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 12
+    averageCpu: 70
+gloo-ee:
+  gloo:
+    settings:
+      kubeResourceOverride:
+        spec:
+          namedExtauth:
+            extAuthBodyPassthrough:
+              clearRouteCache: true
+              extauthzServerRef:
+                name: anubis-nexmo-auth
+                namespace: viam
+              transportApiVersion: V3
+              grpcService:
+                authority: anubis-body-passthrough
+              requestBody:
+                maxRequestBytes: 16384
+                packAsBytes: true
+              requestTimeout: 20s
+              statusOnError: 403
+            extAuthHeadersOnly:
+              clearRouteCache: true
+              extauthzServerRef:
+                name: anubis-nexmo-auth
+                namespace: viam
+              transportApiVersion: V3
+              grpcService:
+                authority: anubis-header-only
+              requestTimeout: 20s
+              statusOnError: 403
+    gatewayProxies:
+      gatewayProxy:
+        podTemplate:
+          resources:
+            requests:
+              cpu: "4"
+              memory: "700M"

@@ -1,0 +1,7 @@
+lobDelegateVirtualService:
+  domains:
+    - api.uc.vonage.com # main global dns
+    - guest-api.vonagebusiness.com # main dns used by vbc
+    - api-us.uc.vonage.com # main sregion dns
+    - '*.api-us.uc.prod.v1.vonagenetworks.net' # internal per cluster (testing)
+    - '*.api-us.vonage.com' # delete after removing [meetings|onevapi-[one|two]-us-east-1].api-us.vonage.com

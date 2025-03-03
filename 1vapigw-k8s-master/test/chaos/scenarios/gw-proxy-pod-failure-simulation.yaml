@@ -1,0 +1,15 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: nexmo-gloo
+  name: gw-proxy-pod-failure-simulation
+spec:
+  selector:
+    namespaces:
+      - nexmo-gloo
+    labelSelectors:
+      k8s-app: gateway-proxy
+  mode: one
+  action: pod-failure
+  duration: 120s
+  gracePeriod: 0

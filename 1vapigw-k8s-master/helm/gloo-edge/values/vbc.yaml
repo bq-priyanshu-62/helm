@@ -1,0 +1,6 @@
+gatewayProxies:
+  gatewayProxy:
+    gatewaySettings:
+      customHttpGateway:
+        virtualServiceSelector:
+          businessUnit: vbc

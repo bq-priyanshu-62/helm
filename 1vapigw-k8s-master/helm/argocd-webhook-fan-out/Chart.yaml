@@ -1,0 +1,6 @@
+apiVersion: v2
+name: argocd-webhook-fan-out
+version: 1.1.0
+description: >-
+  GitHub supports a max of 20 "push" event webhooks. This service will relay and fan out an incoming webhook to 
+  trigger ArgoCD's sync process in all related clusters.

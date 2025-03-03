@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-webhook-fan-out
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: argocd-webhook-fan-out
+  template:
+    metadata:
+      labels:
+        app: argocd-webhook-fan-out
+    spec:
+      containers:
+        - name: argocd-webhook-fan-out
+          # always pull from use1
+          image: {{ .Values.aws.accountId }}.dkr.ecr.us-east-1.amazonaws.com/{{ .Values.aws.ecr.repo }}:{{ .Values.aws.ecr.tag }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: ENDPOINTS
+              value: {{ join "," .Values.endpoints }}

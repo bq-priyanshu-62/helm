@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "consul"
+  labels:
+    type: 'dependencies'
+spec:
+  replicas: 1
+  {{- if (.Values.global).enablekarpenter }}
+  strategy:
+    type: Recreate
+  {{- end }}
+  selector:
+    matchLabels:
+      app: "consul"
+  template:
+    metadata:
+      labels:
+        app: "consul"
+    spec:
+      hostname: "consul"
+      {{- if (.Values.global).enablekarpenter }}
+      nodeSelector:
+        karpenter.sh/provisioner-name: "{{ .Release.Namespace }}karpenter"
+      tolerations:
+      - key: "{{ .Release.Namespace }}karpenter"
+        effect: "NoSchedule"
+      {{- end }}
+      containers:
+        - image: {{ tpl .Values.global.dockerRepoPrefix $ }}/ext/consul:1.6.1
+          imagePullPolicy: Always
+          name: consul

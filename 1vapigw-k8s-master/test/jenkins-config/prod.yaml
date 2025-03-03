@@ -1,0 +1,68 @@
+tests:
+    test_interval: 15
+    regions:
+      - region: euw1
+        environment: prod
+        cluster: 1
+      - region: euw1
+        environment: prod
+        cluster: 2
+      - region: euc1
+        environment: prod
+        cluster: 1
+      - region: euc1
+        environment: prod
+        cluster: 2
+      - region: use1
+        environment: prod
+        cluster: 1
+      - region: use1
+        environment: prod
+        cluster: 2
+      - region: usw2
+        environment: prod
+        cluster: 1
+      - region: usw2
+        environment: prod
+        cluster: 2
+      - region: apse1
+        environment: prod
+        cluster: 1
+      - region: apse1
+        environment: prod
+        cluster: 2
+      - region: apse2
+        environment: prod
+        cluster: 1
+      - region: apse2
+        environment: prod
+        cluster: 2
+      - region: apse3
+        environment: prod
+        cluster: 1
+      - region: apse3
+        environment: prod
+        cluster: 2
+      - region: mec1
+        environment: prod
+        cluster: 1
+      - region: mec1
+        environment: prod
+        cluster: 2
+
+account:
+  environment: 'vonage-vng-v1-api-prd'
+  accountID: '275313334716'
+
+notification:
+  slack_channel: api-gw-tests-prd
+  email_list: nexmo.gateway.dev@vonage.com
+  allow_emails: true
+
+report_portal:
+  enabled: false
+  rp_api_key: rp-api-key-apigw_cH7JTSAnTVCuMBHkeCZpUcsAEHgc1YwTiogI8HU-Ou0yGj96yirIFOtVdTQNZTIU
+  rp_endpoint: https://reportportal-nexmo-prod-1-euw1.main0.api.nexmo.prd.euw1.vonagenetworks.net/api/v1
+  rp_project: api-gw-team-sanity
+  rp_launch: APIGW-Sanity-Tests
+  rp_launch_attributes: "type:sanity,service:gateway"

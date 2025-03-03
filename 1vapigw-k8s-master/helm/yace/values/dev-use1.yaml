@@ -1,0 +1,4 @@
+yace:
+  role: yace-us-api-role
+  globalaccelerator_enabled: true
+

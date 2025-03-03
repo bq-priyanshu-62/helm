@@ -1,0 +1,23 @@
+{{- if .Values.gloo_ui.hostname }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.in.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: {{ .Values.gloo_ui.privateControllerClass }}
+  name: {{ .Values.gloo_ui.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  rules:
+    - host: {{ .Values.gloo_ui.hostname }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: "gloo-fed-console"
+                port:
+                  number: 8090
+            path: /
+            pathType: Prefix
+
+{{ end}}    #   .Values.gloo_ui.hostname

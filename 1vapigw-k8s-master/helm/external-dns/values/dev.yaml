@@ -1,0 +1,7 @@
+external-dns:
+  image: 
+    registry: 684154893900.dkr.ecr.us-east-1.amazonaws.com
+    repository: 1v-apigw-external-dns
+  global:
+    security:
+      allowInsecureImages: true

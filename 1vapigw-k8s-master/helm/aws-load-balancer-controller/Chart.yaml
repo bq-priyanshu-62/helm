@@ -1,0 +1,10 @@
+apiVersion: v2
+name: alb-ingress
+description: Wrapper chart for alb-ingress
+type: application
+version: 1
+appVersion: "2.11.0"
+dependencies:
+  - name: aws-load-balancer-controller
+    version: 1.11.0
+    repository: https://aws.github.io/eks-charts

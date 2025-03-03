@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qa-regression
+  namespace: {{ .Release.Namespace }} 
+  labels:
+    app: qa-regression
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qa-regression
+  template:
+    metadata:
+      labels:
+        app: qa-regression
+    spec:
+      containers:
+        - name: qa-regression
+          image: "{{ .Values.global.dockerRepoPrefix }}/nexmo-telco-qatests:{{ .Values.qaRegression.dockerTag }}"
+          imagePullPolicy: Always
+          command: ["sh"]
+          {{- if .Values.qaRegression.threads }}
+          args: ["-c", "pipenv run pytest -v --junitxml=junit/single_report.xml --capture=tee-sys {{ .Values.qaRegression.qaTestsPath }} -n {{ .Values.qaRegression.threads }} -m \"(trusted or isolated) and not skip and {{ .Values.qaRegression.qaTestsSet }}\" --alluredir=allure-results --reruns 2; tail -f /dev/null"]
+          {{- else }}
+          args: ["-c", "pipenv run pytest -v --junitxml=junit/single_report.xml --capture=tee-sys {{ .Values.qaRegression.qaTestsPath }} -m \"(trusted or isolated) and not skip and {{ .Values.qaRegression.qaTestsSet }}\" --alluredir=allure-results --reruns 2; tail -f /dev/null"]
+          {{- end }}
+          envFrom:
+          - configMapRef:
+              name: regression-config
+          volumeMounts:
+            - name: secret-vol
+              mountPath: /opt/nexmo/keys
+      volumes:
+        - name: secret-vol
+          secret:
+            secretName: identity-signing-key
+            items:
+            - key: NEXMO_IDENTITY_RSA_PUBLIC_KEY
+              path: nexmo_identity_public_key.pem

@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: workflow-auth
+  namespace: argocd
+secrets:
+  - name: workflow-auth-token
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: workflow-auth-token
+  namespace: argocd
+  annotations:
+    kubernetes.io/service-account.name: workflow-auth
+type: kubernetes.io/service-account-token
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  namespace: argocd
+  name: workflow-auth
+rules:
+- apiGroups: ["*"]
+  resources: ["pods", "applications", "applicationsets", "deployments", "horizontalpodautoscalers"]
+  verbs: ["*"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: workflow-auth
+  namespace: argocd
+subjects:
+- kind: ServiceAccount
+  name: workflow-auth
+  namespace: argocd
+roleRef:
+  kind: ClusterRole
+  name: workflow-auth
+  apiGroup: rbac.authorization.k8s.io

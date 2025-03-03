@@ -1,0 +1,5 @@
+apiVersion: v2
+name: gw-tests
+type: application
+description: This installation should contain the APIGW tests
+version: 1.0.0

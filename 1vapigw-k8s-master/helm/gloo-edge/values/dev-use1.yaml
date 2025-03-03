@@ -1,0 +1,7 @@
+region: us-east-1
+
+gloo-ee:
+  redis:
+    disabled: true
+    service:
+      name: gloo-rate-limit-us-east-1.internal.dev.v1.vonagenetworks.net

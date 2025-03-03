@@ -1,0 +1,61 @@
+# template for deploying auth
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: volga
+  name: volga
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  {{- if (.Values.global).enablekarpenter }}
+  strategy:
+    type: Recreate
+  {{- end }}
+  selector:
+    matchLabels:
+      app: volga
+  template:
+    metadata:
+      labels:
+        app: volga
+    spec:
+      {{- if (.Values.global).enablekarpenter }}
+      nodeSelector:
+        karpenter.sh/provisioner-name: "{{ .Release.Namespace }}karpenter"
+      tolerations:
+      - key: "{{ .Release.Namespace }}karpenter"
+        effect: "NoSchedule"
+      {{- end }}
+      containers:
+        - name: volga
+          image: {{ tpl .Values.global.dockerRepoPrefix $ }}/nexmo-volga-notifier:{{ .Values.volga.dockerTag }}
+          args: ["-c", "mysql-db"]
+          resources:
+            requests:
+              memory: {{ .Values.resourcesLimitsMemory | default "1024Mi" }}
+              cpu: {{ .Values.resourcesRequestsCpu | default "1000m" }}
+          envFrom:
+            - configMapRef:
+                name: volgaenv
+          ports:
+            - name: public
+              containerPort: 8070
+              protocol: TCP
+      initContainers:
+        - name: push-consul-config
+          image: "{{ .Values.global.dockerRepoPrefix }}/ext/everpeace/curl-jq:latest"
+          command: [ "sh" ]
+          args: [ "-c", "/usr/local/volga-notifier/config/push-config.sh" ]
+          envFrom:
+            - configMapRef:
+                name: volgaenv
+          volumeMounts:
+            - name: configfiles
+              mountPath: /usr/local/volga-notifier/config
+      volumes:
+        - name: configfiles
+          configMap:
+            defaultMode: 0755
+            name: volgaconfigfiles
+

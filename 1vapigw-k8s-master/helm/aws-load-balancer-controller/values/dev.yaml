@@ -1,0 +1,3 @@
+aws-load-balancer-controller:
+  image:
+    repository: 684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-aws-load-balancer-controller

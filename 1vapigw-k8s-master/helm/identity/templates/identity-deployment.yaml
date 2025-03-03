@@ -1,0 +1,240 @@
+# template for deploying auth
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity
+  labels:
+    vonage_app: identity
+  namespace: {{ .Release.Namespace }}
+spec:
+  {{ if not .Values.autoscaler.enabled }}
+  replicas: {{ .Values.identity.replicas }}
+  {{ end }}
+  selector:
+    matchLabels:
+      vonage_app: identity
+  template:
+    metadata:
+      labels:
+        vonage_app: identity
+        account: {{ .Values.accountName }}
+        aws_account_id: {{ .Values.accountId | quote }}
+        cluster_id: {{ .Values.clusterName }}
+        k8s-app: identity
+        logging: "true"
+        region: {{ .Values.region }}
+        role: identity
+        team: {{ .Values.teamTag }}
+        application_1v: 'true'
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/identity-config.yaml") . | sha256sum }}
+        co.elastic.logs/processors.0.decode_json_fields.fields: message
+        co.elastic.logs/processors.0.decode_json_fields.target: d
+        prometheus.io/path: /monitoring/metrics
+        prometheus.io/port: "4152"
+        prometheus.io/scrape: "true"
+        {{ if .Values.autoscaler.enabled }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: {{ .Values.autoscaler.safeToEvict | default false | quote }}
+        {{ end }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  vonage_app: identity
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      {{- if (.Values.global).enablekarpenter }}
+      nodeSelector:
+        karpenter.sh/provisioner-name: "{{ .Release.Namespace }}karpenter"
+      tolerations:
+      - key: "{{ .Release.Namespace }}karpenter"
+        effect: "NoSchedule"
+      {{- end }}
+      containers:
+        {{ if .Values.identity.enableSsl }}
+        - name: watch
+          image: weaveworks/watch:master-9199bf5
+          imagePullPolicy: Always
+          args: [ "-v", "-p=/ssl-secrets", "curl", "-X", "POST", "--fail", "-o", "-", "-sS", "http://localhost:4152/tasks/reload-ssl" ]
+          volumeMounts:
+            - name: identity-ssl-secrets-vol
+              mountPath: /ssl-secrets
+              readOnly: true
+          resources:
+            limits:
+              memory: "500Mi"
+              cpu: "1000m"
+            requests:
+              memory: "500Mi"
+              cpu: "1000m"
+        {{ end }}
+        - name: identity
+        {{ if .Values.identity.enableRemoteDebug }}
+          command: ["java"]
+          args: ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-jar", "identity-service/build/libs/identity.jar", "server", "identity-service/config/identity.yml"]
+        {{ end }}
+          image: "{{ tpl .Values.global.dockerRepoPrefix $ }}/nexmo-identity:{{ .Values.identity.dockerTag }}"
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: identityenv
+          env:
+            - name: "JAVA_TOOL_OPTIONS"
+              value: "-XX:MaxRAMPercentage=50.0" # set max heap percentage
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: LOG_PATH
+              value: "logs/$(POD_NAMESPACE)/$(POD_NAME)"
+            - name: "APPLICATIONS_SERVICE_JWT"
+              valueFrom:
+                secretKeyRef:
+                  name: identity-applications-jwt
+                  key: IDENTITY_APPLICATION_JWT
+          {{ if .Values.identity.singleSecret }}  
+            - name: "NEXMO_IDENTITY_DB_USERNAME"
+              valueFrom:
+                secretKeyRef:
+                  name: identity-config
+                  key: NEXMO_IDENTITY_DB_USERNAME
+            - name: "NEXMO_IDENTITY_DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: identity-config
+                  key: NEXMO_IDENTITY_DB_PASSWORD
+          {{ else }}
+            - name: "NEXMO_IDENTITY_DB_USERNAME"
+              valueFrom:
+                secretKeyRef:
+                  name: identity-db-config
+                  key: NEXMO_IDENTITY_DB_USERNAME
+            - name: "NEXMO_IDENTITY_DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: identity-db-config
+                  key: NEXMO_IDENTITY_DB_PASSWORD
+          {{ end }}
+            - name: "TOKBOX_AUTH_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: tokbox-auth-token
+                  key: TOKBOX_AUTH_TOKEN
+            - name: "NUMBER_SERVICE_KEY"
+              valueFrom:
+                secretKeyRef:
+                  name: identity-interservice-secret
+                  key: NUMBER_SERVICE_KEY
+            {{ if .Values.identity.enableSsl }}
+            - name: "NEXMO_IDENTITY_SSL_KEYSTORE_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: identity-ssl-password
+                  key: IDENTITY_CERT_PASSWORD
+            {{ end }}
+          ports:
+          {{ if .Values.identity.enableRemoteDebug }}
+            - name: debug
+              containerPort: 5005
+              protocol: TCP
+          {{ end }}
+            - name: public
+              containerPort: 4150
+              protocol: TCP
+            - name: admin
+              containerPort: 4152
+              protocol: TCP
+            - name: public-tls
+              containerPort: 4160
+              protocol: TCP
+          volumeMounts:
+            - name: secret-vol
+              mountPath: /secrets
+            {{ if .Values.global.mapVolumes }}
+            - name: log-storage
+              mountPath: /home/identity/runtime/logs
+              subPath: identity
+            {{ end }}
+            {{ if .Values.identity.enableSsl }}
+            - name: identity-ssl-secrets-vol
+              mountPath: /ssl-secrets
+              readOnly: true
+            {{ end }}
+          livenessProbe:
+            httpGet:
+              path: health-check?type=live
+              port: 4150
+            timeoutSeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 10
+          startupProbe:
+            httpGet:
+              path: health-check?type=ready
+              port: 4150
+            periodSeconds: 10
+            failureThreshold: {{ .Values.identity.startupProbeFailureThreshold | default 30 }} # defaults to 5 min
+          readinessProbe:
+            httpGet:
+              path: health-check?type=ready
+              port: 4150
+          resources:
+            requests:
+              cpu: "2"
+              memory: "2Gi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+      {{- if .Values.identity.healthCheck }}
+      # add 10 seconds
+      terminationGracePeriodSeconds: {{ add .Values.identity.healthCheck.shutdownWaitPeriodInSeconds 10 }}
+      {{- end }}
+      tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 60
+        - key: "node.kubernetes.io/not-ready"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 60
+      volumes:
+        {{ if .Values.identity.singleSecret }}
+        - name: secret-vol
+          secret:
+            secretName: identity-config
+            items:
+            - key: NEXMO_IDENTITY_RSA_PRIVATE_KEY
+              path: IdentityRSAKey.pem
+            - key: NEXMO_IDENTITY_RSA_PUBLIC_KEY
+              path: IdentityPublicKey
+        {{ else }}
+        - name: secret-vol
+          secret:
+            secretName: identity-signing-key
+            items:
+            - key: NEXMO_IDENTITY_RSA_PRIVATE_KEY
+              path: IdentityRSAKey.pem
+            - key: NEXMO_IDENTITY_RSA_PUBLIC_KEY
+              path: IdentityPublicKey
+        {{ end }}
+        {{ if .Values.identity.enableSsl }}
+        - name: identity-ssl-secrets-vol
+          secret:
+            secretName: identity-pkcs12
+        {{ end }}
+        {{ if .Values.global.mapVolumes }}
+        - name: log-storage
+          hostPath:
+            path: {{ .Values.global.logPath }}
+            type: Directory
+        {{ end }}

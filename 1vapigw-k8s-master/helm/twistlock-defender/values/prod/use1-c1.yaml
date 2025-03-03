@@ -1,0 +1,2 @@
+AWS_REGION: "us-east-1"
+CLUSTER_SECRET: "prisma-prod-use1-c1"

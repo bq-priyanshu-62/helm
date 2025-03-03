@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yace
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yace
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: yace
+        {{- if .Values.podLabels }}
+        {{- range $key, $value := .Values.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "5000"
+        prometheus.io/path: /metrics
+        checksum/config: {{ include (print $.Template.BasePath "/config-map.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: yace
+      containers:
+        - name: yace
+          image: {{ .Values.accountId }}.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-yet-another-cloudwatch-exporter:v{{ .Values.yaceExporter.imageVersion }}
+          imagePullPolicy: IfNotPresent
+          args:
+              - "--config.file=/tmp/config.yml"
+              - "--scraping-interval=60"
+              - "--labels-snake-case=true"
+#              - "--debug=true"
+          ports:
+            - name: app
+              containerPort: 5000
+          volumeMounts:
+            - name: config-volume
+              mountPath: /tmp
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+      volumes:
+        - name: config-volume
+          configMap:
+            name: yace-config-{{ .Chart.Version }}

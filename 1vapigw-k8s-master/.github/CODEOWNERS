@@ -1,0 +1,5 @@
+* @Vonage/api-gw @a1t20v21 @alexforrow @sacrebleu @lukelyp @MingzheZhang0208 @mbarper @rakesh-von @Vonage/atl-sre
+argocd/environments/dev @github-actions[bot]
+argocd/routes/dev @github-actions[bot]
+argocd/environments/qa @github-actions[bot]
+argocd/routes/qa @github-actions[bot]

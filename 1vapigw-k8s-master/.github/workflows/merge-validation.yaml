@@ -1,0 +1,37 @@
+name: Validate Direct Merge
+
+on:
+  pull_request_target:
+    paths:
+      - 'argocd/environments/prod/*/*/cluster.jsonnet'
+      - 'argocd/environments/prod/*.jsonnet'
+    branches:
+      - master
+
+jobs:
+  block-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: Vonage/1vapigw-k8s
+          token: ${{ secrets.GH_PAT }}
+          ref: master
+
+      - name: Check changes
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |-
+
+            file_change=$(gh pr diff ${{ github.event.pull_request.number }} --name-only)
+            active_cluster=$(curl -s https://gw-euw1.api-eu.prod.v1.vonagenetworks.net/gateway/ping | jq -r '.cluster')
+
+            if echo "$file_change" | grep "$active_cluster" || (echo "$file_change" | grep -E "env.jsonnet|ap.jsonnet|eu.jsonnet|me.jsonnet|us.jsonnet" && echo "$active_cluster" | grep "1vapi-1"); then
+              if gh pr diff ${{ github.event.pull_request.number }} | grep '^+' | grep -E 'nexmo-gloo-edge|identity:|gw-sanity-service'; then
+                gh pr edit ${{ github.event.pull_request.number }} --add-label 'dont merge'
+              else
+                gh pr edit ${{ github.event.pull_request.number }} --remove-label 'dont merge'
+                gh pr edit ${{ github.event.pull_request.number }} --add-label 'cant merge directly'
+              fi
+            fi

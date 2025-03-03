@@ -1,0 +1,9 @@
+aws:
+  ecr:
+    repo: 1v-apigw-identity-config-monitor
+    tag: b66916e8c
+
+targetGroupBinding:
+  name: "private-identity-config-monitor"
+  serviceName: "identity-config-monitor"
+  servicePort: 3000

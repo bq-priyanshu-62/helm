@@ -1,0 +1,128 @@
+{{- $root := . -}}
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: nexmo-default-delegate-vs-{{ .Values.lobDelegateVirtualService.serviceType }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    businessUnit: {{ .Values.lobDelegateVirtualService.businessUnit | default (regexFind "(\\w+)" .Release.Namespace)  }}
+spec:
+  virtualHost:
+    domains:
+    {{- range prepend .Values.sanityPorts 0 }}
+    {{- $port := . }}
+    {{- range $root.Values.lobDelegateVirtualService.domains }}
+    {{- if $port }}
+    - {{ print . ":" $port | quote }}
+    {{- else }}
+    - {{ . | quote }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+    routes:
+      - matchers:
+          - prefix: '/'
+        delegateAction:
+          selector:
+            labels:
+              serviceType: {{ .Values.lobDelegateVirtualService.serviceType  | squote }}
+              businessUnit: {{ .Values.lobDelegateVirtualService.businessUnit | squote}}
+            namespaces:
+              - '*'
+
+    options:
+      waf:
+        customInterventionMessage: "Payload sizes above 16KB not allowed"
+        responseHeadersOnly: true
+        ruleSets:
+        - ruleStr: |
+            SecRuleEngine On
+            SecRequestBodyLimit 16384
+            SecRequestBodyLimitAction Reject
+      extauth:
+        {{- if .Values.lobDelegateVirtualService.extauth }}
+        {{- toYaml .Values.lobDelegateVirtualService.extauth | nindent 8 }}
+        {{- end }}
+      dlp:
+        actions:
+        - customAction:
+            name: redactApiSecret
+            regexActions: 
+              - regex: ([\&|\?]api_secret=)([^&]+)
+                subgroup: 2
+              - regex: ([\&|\?]key=)([^&]+)
+                subgroup: 2
+              - regex: ([\&|\?]msisdn=)([^&]+)
+                subgroup: 2
+              - regex: ([\&|\?]number=)([^&]+)
+                subgroup: 2
+              - regex: ([\&|\?]text=)([^&]+)
+                subgroup: 2
+              - regex: ([\&|\?]to=)([^&]+)
+                subgroup: 2
+              - regex: ([\&|\?]password=)([^&]+)
+                subgroup: 2
+            maskChar: "*"
+            percent: 
+              value: 100
+        enabledFor: ACCESS_LOGS
+      stagedTransformations:
+        early:
+          requestTransforms:
+            - requestTransformation:
+                transformationTemplate:
+                  passthrough: {}
+                  extractors:
+                    {{- range .Values.lobDelegateVirtualService.extractors }}
+                    {{ toYaml . | nindent 20 | trim}}
+                    {{- end }}
+                  headers:
+                    {{- range .Values.lobDelegateVirtualService.headers }}
+                    {{ toYaml . | nindent 20 | trim}}
+                    {{- end }}
+                    x-original-path:
+                      text: '{{ "{{" }} request_header(":path") {{ "}}" }}'
+          responseTransforms:
+            - matchers:
+              - name: "x-identity-auth-error"
+                value: "true"
+              responseTransformation:
+                transformationTemplate:
+                  parseBodyBehavior: DontParse
+                  headers:
+                    {{- if .Values.lobDelegateVirtualService.responseHeaders }}
+                    {{ toYaml .Values.lobDelegateVirtualService.responseHeaders | nindent 20 | trim }}
+                    {{- end }}
+                  mergeExtractorsToBody: {}
+                  extractors:
+                    {{- if .Values.lobDelegateVirtualService.responseExtractors }}
+                    {{ toYaml .Values.lobDelegateVirtualService.responseExtractors | nindent 20 | trim }}
+                    {{- end }}
+        regular:
+          requestTransforms:
+            - requestTransformation:
+                transformationTemplate:
+                  headers:
+                    # Workaround to remove empty headers from going to the upstream, this is mainly caused
+                    # by having an AuthConfig which allows upstream headers that could be unset, as a result
+                    # gloo sends empty header to the upstream { "": "" }
+                    "": { }
+      {{- if or (.Values.lobDelegateVirtualService.headersToRemove) (.Values.lobDelegateVirtualService.headersToAdd) }}
+      headerManipulation:
+        {{- if .Values.lobDelegateVirtualService.headersToRemove }}
+        responseHeadersToRemove:
+          {{- range .Values.lobDelegateVirtualService.headersToRemove }}
+          - {{ . | quote }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.lobDelegateVirtualService.headersToAdd }}
+        responseHeadersToAdd:
+          {{- range .Values.lobDelegateVirtualService.headersToAdd }}
+          - header:
+              key: {{ .name | quote }}
+              value: {{ .value | quote }}
+            append: {{ .append }}
+          {{- end }}
+        {{- end }}
+      {{- end }}

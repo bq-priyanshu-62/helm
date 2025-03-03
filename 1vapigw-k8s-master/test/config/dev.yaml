@@ -1,0 +1,687 @@
+gloo:
+  api:
+    domain: 'api.dev.v1.vonagenetworks.net'
+
+  api-uc:
+    domain: 'api.uc.dev.v1.vonagenetworks.net'
+
+  regions:
+    euw1:
+      clusters:
+        active:
+          domain: 'gw-euw1.api-eu.dev.v1.vonagenetworks.net'
+        c1:
+          domain: 'gw-euw1-sanity-c1.api-eu.dev.v1.vonagenetworks.net'
+        c2:
+          domain: 'gw-euw1-sanity-c2.api-eu.dev.v1.vonagenetworks.net'
+
+
+    use1:
+      clusters:
+        active:
+          domain: 'gw-use1.api-us.dev.v1.vonagenetworks.net'
+        c1:
+          domain: 'gw-use1-sanity-c1.api-us.dev.v1.vonagenetworks.net'
+        c2:
+          domain: 'gw-use1-sanity-c2.api-us.dev.v1.vonagenetworks.net'
+
+reporter:
+  channel:
+    enabled: true
+    bloc: notifyChannel
+    default: api-gw-tests-dev
+  atv:
+    enabled: true
+    domain: atv.main0.api.nexmo.dev.euw1.vonagenetworks.net
+    awsAccount: nexmo-dev
+
+services:
+  api:
+  # Note that all tests now use an account with 0 balance.
+    # If you enable quota checking in auth you will need to use an account which does have balance and also add tests to use the 0-balance account to ensure all config is covered
+    host: 'api.dev.nexmo.com'
+    rateLimitAuthorization: 'api-rateLimitAuthorization'
+    authorization: 'api-authorization'
+    hasQuotaAuthorization: 'api-hasQuotaAuthorization'
+    testAccount: 'api-testAccount'
+    testPassword: 'api-testPassword'
+    rateLimitPerMinute: 30
+    rateLimitPerSecond: 5
+    dtTestAccount: 'api-dtTestAccount'
+    dtTestPassword: 'api-dtTestPassword'
+
+    tokbox: 
+      token: 'tokbox-token'
+      euw1:
+        host:
+          primary: [video.api.dev.vonage.com]
+      use1:
+        host:
+          primary: [video.api.dev.vonage.com]
+
+    tokboxTools:
+      euw1:
+        host:
+          primary: ['tools.dev.vonage.com']
+      use1:
+        host:
+          primary: ['tools.dev.vonage.com']
+    
+    nexmoTools:
+      euw1:
+        host:
+          primary: ['tools.dev.vonage.com']
+      use1:
+        host:
+          primary: ['tools.dev.vonage.com']
+
+    tendlc:
+      signature: 'tendlc-signature'
+      host:
+        euw1:
+          host:
+            primary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    numberpool:
+      host:
+        euw1:
+          host:
+            primary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    applications:
+      host:
+        euw1:
+          host:
+            primary: ['api-eu-2.dev.nexmo.com']
+            secondary: ['api-eu-1.dev.nexmo.com', 'api-eu.dev.v1.vonagenetworks.net', 'api-eu.dev.nexmo.com', 'api.dev.nexmo.com']
+          authorization: 'applications-authorization'
+          testAccount: 'applications-testAccount'
+          testPassword: 'applications-testPassword'
+        use1:
+          host:
+            primary: ['api-us.dev.v1.vonagenetworks.net', 'api-us-1-gw-prod.dev.nexmo.com', 'api-prod.dev.nexmo.com']
+            secondary: ['api-us-gw-prod.dev.nexmo.com']
+          authorization: 'applications-authorization'
+          testAccount: 'applications-testAccount'
+          testPassword: 'applications-testPassword'
+
+    capi:
+      host:
+        euw1:
+          region-header:
+            - value: ''
+              expected: 'dev-euw1'
+            - value: 'eu-central-dev'
+              expected: 'dev-euc1'
+            - value: 'eu-west-dev'
+              expected: 'dev-euw1'
+          host:
+            primary: ['ws-eu.dev.v1.vonagenetworks.net']
+
+    conversations:
+      host:
+        euw1:
+          host:
+            primary: ['api-eu.dev.v1.vonagenetworks.net']
+          authorization: 'conversations-authorization'
+        use1:
+          host:
+            primary: ['api-us.dev.v1.vonagenetworks.net']
+            secondary: ['api-us-gw-prod.dev.nexmo.com', 'api-us-1-gw-prod.dev.nexmo.com']
+          authorization: 'conversations-authorization'
+      conversationsPingRateLimitPerSecond: 50
+
+    messagesaws:
+      host:
+        euw1:
+          host:
+            primary: ['api-eu-3.dev.v1.vonagenetworks.net', 'api-eu.dev.v1.vonagenetworks.net']
+            secondary: ['api.dev.nexmo.com']# failing -> , 'api-sg-1.dev.nexmo.com']
+        use1:
+          host:
+            primary: []
+            secondary: []
+      sandboxHost:
+        euw1:
+          host:
+            primary: ['messages-sandbox.dev.nexmo.com']
+            secondary: []
+      wamHost:
+        euw1:
+          host:
+            primary: ['whatsapp-manager.dev.nexmo.cloud']
+            secondary: []
+      wamApiHost:
+        euw1:
+          host:
+            primary: ['api-eu-3.dev.v1.vonagenetworks.net', 'api-eu.dev.v1.vonagenetworks.net', 'whatsapp-manager.dev.nexmo.cloud']
+            secondary: ['api.dev.nexmo.com']# failing -> , 'api-sg-1.dev.nexmo.com']
+        use1:
+          host:
+            primary: ['api-us-3.dev.v1.vonagenetworks.net']
+            secondary: []
+      wamCaApiHost:
+        euw1:
+          host:
+            primary: ['api-eu.dev.v1.vonagenetworks.net']
+            secondary: ['api.dev.nexmo.com']
+      rcsManagerHost:
+        euw1:
+          host:
+            primary: ['api-eu.dev.v1.vonagenetworks.net']
+            secondary: ['api.dev.nexmo.com']
+
+      chatappmo:
+        euw1:
+          host:
+            primary: ['messages.dev.nexmo.com']
+            secondary: []
+      sandboxRateLimitPerSecond: 1
+      chatappRateLimitPerSecond: 40
+      dispatchRateLimitPerSecond: 40
+      healthcheckRateLimitPerSecond: 80
+
+    niV2:
+      euw1:
+        host:
+          primary: [ 'api-eu.dev.v1.vonagenetworks.net' ]
+          secondary: [ ]
+      niV2RateLimitPerSecond: 20
+
+    auth:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+
+    cost:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+
+    redact:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+
+    quotaCheck:
+      euw1:
+        host:
+          primary: ['api.dev.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api.dev.nexmo.com']
+          secondary: []
+      noQuotaAuth: 'quotaCheck-noQuotaAuth'
+      noQuotaApiKey: 'quotaCheck-noQuotaApiKey'
+      noQuotaApiSecret: 'quotaCheck-noQuotaApiSecret'
+      withQuotaAuthorization: 'quotaCheck-withQuotaAuthorization'
+      withQuotaAccount: 'quotaCheck-withQuotaAccount'
+      withQuotaPassword: 'quotaCheck-withQuotaPassword'
+
+    ignoreAuth:
+      euw1:
+        host:
+          primary: ['api.dev.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api.dev.nexmo.com']
+          secondary: []
+
+    forceAuth:
+      euw1:
+        host:
+          primary: ['api.dev.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api.dev.nexmo.com']
+          secondary: []
+    
+    directresponse:
+      euw1:
+        host:
+          primary: ['api.dev.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api.dev.nexmo.com']
+          secondary: []
+
+    conversions:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+
+    auditevent:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+
+    cs-ips:
+      euw1:
+        host:
+          primary: ['api-eu.dev.v1.vonagenetworks.net']
+          secondary: []
+        authorization: 'csips-authorization'
+
+    push:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+
+    phub-prov:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+
+    phub-pools:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+
+    accounts-secrets:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+
+    reports:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+
+    partnerapi:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com']
+
+    vapi_payment_controller:
+      euw1:
+        host:
+          primary: ['api-eu-gw-prod.dev.nexmo.com','api-eu-1-gw-prod.dev.nexmo.com', 'api-eu.dev.v1.vonagenetworks.net']
+      use1:
+        host:
+          primary: ['api-us-gw-prod.dev.nexmo.com', 'api-us-1-gw-prod.dev.nexmo.com']
+          secondary: ['api-us.dev.v1.vonagenetworks.net']
+ 
+    vapi:
+      euw1:
+        host:
+          primary: ['api-eu-2-gw-prod.dev.nexmo.com', 'api-eu.dev.v1.vonagenetworks.net', 'api-eu-1-gw-prod.dev.nexmo.com']# failing -> , 'api-eu-3.dev.v1.vonagenetworks.net']
+          secondary: ['api-eu-gw-prod.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api-us.dev.v1.vonagenetworks.net', 'api-us-1-gw-prod.dev.nexmo.com']
+          secondary: ['api-us-gw-prod.dev.nexmo.com', ]
+      vapiPingRateLimitPerSecond: 50
+
+    tts:
+      euw1:
+        host:
+          primary: ['api.dev.nexmo.com']
+          secondary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    media:
+      euw1:
+        host:
+          primary: ['api-eu-1.dev.nexmo.com', 'api.dev.nexmo.com']
+          secondary: ['api-eu.dev.nexmo.com', 'api-eu.dev.v1.vonagenetworks.net']
+        authorization: 'media-authorization'
+        testAccount: 'media-testAccount'
+        testPassword: 'media-testPassword'
+
+    boost:
+      euw1:
+        host:
+          primary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    camara:
+      euw1:
+        host:
+          primary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    numberInsight:
+      euw1:
+        host:
+          primary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    verify:
+      euw1:
+        host:
+          primary: ['api-eu-1.dev.nexmo.com']
+          secondary: ['api.dev.nexmo.com', 'api-eu.dev.nexmo.com', 'api-eu.dev.v1.vonagenetworks.net']
+      rateLimit:
+        verifyV1: 30
+        verifyV1Search: 5
+
+    verify_v2:
+      euw1:
+        host:
+          primary: ['api-eu.dev.v1.vonagenetworks.net']
+          secondary: []
+      use1:
+        host:
+          primary: ['api-prod.dev.nexmo.com']
+          secondary: []
+      rateLimit:
+        verifyV2: 30
+
+    verify_v2_provisioning:
+      euw1:
+        host:
+          primary: ['api-eu.dev.v1.vonagenetworks.net']
+          secondary: []
+      use1:
+        host:
+          primary: ['api-prod.dev.nexmo.com']
+          secondary: []
+      rateLimit:
+        verifyV2Provisioning: 30
+
+    chatapp_orchestrator:
+      euw1:
+        host:
+          primary: [ 'api-eu.dev.v1.vonagenetworks.net' ]
+          secondary: [ ]
+      use1:
+        host:
+          primary: ['api-prod.dev.nexmo.com']
+          secondary: []
+
+    mqm:
+      rateLimitPerSecond: 1
+      euw1:
+        host:
+          primary: [ 'api-eu.dev.v1.vonagenetworks.net' ]
+          secondary: []
+
+    network_api_reg:
+      euw1:
+        host:
+          primary: [ 'api-eu.dev.v1.vonagenetworks.net' ]
+          secondary: [ ]
+
+    velocity_rules:
+      euw1:
+        host:
+          primary: ['api-eu.dev.v1.vonagenetworks.net']
+          secondary: ['api.dev.nexmo.com', 'api-eu.dev.nexmo.com', 'api-eu-1.dev.nexmo.com']
+      use1:
+        host:
+          primary: ['api-prod.dev.nexmo.com']
+          secondary: []
+      rateLimit:
+        velocity_rules: 5
+
+    silent_auth:
+      euw1:
+        host:
+          primary: [ 'api-eu.dev.v1.vonagenetworks.net' ]
+          secondary: [ ]
+
+    devapi_rest:
+      euw1:
+        host:
+          primary: ['rest.dev.nexmo.com']
+          secondary: ['api.dev.v1.vonagenetworks.net']
+        testAccount: 'devapi-testAccount'
+        testPassword: 'devapi-testPassword'
+        testAccountAlt: 'devapi-testAccount'
+        testPasswordAlt: 'devapi-testPassword'
+
+      use1:
+        host:
+          primary: ['rest.dev.nexmo.com']
+          secondary: ['api.dev.v1.vonagenetworks.net']
+        testAccount: 'devapi-testAccount'
+        testPassword: 'devapi-testPassword'
+        testAccountAlt: 'devapi-testAccount'
+        testPasswordAlt: 'devapi-testPassword'
+
+    meetings:
+      domains:
+        regions:
+          use1:
+            - 'meetings.api-us.uc.dev.v1.vonagenetworks.net'
+
+    chat:
+      use1:
+        host:
+          primary: [ 'api-us.dev.v1.vonagenetworks.net' ]
+          secondary: [ 'api.dev.v1.vonagenetworks.net' ]
+
+    chat-media:
+      use1:
+        host:
+          primary: [ 'api-us.dev.v1.vonagenetworks.net' ]
+          secondary: [ 'api.dev.v1.vonagenetworks.net' ]
+
+    chat-widget:
+      use1:
+        host:
+          primary: [ 'api-us.dev.v1.vonagenetworks.net' ]
+          secondary: [ 'api.dev.v1.vonagenetworks.net' ]
+    
+    email:
+      use1:
+        host:
+          primary: [ 'api-us.dev.v1.vonagenetworks.net' ]
+          secondary: [ 'api.dev.v1.vonagenetworks.net' ]
+
+
+    chat-guest:
+      use1:
+        host:
+          primary: [ 'api-us.dev.v1.vonagenetworks.net' ]
+          secondary: [ 'api.dev.v1.vonagenetworks.net' ]
+
+    bus:
+      use1:
+        host:
+          primary: [ 'api-us.dev.v1.vonagenetworks.net' ]
+          secondary: [ 'api.dev.v1.vonagenetworks.net' ]
+
+    vcp_bulk:
+      domains:
+        regions:
+          euw1:
+            - 'api-eu.dev.v1.vonagenetworks.net'
+
+    ni:
+      euw1:
+        host:
+          primary: ['api-eu-1.dev.nexmo.com', 'api.dev.nexmo.com']
+          secondary: ['api-eu.dev.nexmo.com', 'api-eu.dev.v1.vonagenetworks.net']
+
+    ni_rest:
+      euw1:
+        host:
+          primary: ['rest.dev.nexmo.com']
+          secondary: ['api.dev.v1.vonagenetworks.net']
+      use1:
+        host:
+          primary: ['rest.dev.nexmo.com']
+          secondary: ['api.dev.v1.vonagenetworks.net']
+    
+    ni_v3:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net',]
+          secondary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    utilities:
+      host:
+        euw1:
+          host:
+            primary: ['api.dev.nexmo.com']
+            secondary: []
+        use1:
+          host:
+            primary: ['api.dev.nexmo.com']
+            secondary: []
+
+    sms:
+      rateLimitTest:
+        api_key: 'smsRateLimitTest_apiKey'
+        api_secret: 'smsRateLimitTest_apiSecret'
+        rps: 15
+
+    sms_rest:
+      legacyAccount: 'smsRest-legacyAccount'
+      legacyAccountPassword: 'smsRest-legacyAccountPassword'
+      splitFe01PercentAccount: 'smsRest-splitFE-01PercentAccount'
+      splitFe01PercentPassword: 'smsRest-splitFE-01PercentPassword'
+      splitFe05PercentAccount: 'smsRest-splitFE-05PercentAccount'
+      splitFe05PercentPassword: 'smsRest-splitFE-05PercentPassword'
+      splitFe25PercentAccount: 'smsRest-splitFE-25PercentAccount'
+      splitFe25PercentPassword: 'smsRest-splitFE-25PercentPassword'
+      legacyAndSplitFeAccount: 'smsRest-legacyAndSplitFEAccount'
+      legacyAndSplitFePassword: 'smsRest-legacyAndSplitFEPassword'
+      euw1:
+        host:
+          primary: ['rest-eu.dev.nexmo.com']
+          secondary: ['rest.dev.nexmo.com', 'api.dev.v1.vonagenetworks.net', 'api-eu.dev.v1.vonagenetworks.net']
+      use1:
+        host:
+          primary: ['rest-us.dev.nexmo.com']
+          secondary: ['rest.dev.nexmo.com', 'api.dev.v1.vonagenetworks.net', 'api-us.dev.v1.vonagenetworks.net']
+
+    sms_rest_throttling:
+      euw1:
+        host:
+          primary: [ 'api.dev.nexmo.com' ]
+          secondary: [ ]
+
+    sms_api:
+      euw1:
+        host:
+          primary: ['api-eu-2.dev.v1.vonagenetworks.net', 'api-eugb.dev.v1.vonagenetworks.net']
+          secondary: []
+
+    credentials:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api-eu.dev.v1.vonagenetworks.net']
+      use1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api-us.dev.v1.vonagenetworks.net']
+
+    enforcer-service:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    fd-alerts-generator:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    domains_service:
+      euw1:
+        host:
+          primary: ['api.dev.nexmo.com']
+          secondary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    address-prov:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    emergency-number-addr-prov:
+      euw1:
+        host:
+          primary: ['api.dev.v1.vonagenetworks.net']
+          secondary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    vgai-rag-api:
+      euw1:
+        host:
+          primary: ['api-eu.dev.ai.vonage.com']
+          secondary: ['api-eu.dev.v1.vonagenetworks.net']
+
+    number-inventory:
+      euw1:
+        host:
+          primary: [ 'api-eu.dev.v1.vonagenetworks.net' ]
+          secondary: [ ]
+
+    rtc:
+      euw1:
+        host:
+          primary: ['api-eu.dev.v1.vonagenetworks.net','api-eu-2.dev.v1.vonagenetworks.net']
+          secondary: []
+
+  api-uc:
+    domains:
+      global:
+        - 'api.uc.dev.v1.vonagenetworks.net'
+
+    meetings:
+      domains:
+        regions:
+          use1:
+            - 'meetings.api-us.uc.dev.v1.vonagenetworks.net'
+
+      rateLimitPerMinute: 60
+      rateLimitPerSecond: 10

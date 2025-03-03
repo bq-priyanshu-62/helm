@@ -1,0 +1,181 @@
+@Library('jenkins-commons')
+import utils.FileHandler
+import config.ConfigLoader
+
+node {
+    checkout scm
+    serviceParams = []
+    scenariosConfig = loadConfig("configuration/scenarios.yaml")
+    config = null
+
+    serviceParams.addAll([
+        booleanParam(name: 'RELOAD_PARAMS', defaultValue: false, description: 'If selected, will reload the params without executing the pipeline stages. Useful when you change the config files.'),
+        [
+            $class: 'ChoiceParameter',
+            choiceType: 'PT_SINGLE_SELECT',
+            description: '',
+            filterLength: 1,
+            filterable: false,
+            name: 'Env',
+            script: [
+                $class: 'GroovyScript',
+                script: [
+                    classpath: [],
+                    sandbox: false,
+                    script: "return['dev']"
+                ]
+            ]
+        ],
+        [
+            $class: 'CascadeChoiceParameter',
+            choiceType: 'PT_SINGLE_SELECT',
+            description: '',
+            filterLength: 1,
+            filterable: false,
+            name: 'region',
+            referencedParameters: 'Env',
+            script: [
+                $class: 'GroovyScript',
+                fallbackScript: [
+                    classpath: [],
+                    sandbox: false,
+                    script: 'return []'
+                ],
+                script: [
+                    classpath: [],
+                    sandbox: false,
+                    script: """
+                        if(Env.equals('dev')) {
+                            return['eu-west-1','us-east-1']
+                        } else {
+                            return['Not Configured']
+                        }
+                    """
+                ]
+            ]
+        ],
+        choice(
+            name: 'cluster',
+            description: 'select a cluster',
+            choices: ['1vapi-1','1vapi-2']
+        )
+    ])
+    properties([[$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false], parameters(serviceParams)])
+}
+
+
+pipeline {
+    agent any
+
+    options {
+        skipDefaultCheckout(true)
+        disableConcurrentBuilds()
+        durabilityHint('PERFORMANCE_OPTIMIZED')
+        timeout(time: 60, unit: 'MINUTES')
+        buildDiscarder(
+            BuildHistoryManager([
+                [
+                    conditions: [ BuildAgeRange(minDaysAge: 3, maxDaysAge: 3) ],
+                    continueAfterMatch: true,
+                    actions: [ DeleteBuild() ]
+                ],
+                [
+                    conditions: [ BuildResult(matchSuccess: true) ],
+                    continueAfterMatch: false,
+                    matchAtMost: 20,
+                ],
+                [
+                    conditions: [ BuildResult(matchAborted: true, matchFailure: true, matchUnstable: true) ],
+                    continueAfterMatch: false,
+                ],
+                [
+                    actions: [ DeleteBuild() ]
+                ]
+            ])
+        )
+    }
+
+    stages {
+        stage("Reload Params") {
+            steps {
+                script {
+                    if (params.RELOAD_PARAMS) {
+                        currentBuild.result = 'ABORTED'
+                        errorMessage = "This is a dry run to reload job parameters."
+                        error('DRY RUN COMPLETED. JOB PARAMETERIZED.')
+                    }
+                }
+            }
+        }
+        stage('Run Chaos test') {
+            steps {
+                script {
+                    def domain = getDomain(params.Env, params.region, params.cluster)
+
+                    for(scenario in scenariosConfig.scenarios) {
+                        sh """
+                            eval \$(aws sts assume-role --role-arn arn:aws:iam::684154893900:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\n"')
+                            aws eks --region ${region} update-kubeconfig --name ${cluster}
+                            sleep 5
+                            echo "running scenario: ${scenario.name}"
+                            bash ./test/chaos/run-tests.sh ${scenario.file} ${scenario.marker} ${scenario.duration} ${domain}
+                        """
+                    }
+                }
+            }
+            post {
+                always {
+                    script {
+                        //Publish allure results
+                        sh(script: """
+                                set +e
+                                cp -r allure-report/history allure-results
+                                set -e
+                            """)
+
+                        allure([includeProperties: false,
+                                jdk: '',
+                                properties: [],
+                                reportBuildPolicy: 'ALWAYS',
+                                results: [[path: 'allure-results']]
+                        ])
+
+                        sh(script: 'rm -rf allure-results')
+
+                        // Publish the XML report
+                        junit 'junit/*_test_report.xml'
+                        sh(script: 'rm -rf junit')
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Load YAML config
+def loadConfig(configName) {
+    def configFilePath = new FileHandler(this).getFileRelativePath(configName)
+    def config = new ConfigLoader("$WORKSPACE/$configFilePath").load()
+    return config
+}
+
+def getEnvironments() {
+    return ['dev','qa']
+}
+
+def getDomain(env, region, cluster) {
+    def domain = ''
+    config = loadConfig("configuration/${env}.yaml")
+
+    config.tests.regions.each { reg ->
+        if(reg.region == region) {
+            reg.clusters.each { clus ->
+                if(clus.cluster == cluster) {
+                    domain = clus.domain
+                }
+            }
+        }
+    }
+
+    return domain
+}

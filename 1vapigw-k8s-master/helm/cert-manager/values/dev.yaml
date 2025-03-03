@@ -1,0 +1,24 @@
+cert-manager:
+  image:
+    repository: 684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-cert-manager/cert-manager-controller
+
+  webhook:
+    image:
+      repository: 684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-cert-manager/cert-manager-webhook
+
+  cainjector:
+    image:
+      repository: 684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-cert-manager/cert-manager-cainjector
+
+  acmesolver:
+    image:
+      repository: 684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-cert-manager/cert-manager-acmesolver
+
+  startupapicheck:
+    image:
+      repository: 684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-cert-manager/cert-manager-startupapicheck
+
+
+aws-privateca-issuer:
+  image:
+    repository: 684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-cert-manager/cert-manager-aws-privateca-issuer

@@ -1,0 +1,65 @@
+{{- $root := . -}}
+
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: vbc-default-delegate-vs-{{ .Values.lobDelegateVirtualService.serviceType }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    businessUnit: {{ .Values.lobDelegateVirtualService.businessUnit | default (regexFind "(\\w+)" .Release.Namespace)  }}
+spec:
+  virtualHost:
+    domains:
+    {{- range prepend .Values.sanityPorts 0 }}
+    {{- $port := . }}
+    {{- range $root.Values.lobDelegateVirtualService.domains }}
+    {{- if $port }}
+    - {{ print . ":" $port | quote }}
+    {{- else }}
+    - {{ . | quote }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+    routes:
+      - matchers:
+          - prefix: '/'
+        delegateAction:
+          selector:
+            labels:
+              serviceType: {{ .Values.lobDelegateVirtualService.serviceType  | squote }}
+              businessUnit: {{ .Values.lobDelegateVirtualService.businessUnit | squote}}
+            namespaces:
+              - '*'
+      - matchers:
+        - exact: '/'
+        directResponseAction:
+          status: 401
+          body: '{"error": "Unauthorized", "error_description":"Full authentication is required to access this resource"}'
+
+    options:
+      waf:
+        customInterventionMessage: "Payload sizes above 16KB not allowed"
+        responseHeadersOnly: true
+        ruleSets:
+        - ruleStr: |
+            SecRuleEngine On
+            SecRequestBodyLimit 16384
+            SecRequestBodyLimitAction Reject
+      headerManipulation:
+        responseHeadersToRemove:
+          {{- range .Values.lobDelegateVirtualService.headersToRemove }}
+          - {{ . | quote }}
+          {{- end }}
+      cors:
+        allowHeaders:
+          - Content-Type
+          - X-Amzn-Trace-Id
+        allowOrigin:
+          {{- range .Values.lobDelegateVirtualService.allowOrigin }}
+          - {{ . }}
+          {{- end }}
+        allowOriginRegex:
+          {{- range .Values.lobDelegateVirtualService.allowOriginRegex }}
+          - {{ . }}
+          {{- end }}

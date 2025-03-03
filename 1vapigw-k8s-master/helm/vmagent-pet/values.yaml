@@ -1,0 +1,14 @@
+nameOverride: vmagent-pet-eks-internal
+fullnameOverride: vmagent-pet-eks-internal
+victoriaMetrics:
+  config:
+    scrapeInterval: 30s
+replicaCount: 1
+image:
+  repository: 684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-vmagent
+  pullPolicy: IfNotPresent
+  tag: v1.111.0
+annotations:
+  reloader.stakater.com/auto: 'true'
+vmagent:
+  m_team: 1vapigw

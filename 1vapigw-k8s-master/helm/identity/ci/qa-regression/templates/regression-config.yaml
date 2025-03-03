@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: regression-config
+data:
+  "QA_TEST_ENVIRONMENT": "K8s:isolated::"
+  "NEXMO_IDENTITY_RSA_PUBLIC_KEY_PATH": "/opt/nexmo/keys/nexmo_identity_public_key.pem"
+  "NEXMO_IDENTITY_SIGNING_PUBLIC_KEY_PATH": "/opt/nexmo/keys/nexmo_identity_public_key.pem"
+  "K8S_REGION": "{{ .Values.global.deployRegion }}"
+  "K8S_INGRESS": "-{{ .Release.Namespace }}{{ .Values.global.ingress.privateExtension }}"
+  "THROTTLING_INGRESS_HOST": "throttling-config-{{ .Release.Namespace }}{{ .Values.global.ingress.privateExtension }}"
+  "THROTTLING_PATH_PREFIX": "/"
+  "SERVER_HTTP_SCHEME": "https"
+  "PHUB_INGRESS_PORT": "443"
+  "THROTTLING_INGRESS_PORT": "443"
+  "SKIP_MAILHOG_CLEANUP": "{{ .Values.qaRegression.skipMailHog | default false }}"

@@ -1,0 +1,23 @@
+falcon-sensor:
+
+  falcon:
+    cid: "7DC02BAD5B8E445D9795761FF35E853A-90"
+
+  node:
+    image:
+      repository: 576336255095.dkr.ecr.us-east-1.amazonaws.com/crowdstrike-test
+    daemonset:
+      resources:
+        limits:
+          cpu: 750m
+          ephemeral-storage: 100Mi
+          memory: 750Mi
+        requests:
+          cpu: 250m
+          ephemeral-storage: 100Mi
+          memory: 500Mi
+      tolerations:
+      - operator: Exists
+
+  container:
+    replicas: 1

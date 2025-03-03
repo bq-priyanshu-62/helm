@@ -1,0 +1,28 @@
+aws-ebs-csi-driver:
+  image:
+    repository: 1v-apigw-aws-ebs-csi-driver/aws-ebs-csi-driver
+  sidecars:
+    provisioner:
+      image:
+        repository: 1v-apigw-aws-ebs-csi-driver/external-provisioner
+    attacher:
+      image:
+        repository: 1v-apigw-aws-ebs-csi-driver/external-attacher
+    snapshotter:
+      image: 1v-apigw-aws-ebs-csi-driver/csi-snapshotter
+    resizer:
+      image:
+        repository: 1v-apigw-aws-ebs-csi-driver/external-resizer
+    livenessProbe:
+      image:
+        repository: 1v-apigw-aws-ebs-csi-driver/livenessprobe
+    nodeDriverRegistrar:
+      image:
+        repository: 1v-apigw-aws-ebs-csi-driver/node-driver-registrar
+  controller:
+    serviceAccount:
+    # A service account will be created for you if set to true. Set to false if you want to use your own.
+      create: true
+      name: ebs-csi-controller-sa
+      annotations: 
+        eks.amazonaws.com/role-arn: arn:aws:iam::684154893900:role/ebs-csi-us-api-role

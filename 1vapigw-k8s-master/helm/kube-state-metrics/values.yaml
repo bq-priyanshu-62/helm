@@ -1,0 +1,8 @@
+kube-state-metrics:
+  namespaceOverride: monitoring
+  image:
+    tag: v2.14.0
+    pullPolicy: Always
+  extraArgs:
+    - '--metric-labels-allowlist=namespaces=[*],pods=[*],cronjobs=[*],daemonsets=[*],deployments=[*],services=[*],configmaps=[*],horizontalpodautoscalers=[*],secrets=[*]'
+    - '--metric-annotations-allowlist=namespaces=[*],pods=[*],cronjobs=[*],daemonsets=[*],deployments=[*],services=[*],configmaps=[*],horizontalpodautoscalers=[*],secrets=[*]'

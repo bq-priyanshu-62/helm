@@ -1,0 +1,12 @@
+kubernetes-external-secrets:
+  fullnameOverride: aws-external-secrets
+  podLabels:
+    tailed_path: external-secrets.log
+    role: aws-external-secrets
+    team: 1v-api-gw
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+  securityContext:
+    fsGroup: 65534

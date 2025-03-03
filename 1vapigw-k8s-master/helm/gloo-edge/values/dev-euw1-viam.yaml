@@ -1,0 +1,47 @@
+gloo-ee:
+  gloo:
+    gateway:
+      deployment:
+        extraGatewayLabels:
+          account: 1v-apigw-dev
+          aws_account_id: "684154893900"
+          region: eu-west-1
+          cluster_id: viam
+    gloo:
+      deployment:
+        extraGlooLabels:
+          account: 1v-apigw-dev
+          aws_account_id: "684154893900"
+          region: eu-west-1
+          cluster_id: viam
+    gatewayProxies:
+      gatewayProxy:
+        horizontalPodAutoscaler:
+          apiVersion: autoscaling/v2
+          minReplicas: 1
+          maxReplicas: 12
+          metrics:
+            - type: Resource
+              resource:
+                name: memory
+                target:
+                  type: Utilization
+                  averageUtilization: 70
+            - type: Resource
+              resource:
+                name: cpu
+                target:
+                  type: Utilization
+                  averageUtilization: 70
+                  
+        podTemplate:
+          extraGatewayProxyLabels:
+            account: 1v-apigw-dev
+            aws_account_id: "684154893900"
+            region: eu-west-1
+            cluster_id: viam
+          resources:
+            requests:
+              cpu: "1"
+            limits:
+              cpu: "1"

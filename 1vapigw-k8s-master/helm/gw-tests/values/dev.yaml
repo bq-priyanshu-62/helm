@@ -1,0 +1,60 @@
+environment: dev
+
+smokes:
+  executors:
+    image: 684154893900.dkr.ecr.us-east-1.amazonaws.com/apigw-smoke-tests:d229d6e
+  webhooks:
+    slackWebhookUrl: https://hooks.slack.com/services/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
+    payloadTemplate: '"{\"text\": \":no_smoking: *Smokes Test suite <https://testkube-ui-c2.api0.v1.dev.euw1.vonagenetworks.net/test-suites/{{ .TestSuiteExecution.TestSuite.Name }}/executions/{{ .TestSuiteExecution.Id }}|{{ .TestSuiteExecution.TestSuite.Name }}> finished with `{{ .TestSuiteExecution.Status }}` status*\n{{ range .TestSuiteExecution.ExecuteStepResults }} {{ range .Execute }}{{- if .Execution.TestName -}} - <https://testkube-ui-c2.api0.v1.dev.euw1.vonagenetworks.net/tests/{{ .Execution.TestName }}/executions/{{ .Execution.Id }}|{{ .Execution.TestName }}> ({{ .Execution.Duration }}) - `{{ .Execution.ExecutionResult.Status }}`\n {{ end }} {{ end }} {{ end }}\"}"'
+
+  tests:
+    - name: gateway-smokes
+      suiteName: gateway-smokes
+      schedule: "*/5 * * * *"
+      timeOutSecs: 120
+      regions:
+        - name: euw1
+        - name: use1
+
+    - name: gateway-smokes
+      suiteName: gateway-smokes-passive
+      delay: true
+      schedule: "*/10 * * * *"
+      timeOutSecs: 120
+      regions:
+        - name: euw1-passive
+        - name: use1-passive
+
+    - name: ratelimit-smokes
+      suiteName: ratelimit-smokes
+      schedule: "*/30 * * * *"
+      timeOutSecs: 120
+      regions:
+        - name: euw1
+        - name: use1
+
+    - name: ratelimit-smokes
+      suiteName: ratelimit-smokes-passive
+      delay: true
+      delayTime: 2m
+      schedule: "*/30 * * * *"
+      timeOutSecs: 120
+      regions:
+        - name: euw1-passive
+        - name: use1-passive
+
+    - name: identity-smokes
+      suiteName: identity-smokes
+      schedule: "*/5 * * * *"
+      timeOutSecs: 120
+      regions:
+        - name: euw1
+        - name: use1
+
+    - name: identity-admin-smokes
+      suiteName: identity-admin-smokes
+      schedule: "*/15 * * * *"
+      timeOutSecs: 120
+      regions:
+        - name: euw1
+        - name: use1

@@ -1,0 +1,286 @@
+global:
+  console:
+    readOnly: true
+  extensions:
+    extAuth:
+      enabled: true
+      requestTimeout: 2s
+      deployment:
+        extraExtAuthLabels:
+          application_1v: 'true'
+        stats:
+          enabled: true
+        resources:
+          requests:
+            cpu: "2"
+          limits:
+            cpu: "2"
+        tolerations:
+          - key: "node.kubernetes.io/unreachable"
+            operator: "Exists"
+            effect: "NoExecute"
+            tolerationSeconds: 60
+          - key: "node.kubernetes.io/not-ready"
+            operator: "Exists"
+            effect: "NoExecute"
+            tolerationSeconds: 60
+    glooRedis:
+      enableAcl: false
+    rateLimit:
+      upstream:
+        kubeResourceOverride:
+          spec:
+            healthChecks:
+              - grpcHealthCheck:
+                  serviceName: ratelimit
+                healthyThreshold: 2
+                interval: 10s
+                noTrafficInterval: 10s
+                timeout: 5s
+                unhealthyThreshold: 3
+      antiAffinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    gloo: rate-limit
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+      deployment:
+        livenessProbeEnabled: true
+        extraRateLimitLabels:
+          k8s-app: rate-limit
+          team: 1v-api-gw
+          application_1v: 'true'
+        stats:
+          enabled: true
+        resources:
+          requests:
+            cpu: "2"
+          limits:
+            cpu: "2"
+        tolerations:
+          - key: "node.kubernetes.io/unreachable"
+            operator: "Exists"
+            effect: "NoExecute"
+            tolerationSeconds: 60
+          - key: "node.kubernetes.io/not-ready"
+            operator: "Exists"
+            effect: "NoExecute"
+            tolerationSeconds: 60
+
+gloo-ee:
+  create_license_secret: false
+  observability:
+    enabled: false
+  prometheus:
+    server:
+      enabled: false
+    kubeStateMetrics:
+      enabled: false
+    enabled: false
+  grafana:
+    defaultInstallationEnabled: false
+    serviceAccount:
+      create: false
+    replicas: 0
+  redis:
+    clustered: true
+    deployment:
+      replicas: 1
+      clientSideShardingEnabled: true
+  gloo-fed:
+    create_license_secret: false
+    enabled: false
+    glooFedApiserver:
+      enable: true
+      console:
+        port: 8099
+    rbac:
+      create: true
+  gloo:
+    settings:
+      kubeResourceOverride: 
+        spec:
+          extauth:
+            clearRouteCache: true
+          ratelimitServer: 
+            denyOnFail: true
+            enableXRatelimitHeaders: true
+            requestTimeout: 1s
+      disableKubernetesDestinations: true
+      replaceInvalidRoutes: true # todo: do we need it here? it's part of the invalidConfigPolicy as well.
+      regexMaxProgramSize: 200 # we need larger regex to allow us to correctly validate guids
+      invalidConfigPolicy:
+        replaceInvalidRoutes: true
+        invalidRouteResponseCode: 402
+        invalidRouteResponseBody: "The RouteTable containing this route has invalid configuration"
+    gloo:
+      # NOTE that this must be enabled if we ever run more than 1 replica
+      disableLeaderElection: true
+      deployment:
+        replicas: 1
+        resources:
+          requests:
+            cpu: 1500m
+            memory: 1500Mi
+        extraGlooLabels:
+          k8s-app: gloo
+          team: 1v-api-gw
+          tailed_path: gloo.log
+          role: gloo
+          logging: false
+          application_1v: 'true'
+    gateway:
+      # https://docs.solo.io/gloo-edge/master/operations/advanced/crd_comperssion/
+      compressedProxySpec: true
+      readGatewaysFromAllNamespaces: false
+      validation:
+        enabled: false
+        validationServerGrpcMaxSizeBytes: 16000000
+      deployment:
+        replicas: 1
+        stats:
+          enabled: true
+        extraGatewayLabels:
+          k8s-app: gateway
+          team: 1v-api-gw
+          tailed_path: gateway.log
+          role: gateway
+          logging: false
+          application_1v: 'true'
+    discovery:
+      enabled: false
+    gatewayProxies:
+      gatewayProxy:
+        extraEnvoyArgs: 
+          - --component-log-level misc:error
+        readConfig: true
+        readConfigMulticluster: true
+        antiAffinity: true
+        service:
+          name: gateway-proxy
+          type: ClusterIP
+          httpPort: 443
+          httpsPort: 8080
+#          externalTrafficPolicy: Local
+        podTemplate:
+          extraGatewayProxyLabels:
+            k8s-app: gateway-proxy
+            team: 1v-api-gw
+            tailed_path: gateway-proxy.log
+            role: gateway-proxy
+            logging: true
+            application_1v: 'true'
+          terminationGracePeriodSeconds: 45
+          gracefulShutdown:
+            enabled: true
+            sleepTimeSeconds: 35
+          probes: true
+          livenessProbeEnabled: true
+          customReadinessProbe:
+            httpGet:
+              scheme: HTTP
+              port: 8080
+              path: /healthcheck
+            failureThreshold: 1
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+          customLivenessProbe:
+            httpGet:
+              scheme: HTTP
+              port: 8080
+              path: /healthcheck
+            failureThreshold: 30
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+          tolerations:
+            - key: "node.kubernetes.io/unreachable"
+              operator: "Exists"
+              effect: "NoExecute"
+              tolerationSeconds: 60
+            - key: "node.kubernetes.io/not-ready"
+              operator: "Exists"
+              effect: "NoExecute"
+              tolerationSeconds: 60
+        kind:
+          deployment:
+            replicas: 3
+            stats:
+              enabled: true
+        gatewaySettings:
+          disableGeneratedGateways: false
+          customHttpGateway:
+            virtualServiceNamespaces:
+              - '*'
+            options:
+              healthCheck:
+                path: /healthcheck
+              httpConnectionManagerSettings:
+                useRemoteAddress: true
+                xffNumTrustedHops: 1
+              proxyLatency:
+                request: FIRST_INCOMING_FIRST_OUTGOING
+                response: LAST_INCOMING_LAST_OUTGOING
+                measureRequestInternally: false
+                chargeClusterStat: true
+                chargeListenerStat: true
+                emitDynamicMetadata: true
+          proxyNames:
+            - gateway-proxy
+          useProxyProto: false
+          options:
+            socketOptions:
+              - description: "enable keep-alive" # socket level options
+                level: 1 # means socket level options
+                name: 9 # means the keep-alive parameter
+                intValue: 1 # a nonzero value means "yes" - 
+                state: STATE_PREBIND
+              - description: "idle time before first keep-alive probe is sent" # TCP protocol
+                level: 6 # IPPROTO_TCP
+                name: 4 # TCP_KEEPIDLE parameter - The time (in seconds) the connection needs to remain idle before TCP starts sending keepalive probes
+                intValue: 7200 # seconds
+                state: STATE_PREBIND
+              - description: "keep-alive interval" # TCP protocol
+                level: 6 # IPPROTO_TCP
+                name: 5 # the TCP_KEEPINTVL parameter - The time (in seconds) between individual keepalive probes.
+                intValue: 10 # seconds
+                state: STATE_PREBIND
+              - description: "keep-alive probes count" # TCP protocol
+                level: 6 # IPPROTO_TCP
+                name: 6 # the TCP_KEEPCNT parameter - The maximum number of keepalive probes TCP should send before dropping the connection
+                intValue: 120 # number of failed probes - at a rate of 1 every 10 seconds this is 20 mins
+                state: STATE_PREBIND
+            accessLoggingService:
+              accessLog:
+                - fileSink:
+                    path: /dev/stdout
+                    jsonFormat:
+                      aws_trace_id: "%REQ(X-AMZN-TRACE-ID)%"
+                      request_time: "%START_TIME%"
+                      method: "%REQ(:METHOD)%"
+                      path: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
+                      bytes_received: "%BYTES_RECEIVED%"
+                      bytes_sent: "%BYTES_SENT%"
+                      duration: "%DURATION%"
+                      protocol: "%PROTOCOL%"
+                      target_service: "%UPSTREAM_CLUSTER%"
+                      target_host: "%UPSTREAM_HOST%"
+                      trace_id: "%REQ(X-REQUEST-ID)%"
+                      remote_addr: "%REQ(X-FORWARDED-FOR)%"
+                      remote_addr_with_port: "%DOWNSTREAM_REMOTE_ADDRESS%"
+                      hostname: "%REQ(:AUTHORITY)%"
+                      response_code: "%RESPONSE_CODE%"
+                      response_details: "%RESPONSE_CODE_DETAILS%"
+                      response_flags: "%RESPONSE_FLAGS%"
+                      user_agent: "%REQ(USER-AGENT)%"
+
+auth:
+  enabled: true
+  kubeApp: identity
+  kubeServiceName: identity
+  kubeNamespace: nexmo-gateway-services
+  kubePort: 4150

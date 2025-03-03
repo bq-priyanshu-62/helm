@@ -1,0 +1,80 @@
+lobDelegateVirtualService:
+  domains:
+    - rest.nexmo.com
+    - rest.nexmocn.com
+    - rest-eu.nexmo.com
+    - rest-gb.nexmo.com
+    - a-euc1.nexmo.com
+    - a-euw1.nexmo.com
+    - a.nexmo.com
+    - api.nexmo.cloud
+    - api.nexmo.com
+    - api.nexmocn.com
+    - api-sg-1.nexmo.com
+    - api-eu-4.vonage.com
+    - api-eu-3.vonage.com
+    - api-eu-2.nexmo.com
+    - api-eu-2.vonage.com
+    - api-eu-1.nexmo.com
+    - api-eu.vonage.com
+    - api-eu.nexmo.com
+    - api-eugb.vonage.com
+    - api-gb-1.vonage.com
+    - api-vcp.vonage.com
+    - messages.nexmo.com
+    - messages-eu.vonage.com
+    - messages.vonage.com
+    - messages-sandbox.nexmo.com
+    - whatsapp-manager.nexmo.cloud
+    - docs.nexmo.com
+    - blog.nexmo.com
+    - dashboard-gb-1.nexmo.com
+    - dashboard-nl-1.nexmo.com
+    - dashboard.vonage.com
+    - dashboard.nexmo.com
+    - dashboard.nexmocn.com
+    - dashboard-gb-viam.nexmo.com
+    - dashboard-viam.nexmo.com
+    - developer.vonage.com
+    - developer.nexmo.com
+    - developers.nexmo.com
+    - developer.nexmocn.com
+    - prod.developer.vonage.com
+    - api.prod.v1.vonagenetworks.net
+    - api-eu.prod.v1.vonagenetworks.net
+    - '*.api-eu.prod.v1.vonagenetworks.net'
+    - 'api.management.vonage.com'
+    - api-global.vonage.com
+
+    - ws-eu-1.nexmo.com
+    - ws-eu-2.nexmo.com
+    - ws.nexmo.com
+    - ws-vcp.vonage.com
+    - ws-eu.vonage.com
+    - ws-eu-3.vonage.com
+    - ws-eu-4.vonage.com
+
+    - video.api.vonage.com
+    - tools.vonage.com
+
+    # CPASS resell domains
+    - dashboard.api.telekom.net
+    - dashboard.developer.telekom.com
+    - developer.api.telekom.net
+    - docs.developer.telekom.com
+    - kwc.dashboard.vonage.com
+    - optus.dashboard.vonage.com
+
+    #Partner Portal domains
+    - management.vonage.com
+
+    #dt-5g-slice domains
+    - 5g-slice.api.telekom.net
+    - admin.5g-slice.api.telekom.net
+    - 5g-slice.developer.telekom.com
+    - admin.5g-slice.developer.telekom.com
+
+    - api-eu.ai.vonage.com
+    - learn.vonage.com
+
+  serviceType: api-public

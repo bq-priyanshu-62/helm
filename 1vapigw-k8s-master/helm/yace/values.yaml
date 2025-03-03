@@ -1,0 +1,9 @@
+yaceExporter:
+  imageVersion: 0.61.2
+
+podLabels:
+  tailed_path: yace.log
+  role: yace
+  team: 1v-api-gw
+  logging: true
+  k8s-app: yace

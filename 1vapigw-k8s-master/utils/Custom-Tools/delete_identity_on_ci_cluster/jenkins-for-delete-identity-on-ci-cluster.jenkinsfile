@@ -1,0 +1,88 @@
+def failedNamespace 
+pipeline {
+    agent any
+
+    options {
+        disableConcurrentBuilds()
+    }
+
+    triggers {
+        cron('0 0 * * *')
+    }
+
+    stages {
+        stage("Delete Identity Environment") {
+            steps {
+                script {
+                    timeout(time: 30, unit: 'MINUTES') {
+                        def namespaces = getNamespace().split('\n')
+                        echo "$namespaces"
+                        if (namespaces.size() == 1 && namespaces[0].isEmpty()) {
+                            echo "No namespaces found. Exiting..."
+                            currentBuild.result = 'ABORTED'
+                            return
+                        } else {
+                            failedNamespace = deleteHelms(namespaces)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        failure {
+            script {
+                slackSend(
+                    color: 'danger',
+                    message: ":no_smoking: Failed to delete ${failedNamespace} for clean CI Environment in Jenkins job: ${env.JOB_NAME} (<${env.BUILD_URL}|Open>",
+                    channel: '#api-gw-notify-dev'
+                )
+            }
+        }
+    }
+}
+
+def getNamespace() {
+    def namespacesList = sh(script: """
+        eval \$(aws sts assume-role --role-arn arn:aws:iam::684154893900:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\\n"')
+        aws eks --region us-east-1 update-kubeconfig --name 1vapi-nexmo-ci  > /dev/null 2>&1
+        kubectl get namespaces |grep identity-ci-* |awk '{print \$1}'
+    """, returnStdout: true).trim()
+    return namespacesList
+}
+
+def deleteHelms(namespaces) {
+    for (def namespaceName in namespaces) {
+        try {
+            def helmReleases = sh(script: """
+                eval \$(aws sts assume-role --role-arn arn:aws:iam::684154893900:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\n"')
+                aws eks --region us-east-1 update-kubeconfig --name 1vapi-nexmo-ci > /dev/null 2>&1
+                helm list -n $namespaceName -q
+            """, returnStdout: true).trim().split('\n')
+            
+            if (helmReleases.size() > 1) {
+                def helmReleasesList = helmReleases.join(' ')
+                sh """
+                    echo $helmReleasesList
+                    echo "Deleting Helm Charts from namespace: $namespaceName"
+                    eval \$(aws sts assume-role --role-arn arn:aws:iam::684154893900:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\n"')
+                    aws eks --region us-east-1 update-kubeconfig --name 1vapi-nexmo-ci
+                    helm uninstall $helmReleasesList -n $namespaceName
+                """
+            } 
+            sh """
+                eval \$(aws sts assume-role --role-arn arn:aws:iam::684154893900:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\n"')
+                aws eks --region us-east-1 update-kubeconfig --name 1vapi-nexmo-ci
+                echo "Deleting namespace: $namespaceName"
+                kubectl delete ns $namespaceName 
+            """
+        } catch (Exception e) {
+            echo "Failed to delete namespace: $namespaceName" 
+            failedNamespace = namespaceName 
+            currentBuild.result = 'FAILURE'
+            return failedNamespace 
+        }
+    }
+    return null
+}

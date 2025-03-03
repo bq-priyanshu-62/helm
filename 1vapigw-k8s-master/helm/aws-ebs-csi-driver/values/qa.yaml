@@ -1,0 +1,3 @@
+aws-ebs-csi-driver:
+  image:
+    containerRegistry: 507728974998.dkr.ecr.us-east-1.amazonaws.com/

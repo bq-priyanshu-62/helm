@@ -1,0 +1,10 @@
+autoscaler:
+  enabled: false
+
+autoscalerConfigs:
+  minReplicas: 1
+  maxReplicas: 3
+  averageCpu: 60
+
+identity: 
+  enableRemoteDebug: false

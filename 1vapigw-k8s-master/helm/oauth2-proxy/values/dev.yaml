@@ -1,0 +1,14 @@
+oauth2-proxy:
+  ingress:
+    enabled: true
+    annotations: 
+      kubernetes.io/ingress.class: nginx-privatelink
+    path: /
+    pathType: ImplementationSpecific
+    hosts:
+      - testkube-ui-c2.api0.v1.dev.euw1.vonagenetworks.net
+  image:
+    repository: "684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-oauth2"
+  extraArgs:
+    oidc-issuer-url: https://testkube.api0.v1.dev.euw1.vonagenetworks.net/
+    redirect-url: https://testkube-ui-c2.api0.v1.dev.euw1.vonagenetworks.net/oauth2/callback

@@ -1,0 +1,24 @@
+targetGroupBindings:
+  - name: "public-identity"
+    serviceName: "identity"
+    servicePort: 4150
+    targetGroupARN: "arn:aws:elasticloadbalancing:us-east-1:275313334716:targetgroup/intl-svc-c1-pub-identity/8c36461d4f81ec16"
+  - name: "public-anubis-certs"
+    namespace: viam
+    serviceName: "anubis-certs"
+    servicePort: 5000
+    targetGroupARN: "arn:aws:elasticloadbalancing:us-east-1:275313334716:targetgroup/intl-svc-c1-pub-anubis-certs/0a2ec712b839e836"
+  - name: "viam"
+    namespace: nexmo-gloo
+    serviceName: "gateway-proxy"
+    servicePort: 443
+    targetGroupARN: "arn:aws:elasticloadbalancing:us-east-1:275313334716:targetgroup/intl-svc-c1-pub-gateway-proxy/d77336ebf4381ce5"
+
+  - name: "private-identity"
+    serviceName: "identity"
+    servicePort: 4150
+    targetGroupARN: "arn:aws:elasticloadbalancing:us-east-1:275313334716:targetgroup/intl-svc-c1-priv-identity/75726eb78413a306"
+  - name: "private-identity-admin"
+    serviceName: "identity"
+    servicePort: 4152
+    targetGroupARN: "arn:aws:elasticloadbalancing:us-east-1:275313334716:targetgroup/intl-svc-c1-priv-identity-admin/386abe1484e3a4b0"

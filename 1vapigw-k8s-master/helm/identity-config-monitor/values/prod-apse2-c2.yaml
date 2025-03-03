@@ -1,0 +1,2 @@
+targetGroupBinding:
+    targetGroupARN: "arn:aws:elasticloadbalancing:ap-southeast-2:275313334716:targetgroup/intl-svc-c2-priv-identity-config/c6a0c323b0867a9a"

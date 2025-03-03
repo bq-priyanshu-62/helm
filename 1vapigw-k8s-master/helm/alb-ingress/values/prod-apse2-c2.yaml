@@ -1,0 +1,19 @@
+targetGroupBindings:
+  - name: "public-identity"
+    serviceName: "identity"
+    servicePort: 4150
+    targetGroupARN: "arn:aws:elasticloadbalancing:ap-southeast-2:275313334716:targetgroup/intl-svc-c2-pub-identity/e5700bc8a9307ec4"
+  - name: "public-anubis-certs"
+    namespace: viam
+    serviceName: "anubis-certs"
+    servicePort: 5000
+    targetGroupARN: "arn:aws:elasticloadbalancing:ap-southeast-2:275313334716:targetgroup/intl-svc-c2-pub-anubis-certs/0ffc09aa616233b0"
+
+  - name: "private-identity"
+    serviceName: "identity"
+    servicePort: 4150
+    targetGroupARN: "arn:aws:elasticloadbalancing:ap-southeast-2:275313334716:targetgroup/intl-svc-c2-priv-identity/8aca9ef7bcff470d"
+  - name: "private-identity-admin"
+    serviceName: "identity"
+    servicePort: 4152
+    targetGroupARN: "arn:aws:elasticloadbalancing:ap-southeast-2:275313334716:targetgroup/intl-svc-c2-priv-identity-admin/dc224dba18e64796"

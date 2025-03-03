@@ -1,0 +1,6 @@
+lobDelegateVirtualService:
+  domains:
+    - '*.vocal-qa.com'
+    - 'api.uc.qa.v1.vonagenetworks.net'
+    - 'api-us.uc.qa.v1.vonagenetworks.net'
+    - '*.api-us.uc.qa.v1.vonagenetworks.net'

@@ -1,0 +1,19 @@
+name: Auto Approve
+
+on:
+  pull_request_target:
+    paths:
+      - 'argocd/environments/dev/**'
+      - 'argocd/routes/dev/**'
+      - 'argocd/environments/qa/**'
+      - 'argocd/routes/qa/**'
+    branches:
+      - master
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: hmarr/auto-approve-action@v2.1.0
+      with:
+        github-token: "${{ secrets.GITHUB_TOKEN }}"

@@ -1,0 +1,22 @@
+unclassified:
+  awsCredentialsProvider:
+    client:
+      endpointConfiguration:
+        serviceEndpoint: https://secretsmanager.eu-west-1.amazonaws.com
+        signingRegion: eu-west-1
+jenkins:
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+  securityRealm:
+    ldap:
+      configurations:
+        - server: ${JENKINS_LDAP_URL}
+          rootDN: dc=nexmo,dc=com
+          managerDN: "cn=sss,dc=nexmo,dc=com"
+          managerPasswordSecret: ${JENKINS_LDAP_PASS}
+      cache:
+        size: 100
+        ttl: 10
+      userIdStrategy: CaseInsensitive
+      groupIdStrategy: CaseSensitive

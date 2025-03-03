@@ -1,0 +1,131 @@
+@Library('jenkins-commons')
+import utils.FileHandler
+import config.ConfigLoader
+
+node {
+    checkout scm
+    serviceParams = []
+    inst = 1
+    
+    serviceParams.addAll([
+        booleanParam(name: 'RELOAD_PARAMS', defaultValue: false, description: 'If selected, will reload the params without executing the pipeline stages. Useful when you change the config files.'),
+        choice(name: 'environment', choices: getParams('environment'), description: 'select an env'),
+        choice(name: 'region', choices: getParams('region'), description: 'select a region'),
+        choice(name: 'cluster', choices: getParams('cluster'), description: 'select a cluster'),
+        choice(name: 'script', choices: getParams('script'), description: 'select a script file to run'),
+        booleanParam(name: 'overwrite', defaultValue: false, description: 'If true overwrites the no of threads and duration of the script else ignores the threads and duration jenkins parameters'),
+        string(name: 'threads', defaultValue: '30', description: 'No of jmeter threads to run on single server node'),
+        string(name: 'durationSecs', defaultValue: '600', description: 'Duration (in secs) of the script to run'),
+        string(name: 'jmeterNodes', defaultValue: '3', description: 'No of jmeter server nodes to run'),
+        booleanParam(name: 'existingContext', defaultValue: true, description: 'If true it will not update the context to dev euw1 c2. Set to false only when context is outdated since it can cause problems to other dev pipelines.')
+    ])
+    properties([[$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false], parameters(serviceParams)])
+}
+
+pipeline {
+    agent any
+
+    triggers {
+        parameterizedCron("30 2 * * 6 % environment=qa; region=euw1; cluster=c1; script=apigw-constant-load.jmx")
+    }
+
+    options {
+        skipDefaultCheckout(true)
+        disableConcurrentBuilds()
+        durabilityHint('PERFORMANCE_OPTIMIZED')
+        timeout(time: 120, unit: 'MINUTES')
+        buildDiscarder(
+            BuildHistoryManager([
+                [
+                    conditions: [ BuildAgeRange(minDaysAge: 30, maxDaysAge: 30) ],
+                    continueAfterMatch: true,
+                    actions: [ DeleteBuild() ]
+                ],
+                [
+                    conditions: [ BuildResult(matchSuccess: true) ],
+                    continueAfterMatch: false,
+                    matchAtMost: 20,
+                ],
+                [
+                    conditions: [ BuildResult(matchAborted: true, matchFailure: true, matchUnstable: true) ],
+                    continueAfterMatch: false,
+                ],
+                [
+                    actions: [ DeleteBuild() ]
+                ]
+            ])
+        )
+    }
+
+    stages {
+        stage("Reload Params") {
+            steps {
+                script {
+                    if (params.RELOAD_PARAMS) {
+                        currentBuild.result = 'ABORTED'
+                        errorMessage = "This is a dry run to reload job parameters."
+                        error('DRY RUN COMPLETED. JOB PARAMETERIZED.')
+                    }
+                }
+            }
+        }
+        stage('Run Performance test') {
+            steps {
+                script {
+                    sh """
+                        eval \$(aws sts assume-role --role-arn arn:aws:iam::684154893900:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\n"')
+                        ${existingContext} || aws eks --region eu-west-1 update-kubeconfig --name 1vapi-2 --alias dev-euw1-c2
+                        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 684154893900.dkr.ecr.us-east-1.amazonaws.com
+                        cd test/performance
+                        chmod 555 jmeter-deploy.sh
+                        bash jmeter-deploy.sh -x ${inst} -d true -n ${jmeterNodes} -s ${script} -e ${environment} -p ${region}-${cluster}.properties -c dev-euw1-c2
+                    """
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                // Publish the HTML report
+                publishHTML (target : [allowMissing: false,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'test/performance/report',
+                    reportFiles: 'index.html',
+                    reportName: 'HTML Reports'])
+
+                // Cleanup
+                sh """
+                    eval \$(aws sts assume-role --role-arn arn:aws:iam::684154893900:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\n"')
+                    ${existingContext} || aws eks --region eu-west-1 update-kubeconfig --name 1vapi-2 --alias dev-euw1-c2
+                    cd test/performance
+                    bash jmeter-deploy.sh -x ${inst} -d false -c dev-euw1-c2
+                """
+            }
+        }
+    }
+}
+
+def getParams(name) {
+    def values = []
+    switch(name) {
+        case "environment":
+            values = ["dev", "qa"]
+            break
+
+        case "region":
+            values = ["euw1", "euc1", "use1", "usw2", "apse1", "apse2"]
+            break
+
+        case "cluster":
+            values = ["c1", "c2"]
+            break
+        
+        case "script":
+            values = ["apigw-constant-load.jmx", "apigw-autoscaling.jmx", "apigw-spikes.jmx"]
+            break
+    }
+
+    return values
+}

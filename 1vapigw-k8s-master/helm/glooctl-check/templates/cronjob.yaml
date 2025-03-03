@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: glooctl-check
+spec:
+  schedule: "{{ .Values.app.cronSchedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: glooctl-check
+          containers:
+            - name: glooctl-check
+              # always pull from use1
+              image: {{ .Values.aws.accountId }}.dkr.ecr.us-east-1.amazonaws.com/{{ .Values.aws.ecr.repo }}:{{ .Values.aws.ecr.tag }}
+              imagePullPolicy: Always
+              resources:
+                requests:
+                  cpu: "1"
+                  memory: "1Gi"
+                limits:
+                  cpu: "1"
+                  memory: "1Gi"
+              env:
+                - name: CLUSTER_NAME
+                  value: {{ .Values.app.clusterName }}
+                - name: MAX_ATTEMPTS
+                  value: {{ .Values.app.maxAttempts | squote }}
+                - name: APIGW_ENV
+                  value: {{ .Values.environment }}
+                - name: SLACK_WEBHOOK
+                  value: {{ .Values.slack.webhook }}
+          restartPolicy: OnFailure

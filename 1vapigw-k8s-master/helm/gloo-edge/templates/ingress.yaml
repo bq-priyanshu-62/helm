@@ -1,0 +1,79 @@
+{{- $root := . -}}
+
+# todo: revised ingress configuration - should we keep it as part of the gateway or external as done for identity and throttling?
+{{- if not .Values.ingress.targetGroupBindings }}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.ingress.name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=30,access_logs.s3.enabled=true,access_logs.s3.bucket=vonage-access-logs-{{ .Values.accountId }}-{{ .Values.region }}
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30
+    alb.ingress.kubernetes.io/tags: "environment={{ .Values.environment }}, monitoring=true, kubernetes.io/namespace={{ .Release.Namespace }}, shield-advanced=true"
+    alb.ingress.kubernetes.io/security-groups: {{ join "," .Values.ingress.securityGroups }}
+
+    {{- if hasKey .Values.ingress "groupName" }}
+    alb.ingress.kubernetes.io/group.name: {{ .Values.ingress.groupName }}
+    alb.ingress.kubernetes.io/group.order: {{ .Values.ingress.groupOrder | default "100" | quote }}
+    {{- end }}
+
+    {{- if hasKey .Values.ingress "certificateArns" }}
+    alb.ingress.kubernetes.io/certificate-arn: {{ join "," .Values.ingress.certificateArns }}
+    {{- end }}
+
+    {{- if hasKey .Values.ingress "healthCheckPath" }}
+    alb.ingress.kubernetes.io/healthcheck-path: {{ .Values.ingress.healthCheckPath }}
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: {{ .Values.ingress.healthCheckInterval | default "5" | quote }}
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: {{ .Values.ingress.healthCheckTimeout | default "2" | quote }}
+    {{- end }}
+
+    {{- if hasKey .Values.ingress "successCodes" }}
+    alb.ingress.kubernetes.io/success-codes: {{ .Values.ingress.successCodes }}
+    {{- end }}
+
+    {{- if hasKey .Values.ingress "wafAclArn" }}
+    alb.ingress.kubernetes.io/wafv2-acl-arn: {{ .Values.ingress.wafAclArn }}
+    {{- end }}
+
+    {{- range $key, $value := .Values.ingress.extraAnnotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+
+    external-dns.alpha.kubernetes.io/hostname: {{ join "," .Values.ingress.hostnames | quote }}
+    external-dns.alpha.kubernetes.io/ttl: "10"
+
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: {{ index .Values "gloo-ee" "gloo" "gatewayProxies" "gatewayProxy" "service" "name" | default "gateway-proxy" }}
+              servicePort: {{ index .Values "gloo-ee" "gloo" "gatewayProxies" "gatewayProxy" "service" "httpPort" | default 443 }}
+
+{{ else }}  # .Values.ingress.targetGroupBindings
+
+  {{ range .Values.ingress.targetGroupBindings }}
+  {{- $targetGroupBinding := . }}
+---
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: {{ $targetGroupBinding.targetGroupBindingName }}
+  namespace: {{ $root.Release.Namespace }}
+  labels:
+    ingress.k8s.aws/stack-name: {{ $root.Values.clusterName }}
+    ingress.k8s.aws/stack-namespace: {{ $root.Release.Namespace }}
+spec:
+  serviceRef:
+    name: {{ index $root.Values "gloo-ee" "gloo" "gatewayProxies" "gatewayProxy" "service" "name" | default "gateway-proxy" }}
+    port: {{ index $root.Values "gloo-ee" "gloo" "gatewayProxies" "gatewayProxy" "service" "httpPort" | default 443 }}
+  targetGroupARN: {{ $targetGroupBinding.targetGroupARN }}
+  targetType: ip
+  {{- end }}
+{{ end}}    #   .Values.ingress.targetGroupBindings

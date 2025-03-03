@@ -1,0 +1,99 @@
+{{- $root := . -}}
+
+{{ range .Values.ingresses }}
+{{- $ingress := . }}
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $ingress.name | default $root.Release.Name }}
+  namespace: {{ $root.Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: {{ $ingress.scheme | default "internal" }}
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=30,access_logs.s3.enabled=true,access_logs.s3.bucket=vonage-access-logs-{{ $root.Values.accountId }}-{{ $root.Values.region }}
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30
+    alb.ingress.kubernetes.io/tags: "environment={{ $root.Values.environment }}, monitoring=true, kubernetes.io/namespace={{ $root.Release.Namespace }}, shield-advanced={{ $ingress.shieldAdvanced | default "false" }}"
+
+    {{- if hasKey $ingress "groupName" | default $root.Values.ingress.defaults.groupName }}
+    alb.ingress.kubernetes.io/group.name: {{ $ingress.groupName | default $root.Values.ingress.defaults.groupName }}
+    alb.ingress.kubernetes.io/group.order: {{ $ingress.groupOrder | default $root.Values.ingress.defaults.groupOrder | default "100" | quote }}
+    {{- end }}
+
+    {{- if and (eq $ingress.name "public") (hasKey $root.Values.lb "public") }}
+    {{- if hasKey $root.Values.lb.public "securityGroups" }}
+    alb.ingress.kubernetes.io/security-groups: {{ join "," $root.Values.lb.public.securityGroups }}
+    {{- end }}
+    {{- if hasKey $root.Values.lb.public "certificateArns" }}
+    alb.ingress.kubernetes.io/certificate-arn: {{ join "," $root.Values.lb.public.certificateArns }}
+    {{- end }}
+    {{- end }}
+
+    {{- if and (eq $ingress.name "private") (hasKey $root.Values.lb "private") }}
+    {{- if hasKey $root.Values.lb.private "securityGroups" }}
+    alb.ingress.kubernetes.io/security-groups: {{ join "," $root.Values.lb.private.securityGroups }}
+    {{- end }}
+    {{- if hasKey $root.Values.lb.private "certificateArns" }}
+    alb.ingress.kubernetes.io/certificate-arn: {{ join "," $root.Values.lb.private.certificateArns }}
+    {{- end }}
+    {{- end }}
+
+    {{- if hasKey $ingress "healthCheckPath" | default $root.Values.ingress.defaults.healthCheckPath }}
+    alb.ingress.kubernetes.io/healthcheck-path: {{ $ingress.healthCheckPath | default $root.Values.ingress.defaults.healthCheckPath }}
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: {{ $ingress.healthCheckInterval | default $root.Values.ingress.defaults.healthCheckInterval | default "5" | quote }}
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: {{ $ingress.healthCheckTimeout | default $root.Values.ingress.defaults.healthCheckTimeout | default "2" | quote }}
+    {{- end }}
+
+    {{- if hasKey $ingress "successCodes" }}
+    alb.ingress.kubernetes.io/success-codes: {{ $ingress.successCodes }}
+    {{- end }}
+
+    {{- if hasKey $ingress "wafAclArn" }}
+    alb.ingress.kubernetes.io/wafv2-acl-arn: {{ $ingress.wafAclArn }}
+    {{- end }}
+
+    {{- range $key, $value := $ingress.extraAnnotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+
+    # get the list of hostnames to set route53 for
+    {{- $hostnames := list }}
+    {{- range $ingress.hosts }}
+    {{- $hostnames = append $hostnames .host -}}
+    {{- end }}
+
+    external-dns.alpha.kubernetes.io/hostname: {{ join "," $hostnames | quote }}
+    external-dns.alpha.kubernetes.io/ttl: "10"
+
+spec:
+  rules:
+  {{- range $ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+        {{- range .paths }}
+          - path: {{ .path }}
+            backend:
+              serviceName: {{ .service.name }}
+              servicePort: {{ .service.port }}
+        {{- end }}
+  {{- end }}
+{{- end }}
+
+{{ range .Values.targetGroupBindings }}
+{{- $targetGroupBinding := . }}
+---
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: {{ $targetGroupBinding.name }}-{{ $targetGroupBinding.targetGroupARN | sha1sum | trunc 5 }}
+  namespace: {{ default $root.Release.Namespace $targetGroupBinding.namespace }}
+spec:
+  serviceRef:
+    name: {{ $targetGroupBinding.serviceName }}
+    port: {{ $targetGroupBinding.servicePort }}
+  targetGroupARN: {{ $targetGroupBinding.targetGroupARN }}
+  targetType: {{ $targetGroupBinding.targetType | default "ip" }}
+{{- end }}

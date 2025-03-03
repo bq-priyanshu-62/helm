@@ -1,0 +1,7 @@
+targetGroupBinding:
+    targetGroupARN: "arn:aws:elasticloadbalancing:us-east-1:684154893900:targetgroup/intl-svc-c1-priv-identity-config/ee846269093fae11"
+
+aws:
+  ecr:
+    repo: 1v-apigw-identity-config-monitor
+    tag: latest

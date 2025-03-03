@@ -1,0 +1,4 @@
+gwSanityService:
+  autoscaling:
+    minReplicas: 1
+    maxReplicas: 12

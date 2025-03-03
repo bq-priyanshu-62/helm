@@ -1,0 +1,27 @@
+{{- range $v := .Values.smokes.tests }}
+---
+apiVersion: tests.testkube.io/v3
+kind: TestSuite
+metadata:
+  name: {{ $v.suiteName }}
+  namespace: testkube
+  labels:
+    type: smokes
+spec:
+  steps:
+  {{- if $v.delay }}
+  - stopOnFailure: false
+    execute:
+    {{- if $v.delayTime }}
+    - delay: {{ $v.delayTime }}
+    {{- else }}
+    - delay: 30s
+    {{- end }}
+  {{- end }}
+  - stopOnFailure: false
+    execute:
+    {{- range $r := $v.regions }}
+    - test: {{ $v.name }}-{{ $r.name }}
+    {{- end }}
+  schedule: "{{ $v.schedule }}"
+{{- end }}

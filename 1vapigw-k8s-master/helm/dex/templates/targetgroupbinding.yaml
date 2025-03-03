@@ -1,0 +1,13 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: {{ .Values.targetGroupBinding.name }}
+  namespace: {{ .Values.targetGroupBinding.namespace }}
+  labels:
+{{ toYaml .Values.targetGroupBinding.labels | indent 4 }}
+spec:
+  serviceRef:
+    name: {{ .Values.targetGroupBinding.serviceRef.name }}
+    port: {{ .Values.targetGroupBinding.serviceRef.port }}
+  targetGroupARN: {{ .Values.targetGroupBinding.targetGroupARN }}
+  targetType: ip

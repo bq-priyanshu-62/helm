@@ -1,0 +1,20 @@
+{
+  "name": "argocd-webhook-fan-out",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "start": "npm run lint:fix && nodemon index.js",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "fastify": "^4.23.2",
+    "got": "^12.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "standard": "^16.0.4"
+  }
+}

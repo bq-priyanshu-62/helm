@@ -1,0 +1,66 @@
+lobDelegateVirtualService:
+  domains:
+    - rest.dev.nexmo.com
+    - rest.dev.nexmocn.com
+    - rest-eu.dev.nexmo.com
+    - rest-us.dev.nexmo.com
+
+    - api.dev.nexmo.cloud
+    - api.dev.nexmo.com
+    - api.dev.nexmocn.com
+    - api-prod.dev.nexmo.com
+    - api.dev.v1.vonagenetworks.net
+
+    - api-eu.dev.nexmo.com
+    - api-us.dev.nexmo.com
+    - api-ap.dev.nexmo.com
+
+    - api-eu.dev.v1.vonagenetworks.net
+    - api-us.dev.v1.vonagenetworks.net
+    - api-ap.dev.v1.vonagenetworks.net
+    - api-eu-gw-prod.dev.nexmo.com
+
+    - api-eu-1.dev.nexmo.com
+    - api-eu-1-gw-prod.dev.nexmo.com
+    - api-eu-1.dev.v1.vonagenetworks.net
+
+    - api-eu-2.dev.v1.vonagenetworks.net
+    - api-eu-2.dev.nexmo.com
+    - api-eu-2-gw-prod.dev.nexmo.com
+
+    - api-eu-3.dev.v1.vonagenetworks.net
+    - api-eu-3.dev.nexmo.com
+
+    - api-eu-4.dev.v1.vonagenetworks.net
+
+    - api-eugb.dev.v1.vonagenetworks.net
+
+    - dashboard.api-eu.dev.v1.vonagenetworks.net
+
+    - messages.dev.nexmo.com
+    - messages-sandbox.dev.nexmo.com
+    - messages-eu.dev.v1.vonagenetworks.net
+    - whatsapp-manager.dev.nexmo.cloud
+    - ws-eu.dev.v1.vonagenetworks.net
+
+    - ws-eu-2-gw-prod.dev.nexmo.com
+    - ws-eu-1-gw-prod.dev.nexmo.com
+    - ws-eu-gw-prod.dev.nexmo.com
+    - ws-eu.qa.v1.vonagenetworks.net
+    - ws.dev.nexmo.com
+    - ws-prod.dev.nexmo.com
+
+    - '*.api-eu.dev.v1.vonagenetworks.net'
+    - '*.ws-eu.dev.v1.vonagenetworks.net'
+
+    - dashboard.dev.v1.vonagenetworks.net
+    - '*.dashboard.dev.v1.vonagenetworks.net'
+
+    - video.api.dev.vonage.com
+    - tools.dev.vonage.com
+
+    - admin-dashboard.dev.nexmo.com
+    - management.dev.v1.vonagenetworks.net
+
+    - api-eu.dev.ai.vonage.com
+  serviceType: api-public

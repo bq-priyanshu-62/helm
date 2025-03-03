@@ -1,0 +1,6 @@
+ingress:
+  targetGroupBindings:
+    - targetGroupBindingName: nexmo-gw-external-service-tgb-1vapi-1 # TG for C1 to service ALB
+      targetGroupARN: arn:aws:elasticloadbalancing:ap-southeast-1:275313334716:targetgroup/api-gw-1vapi-1-IwKXXEZu/c890c60f719dd533
+    - targetGroupBindingName: nexmo-gw-external-sanity-tgb-1vapi-1 # TG for C1 to sanity ALB
+      targetGroupARN: arn:aws:elasticloadbalancing:ap-southeast-1:275313334716:targetgroup/api-gw-1vapi-1-2wYsYJcz/4ccdf8195e4b4f65

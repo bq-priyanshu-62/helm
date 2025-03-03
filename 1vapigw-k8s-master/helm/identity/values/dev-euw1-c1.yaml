@@ -1,0 +1,80 @@
+accountName: "1v-apigw-dev"
+accountId: "684154893900"
+clusterName: "dev"
+region: "eu-west-1"
+teamTag: "1v-api-gw"
+
+
+global:
+    dockerRepoPrefix: 564623767830.dkr.ecr.eu-west-1.amazonaws.com
+    # todo: validate logs are ship to logging infra
+    mapVolumes: false
+    logPath: /nexmo
+    createIngress: false
+identity:
+    dockerTag: latest
+    replicas: 1
+    singleSecret: false
+    secret:
+        create: false
+        external: true
+    enableSsl: false # TODO: Should be set to true once we can resolve the tls issues in gloo
+    logLevel: INFO
+    healthCheck:
+        enableDelayedShutdown: true
+        shutdownWaitPeriodInSeconds: 90
+    kafkaHost: hermes-1.eu-west-1.dev.nexmo.vip:9092
+    accountCacheKafkaTopic: volga_account_cache_invalidation
+    routing:
+        routeAllRequestsToSmsLegacy: false
+    configDynamoDB:
+        region: eu-west-1
+        tableName: apigw-configs
+    auth:
+        config_db_enabled: true
+        config_db_db_url: jdbc:mysql://phub-aurora.eu-west-1.main0.api.psrv.dev.euw1.vonagenetworks.net:3306/config?useSSL=false
+        config_db_db_schema: config
+        config_db_db_sql_logging: false
+        config_db_db_min_connections: 2
+        config_db_db_max_connections: 200
+        config_db_db_ssl: false
+        jwt_issuer: Nexmo
+        jwt_default_ttl_unit: minute
+        jwt_default_ttl_count: 15
+        third_party:
+            ai_root_url: "https://ziuc1198hb.execute-api.eu-west-1.amazonaws.com"
+            tokbox_auth_base_url: "https://athena.main0.api.dev.usw2.vonagenetworks.net"
+            tokbox_health_check_url: "https://athena.main0.api.dev.usw2.vonagenetworks.net/server/health"
+            tokbox_health_check_enable: true
+    services:
+        numbers_service:
+            host: "numapi-numbers.lb.main0.api.telco.dev.euw1.vonagenetworks.net"
+            port: 80
+            enable_ssl: false
+            enable_health_check: true
+        accounts_service:
+            host: accounts.psrv.eu.dev.api.vonagenetworks.net
+            port: 80
+            enable_ssl: false
+            service_key: 93rgb30p9wgwb3pa938bgvabq38q92334gbakq2332qf
+            enable_health_check: true
+        quota_checker:
+            data_center: aws-nexmo-dev-eu-west-1
+            kafka_topic: telco_quota_block-activity
+            boot_strap_brokers: kafka-cdr-1.eu-west-1.dev.nexmo.vip:9092
+        applications_service:
+            host: applications-service.lb.main0.api.dash.dev.euw1.vonagenetworks.net
+            port: 80
+            enable_ssl: false
+            enable_health_check: true
+    upstream:
+        create: false
+
+autoscaler:
+    enabled: true
+    safeToEvict: true
+
+autoscalerConfigs:
+  minReplicas: 2
+  maxReplicas: 2
+  averageCpu: 60

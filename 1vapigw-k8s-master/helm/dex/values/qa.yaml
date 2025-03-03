@@ -1,0 +1,57 @@
+targetGroupBinding:
+  name: bindtestkube
+  namespace: testkube
+  labels:
+    ingress.k8s.aws/stack-name: 1vapi-2
+    ingress.k8s.aws/stack-namespace: testkube
+  serviceRef:
+    name: dex
+    port: 5556
+  targetGroupARN: arn:aws:elasticloadbalancing:eu-west-1:507728974998:targetgroup/api-gw-1vapi-2-ZPUVsbLd/6b1ec27ccfd2d048
+
+dex:
+  image:
+    repository: 507728974998.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-dexidp
+  config:
+    issuer: https://testkube.api0.v1.qa.euw1.vonagenetworks.net/
+    storage:
+      type: kubernetes
+      config:
+        inCluster: true
+    enablePasswordDB: true
+    oauth2:
+      skipApprovalScreen: true
+      alwaysShowLoginScreen: false
+    connectors:
+    - type: ldap
+      name: ldap
+      id: ldap
+      config:
+        host: ldap01.main0.api.nexmo.qa.euw1.vonagenetworks.net
+        insecureNoSSL: false
+        insecureSkipVerify: true
+        bindDN: "cn=sss,dc=nexmo,dc=com"
+        bindPW: "$password"
+        usernamePrompt: Username
+        userSearch:
+          baseDN: dc=nexmo,dc=com
+          filter: "(&(objectClass=posixAccount)(|(memberOf=cn=team_gateway,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_ops,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_apex,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_appsupport,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_boa,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_chatapp,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_core,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_dashboard,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_data,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_mediabridge,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_oss,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_qa,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_rtc,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_sip,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_support,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_telco,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_vapi,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_verify,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_viam,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_voice,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_voice_tools,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_volga,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_vbc_meetings,ou=group,dc=nexmo,dc=com)(memberOf=cn=vonage-gnp,ou=group,dc=nexmo,dc=com)))"
+          username: uid
+          idAttr: uid
+          emailAttr: mail
+          nameAttr: uid
+        # Ldap group serch attributes
+        groupSearch:
+          baseDN: dc=nexmo,dc=com
+          filter: "(objectClass=posixGroup)"
+          userAttr: DN
+          groupAttr: member
+          nameAttr: cn
+    logger:
+      level: "info"
+    staticClients:
+    - id: $CLIENT_ID
+      name: Oauth2-Proxy OIDC Dex App
+      redirectURIs:
+      - https://testkube-ui-c2.api0.v1.qa.euw1.vonagenetworks.net/oauth2/callback
+      secret: $CLIENT_SECRET

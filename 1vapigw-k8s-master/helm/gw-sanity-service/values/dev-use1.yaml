@@ -1,0 +1,17 @@
+# argocd attributes: clusterName
+environment: dev
+
+ecrService:
+  host: 684154893900.dkr.ecr.us-east-1.amazonaws.com
+  repo: '1v-apigw-sanity'
+  tag: latest
+
+gwSanityService: {}
+
+upstream:
+  sanity:
+    timeout: "2s"
+    httpIdleTimeout: 70s
+  load:
+    auth:
+      enabled: true

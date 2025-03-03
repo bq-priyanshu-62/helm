@@ -1,0 +1,11 @@
+status = [
+#    "CheckActiveClusters",
+    "fmt",
+]
+required_approvals = 1
+use_codeowners = true
+timeout_sec = 300
+delete_merged_branches = true
+use_squash_merge = true
+cut_body_after = "## Changes:"
+block_labels = ["dont merge"]

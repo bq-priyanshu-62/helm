@@ -1,0 +1,2033 @@
+gloo:
+  api:
+    domain: 'api.vonage.com'
+
+  api-uc:
+    domain: 'api.uc.vonage.com'
+
+  regions:
+    euw1:
+      clusters:
+        active:
+          domain: 'gw-euw1.api-eu.prod.v1.vonagenetworks.net'
+        c1:
+          domain: 'gw-euw1-sanity-c1.api-eu.prod.v1.vonagenetworks.net'
+        c2:
+          domain: 'gw-euw1-sanity-c2.api-eu.prod.v1.vonagenetworks.net'
+
+    euc1:
+      clusters:
+        active:
+          domain: 'gw-euc1.api-eu.prod.v1.vonagenetworks.net'
+        c1:
+          domain: 'gw-euc1-sanity-c1.api-eu.prod.v1.vonagenetworks.net'
+        c2:
+          domain: 'gw-euc1-sanity-c2.api-eu.prod.v1.vonagenetworks.net'
+
+    apse1:
+      clusters:
+        active:
+          domain: 'gw-apse1.api-ap.prod.v1.vonagenetworks.net'
+        c1:
+          domain: 'gw-apse1-sanity-c1.api-ap.prod.v1.vonagenetworks.net'
+        c2:
+          domain: 'gw-apse1-sanity-c2.api-ap.prod.v1.vonagenetworks.net'
+
+    apse2:
+      clusters:
+        active:
+          domain: 'gw-apse2.api-ap.prod.v1.vonagenetworks.net'
+        c1:
+          domain: 'gw-apse2-sanity-c1.api-ap.prod.v1.vonagenetworks.net'
+        c2:
+          domain: 'gw-apse2-sanity-c2.api-ap.prod.v1.vonagenetworks.net'
+    
+    apse3:
+      clusters:
+        active:
+          domain: 'gw-apse3.api-ap.prod.v1.vonagenetworks.net'
+        c1:
+          domain: 'gw-apse3-sanity-c1.api-ap.prod.v1.vonagenetworks.net'
+        c2:
+          domain: 'gw-apse3-sanity-c2.api-ap.prod.v1.vonagenetworks.net'
+    
+    mec1:
+      clusters:
+        active:
+          domain: 'gw-mec1.api-me.prod.v1.vonagenetworks.net'
+        c1:
+          domain: 'gw-mec1-sanity-c1.api-me.prod.v1.vonagenetworks.net'
+        c2:
+          domain: 'gw-mec1-sanity-c2.api-me.prod.v1.vonagenetworks.net'
+
+    usw2:
+      clusters:
+        active:
+          domain: 'gw-usw2.api-us.prod.v1.vonagenetworks.net'
+        c1:
+          domain: 'gw-usw2-sanity-c1.api-us.prod.v1.vonagenetworks.net'
+        c2:
+          domain: 'gw-usw2-sanity-c2.api-us.prod.v1.vonagenetworks.net'
+
+    use1:
+      clusters:
+        active:
+          domain: 'gw-use1.api-us.prod.v1.vonagenetworks.net'
+        c1:
+          domain: 'gw-use1-sanity-c1.api-us.prod.v1.vonagenetworks.net'
+        c2:
+          domain: 'gw-use1-sanity-c2.api-us.prod.v1.vonagenetworks.net'
+
+reporter:
+  channel:
+    enabled: true
+    bloc: prodNotifyChannel
+    default: api-gw-tests-prd
+  atv:
+    enabled: true
+    domain: atv.main0.api.nexmo.prd.euw2.vonagenetworks.net
+    awsAccount: nexmo-prod
+
+services:
+  api:
+    hasQuotaAuthorization: 'api-hasQuotaAuthorization'
+    authorization: 'api-authorization'
+    testAccount: 'api-testAccount'
+    testPassword: 'api-testPassword'
+    rateLimitPerMinute: 150
+    rateLimitPerSecond: 20
+    dtTestAccount: 'api-dtTestAccount'
+    dtTestPassword: 'api-dtTestPassword'
+
+    tokbox: 
+      token: 'tokbox-token'
+      euw1:
+        host:
+          primary: [video.api.vonage.com]
+      euc1:
+        host:
+          primary: [video.api.vonage.com]
+      use1:
+        host:
+          primary: [video.api.vonage.com]
+      usw2:
+        host:
+          primary: [video.api.vonage.com]
+      apse1:
+        host:
+          primary: [video.api.vonage.com]
+      apse2:
+        host:
+          primary: [video.api.vonage.com]
+
+    tokboxTools:
+      euw1:
+        host:
+          primary: ['tools.vonage.com']
+      euc1:
+        host:
+          primary: ['tools.vonage.com']
+      use1:
+        host:
+          primary: ['tools.vonage.com']
+      usw2:
+        host:
+          primary: ['tools.vonage.com']
+      apse1:
+        host:
+          primary: ['tools.vonage.com']
+      apse2:
+        host:
+          primary: ['tools.vonage.com']
+
+    nexmoTools:
+      euw1:
+        host:
+          primary: ['tools.vonage.com']
+      euc1:
+        host:
+          primary: ['tools.vonage.com']
+      use1:
+        host:
+          primary: ['tools.vonage.com']
+      usw2:
+        host:
+          primary: ['tools.vonage.com']
+      apse1:
+        host:
+          primary: ['tools.vonage.com']
+      apse2:
+        host:
+          primary: ['tools.vonage.com']
+    dashboard:
+      euw1:
+        host:
+          primary: ['dashboard.nexmo.com', 'dashboard.nexmocn.com']
+          secondary: ['dashboard-gb-1.nexmo.com', 'dashboard-nl-1.nexmo.com', 'dashboard.vonage.com', 'kwc.dashboard.vonage.com', 'optus.dashboard.vonage.com', 'dashboard.developer.telekom.com']
+      euc1:
+        host:
+          primary: ['dashboard.nexmo.com', 'dashboard.nexmocn.com']
+          secondary: ['dashboard-gb-1.nexmo.com', 'dashboard-nl-1.nexmo.com', 'dashboard.vonage.com', 'kwc.dashboard.vonage.com', 'optus.dashboard.vonage.com', 'dashboard.developer.telekom.com']
+      externalSites:
+        domains: ['']
+      signinUrlRegex: 'https:\/\/oidc.idp.vonage.com\/oauth2\/auth'
+
+    5gSlice:
+      euw1:
+        host:
+          primary: ['5g-slice.developer.telekom.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['5g-slice.developer.telekom.com']
+          secondary: []
+      signinUrlRegex: 'https:\/\/oidc.idp.vonage.com\/oauth2\/auth'
+
+    Admin5gSlice:
+      euw1:
+        host:
+          primary: ['admin.5g-slice.developer.telekom.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['admin.5g-slice.developer.telekom.com']
+          secondary: []
+
+    adp:
+      bifrost:
+        host:
+          primary: []
+          secondary: []
+      adp:
+        host:
+          primary: ['developer.vonage.com']
+          secondary: ['developer.api.telekom.net', 'docs.developer.telekom.com']
+      vcr:
+        host: 
+          primary: ['developer.vonage.com']
+          secondary: []
+        authHost: 'ui.idp.vonage.com'
+        secrets:
+          apiKey: 'vcr-proxyApiKey'
+          password: 'vcr-proxyPassword'
+          username: 'vcr-proxyUsername'
+          captchaSkip: 'vcr-proxyCaptchaSkip'
+      pingUrl: '/ping'
+      
+    tendlc:
+      signature: 'tendlc-signature'
+      host:
+        euc1:
+          host:
+            primary: ['api-eu.vonage.com']
+        euw1:
+          host:
+            primary: ['api-eu.vonage.com']
+        apse1:
+          host:
+            primary: ['api-ap.vonage.com']
+        apse2:
+          host:
+            primary: ['api-ap.vonage.com']
+        use1:
+          host:
+            primary: ['api-us.vonage.com']
+        usw2:
+          host:
+            primary: ['api-us.vonage.com']
+
+    numberpool:
+      host:
+        euc1:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        euw1:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        apse1:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        apse2:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        use1:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        usw2:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+
+    applications:
+      host:
+        euc1:
+          host:
+            primary: ['api-eu-1.nexmo.com', 'api-eu-2.nexmo.com', 'api-eu.nexmo.com', 'api.nexmo.com']
+            secondary: ['api-eu.vonage.com', 'api.nexmocn.com']
+          authorization: 'applications-authorization'
+          testAccount: 'applications-testAccount'
+          testPassword: 'applications-testPassword'
+        euw1:
+          host:
+            primary: ['api-eu-1.nexmo.com', 'api-eu-2.nexmo.com', 'api-eu.nexmo.com', 'api.nexmo.com']
+            secondary: ['api-eu.vonage.com', 'api.nexmocn.com']
+          authorization: 'applications-authorization'
+          testAccount: 'applications-testAccount'
+          testPassword: 'applications-testPassword'
+        apse1:
+          host:
+            primary: ['api-ap.vonage.com', 'api.nexmo.com']
+            secondary: ['api-sg-1.nexmo.com', 'api.nexmocn.com']
+          authorization: 'applications-authorization'
+          testAccount: 'applications-testAccount'
+          testPassword: 'applications-testPassword'
+        apse2:
+          host:
+            primary: ['api-ap.vonage.com', 'api.nexmo.com']
+            secondary: ['api-sg-1.nexmo.com', 'api.nexmocn.com']
+          authorization: 'applications-authorization'
+          testAccount: 'applications-testAccount'
+          testPassword: 'applications-testPassword'
+        use1:
+          host:
+            primary: ['api-us-1.nexmo.com', 'api-us-2.nexmo.com', 'api-us.nexmo.com', 'api.nexmo.com']
+            secondary: ['api-us.vonage.com', 'api.nexmocn.com']
+          authorization: 'applications-authorization'
+          testAccount: 'applications-testAccount'
+          testPassword: 'applications-testPassword'
+        usw2:
+          host:
+            primary: ['api-us-1.nexmo.com', 'api-us-2.nexmo.com', 'api-us.nexmo.com']
+            secondary: ['api-us.vonage.com']
+          authorization: 'applications-authorization'
+          testAccount: 'applications-testAccount'
+          testPassword: 'applications-testPassword'
+
+
+    capi:
+      host:
+        euw1:
+          region-header:
+            - value: ''
+              expected: 'eu-3'
+            - value: 'eu-east'
+              expected: 'eu-4'
+            - value: 'eu-west'
+              expected: 'eu-3'
+          host:
+            primary: ['ws-eu.vonage.com']
+        euc1:
+          region-header:
+            - value: ''
+              expected: 'eu-3'
+            - value: 'eu-east'
+              expected: 'eu-4'
+            - value: 'eu-west'
+              expected: 'eu-3'
+          host:
+            primary: ['ws-eu.vonage.com']
+        apse1:
+          region-header:
+            - value: ''
+              expected: 'ap-3'
+            - value: 'apac-australia'
+              expected: 'ap-4'
+            - value: 'apac-sng'
+              expected: 'ap-3'
+          host:
+            primary: ['ws-ap.vonage.com']
+        apse2:
+          region-header:
+            - value: ''
+              expected: 'ap-3'
+            - value: 'apac-australia'
+              expected: 'ap-4'
+            - value: 'apac-sng'
+              expected: 'ap-3'
+          host:
+            primary: ['ws-ap.vonage.com']
+        use1:
+          region-header:
+            - value: ''
+              expected: 'us-3'
+            - value: 'na-west'
+              expected: 'us-4'
+            - value: 'na-east'
+              expected: 'us-3'
+          host:
+            primary: ['ws-us.vonage.com']
+        usw2:
+          region-header:
+            - value: ''
+              expected: 'us-3'
+            - value: 'na-west'
+              expected: 'us-4'
+            - value: 'na-east'
+              expected: 'us-3'
+          host:
+            primary: ['ws-us.vonage.com']
+
+    conversations:
+      host:
+        euw1:
+          host:
+            primary: ['api-eu-1.nexmo.com', 'api-eu-2.nexmo.com', 'api-eu.nexmo.com', 'api.nexmo.com', 'api-eu.vonage.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+            secondary: ['api.nexmocn.com']
+          app_routing: #token with application routing enable to euw1
+            authorization: 'conversations-appRouting-euw1'
+          authorization: 'conversations-authorization'
+        euc1:
+          host:
+            primary: ['api-eu-1.nexmo.com', 'api-eu-2.nexmo.com', 'api-eu.nexmo.com', 'api.nexmo.com', 'api-eu.vonage.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+            secondary: ['api.nexmocn.com']
+          app_routing: #token with application routing enable to euc1
+            authorization: 'conversations-appRouting-euc1'
+          authorization: 'conversations-authorization'
+        apse1:
+          host:
+            primary: ['api-sg-1.nexmo.com', 'api.nexmo.com', 'api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+            secondary: ['api.nexmocn.com']
+          app_routing: #token with application routing enable to apse1
+            authorization: 'conversations-appRouting-apse1'
+          authorization: 'conversations-authorization'
+        apse2:
+          host:
+            primary: ['api-sg-1.nexmo.com', 'api.nexmo.com', 'api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+            secondary: ['api.nexmocn.com']
+          app_routing: #token with application routing enable to apse2
+            authorization: 'conversations-appRouting-apse2'
+          authorization: 'conversations-authorization'
+        use1:
+          host:
+            primary: ['api-us-1.nexmo.com', 'api-us-2.nexmo.com', 'api-us.nexmo.com', 'api.nexmo.com', 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+            secondary: ['api.nexmocn.com']
+          app_routing: #token with application routing enable to use1
+            authorization: 'conversations-appRouting-use1'
+          authorization: 'conversations-authorization'
+        usw2:
+          host:
+            primary: ['api-us-1.nexmo.com', 'api-us-2.nexmo.com', 'api-us.nexmo.com', 'api.nexmo.com', 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+            secondary: ['api.nexmocn.com']
+          app_routing: #token with application routing enable to usw2
+            authorization: 'conversations-appRouting-usw2'
+          authorization: 'conversations-authorization'
+
+    messagesaws:
+      host:
+        euw1:
+          host:
+            primary: ['api-eu-3.vonage.com', 'api-eu-4.vonage.com', 'api-eu.vonage.com']
+            secondary: ['api-eu.nexmo.com', 'api.nexmo.com', 'api.nexmocn.com']
+        euc1:
+          host:
+            primary: ['api-eu-3.vonage.com', 'api-eu-4.vonage.com', 'api-eu.vonage.com']
+            secondary: ['api-eu.nexmo.com', 'api.nexmo.com', 'api.nexmocn.com']
+        use1:
+          host:
+            primary: ['api-us-3.vonage.com', 'api-us-4.vonage.com', 'api-us.vonage.com', 'api.nexmo.com']
+            secondary: ['api-us.nexmo.com', 'api.nexmocn.com']
+        usw2:
+          host:
+            primary: ['api-us-3.vonage.com', 'api-us-4.vonage.com', 'api-us.vonage.com', 'api.nexmo.com']
+            secondary: ['api-us.nexmo.com', 'api.nexmocn.com']
+        apse1:
+          host:
+            primary: ['api-sg-1.nexmo.com', 'api.nexmo.com']
+            secondary: ['api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com', 'api.nexmocn.com']
+        apse2:
+          host:
+            primary: ['api-sg-1.nexmo.com', 'api.nexmo.com']
+            secondary: ['api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com', 'api.nexmocn.com']
+      wamApiHost:
+        use1:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        usw2:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        euw1:
+          host:
+            primary: ['api.nexmo.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com', 'api-eu.vonage.com', 'whatsapp-manager.nexmo.cloud']
+            secondary: ['api-eu.nexmo.com', 'api.nexmo.com', 'api.nexmocn.com']
+        euc1:
+          host:
+            primary: ['api.nexmo.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com', 'api-eu.vonage.com', 'whatsapp-manager.nexmo.cloud']
+            secondary: ['api-eu.nexmo.com', 'api.nexmo.com', 'api.nexmocn.com']
+        apse1:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        apse2:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+      wamCaApiHost:
+        use1:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        usw2:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        euw1:
+          host:
+            primary: ['api.nexmo.com', 'api-eu-3.vonage.com'] # TODO add api-eu-4.vonage.com once deployed there
+            secondary: ['api-eu.nexmo.com', 'api-eu.vonage.com', 'api.nexmo.com', 'api.nexmocn.com']
+        euc1:
+          host:
+            primary: ['api.nexmo.com', 'api-eu-3.vonage.com'] # TODO add api-eu-4.vonage.com once deployed there
+            secondary: ['api-eu.nexmo.com', 'api-eu.vonage.com', 'api.nexmo.com', 'api.nexmocn.com']
+        apse1:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        apse2:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+      rcsManagerHost:
+        use1:
+          host:
+            primary: [ 'api-us.vonage.com', 'api-us.nexmo.com' ]
+            secondary: [ 'api-us-3.vonage.com' ]
+        usw2:
+          host:
+            primary: [ 'api-us.vonage.com', 'api-us.nexmo.com']
+            secondary: [ 'api-us-4.vonage.com' ]
+        euw1:
+          host:
+            primary: [ 'api.nexmo.com', 'api-eu-3.vonage.com' ]
+            secondary: [ 'api-eu.nexmo.com', 'api-eu.vonage.com', 'api.nexmo.com', 'api.nexmocn.com' ]
+        euc1:
+          host:
+            primary: [ 'api.nexmo.com', 'api-eu-4.vonage.com' ]
+            secondary: [ 'api-eu.nexmo.com', 'api-eu.vonage.com', 'api.nexmo.com', 'api.nexmocn.com' ]
+        apse1:
+          host:
+            primary: [ 'api-ap.vonage.com' ]
+            secondary: [ 'api-ap-3.vonage.com' ]
+        apse2:
+          host:
+            primary: [ 'api-ap.vonage.com' ]
+            secondary: [ 'api-ap-4.vonage.com' ]
+      sandboxHost:
+        euc1:
+          host:
+            primary: ['messages-sandbox.nexmo.com']
+            secondary: []
+        euw1:
+          host:
+            primary: ['messages-sandbox.nexmo.com']
+            secondary: []
+        apse1:
+          host:
+            primary: ['messages-sandbox.nexmo.com']
+            secondary: []
+        apse2:
+          host:
+            primary: ['messages-sandbox.nexmo.com']
+            secondary: []
+      wamHost:
+        euc1:
+          host:
+            primary: ['whatsapp-manager.nexmo.cloud']
+            secondary: []
+        euw1:
+          host:
+            primary: ['whatsapp-manager.nexmo.cloud']
+            secondary: []
+        apse1:
+          host:
+            primary: ['whatsapp-manager.nexmo.cloud']
+            secondary: []
+        apse2:
+          host:
+            primary: ['whatsapp-manager.nexmo.cloud']
+            secondary: []
+      chatappmo:
+        apse1:
+          host:
+            primary: ['messages-ap.vonage.com']
+            secondary: []
+        apse2:
+          host:
+            primary: ['messages-ap.vonage.com']
+            secondary: []
+        euw1:
+          host:
+            primary: ['messages-eu.vonage.com']
+            secondary: []
+        euc1:
+          host:
+            primary: ['messages-eu.vonage.com']
+            secondary: []
+        use1:
+          host:
+            primary: ['messages-us.vonage.com']
+            secondary: []
+        usw2:
+          host:
+            primary: ['messages-us.vonage.com']
+            secondary: []
+      sandboxRateLimitPerSecond: 1
+      chatappRateLimitPerSecond: 40
+      dispatchRateLimitPerSecond: 40
+      healthcheckRateLimitPerSecond: 80
+
+    niV2:
+      euw1:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ 'api-eu.vonage.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+      euc1:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ 'api-eu.vonage.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+      use1:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+      usw2:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+      apse1:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: ['api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+      apse2:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ 'api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+      niV2RateLimitPerSecond: 20
+
+    auth:
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse3:
+        host:
+          primary: ['idn.api.vonage.com']
+          secondary: []
+      mec1:
+        host:
+          primary: ['are.api.vonage.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+
+    cost:
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+
+    quotaCheck:
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse3:
+        host:
+          primary: ['idn.api.vonage.com']
+          secondary: []
+      mec1:
+        host:
+          primary: ['are.api.vonage.com']
+          secondary: []
+      noQuotaAuth: 'quotaCheck-noQuotaAuth'
+      noQuotaApiKey: 'quotaCheck-noQuotaApiKey'
+      noQuotaApiSecret: 'quotaCheck-noQuotaApiSecret'
+      withQuotaAuthorization: 'quotaCheck-withQuotaAuthorization'
+      withQuotaAccount: 'quotaCheck-withQuotaAccount'
+      withQuotaPassword: 'quotaCheck-withQuotaPassword'
+
+    redact:
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+
+    directresponse:
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse3:
+        host:
+          primary: ['idn.api.vonage.com']
+          secondary: []
+      mec1:
+        host:
+          primary: ['are.api.vonage.com']
+          secondary: []
+          
+    ignoreAuth:
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse3:
+        host:
+          primary: ['idn.api.vonage.com']
+          secondary: []
+      mec1:
+        host:
+          primary: ['are.api.vonage.com']
+          secondary: []
+
+    forceAuth:
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse3:
+        host:
+          primary: ['idn.api.vonage.com']
+          secondary: []
+      mec1:
+        host:
+          primary: ['are.api.vonage.com']
+          secondary: []
+
+    conversions:
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+
+    auditevent:
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+
+    cs-ips:
+      euw1:
+        host:
+          primary: ['api-eu-1.nexmo.com', 'api-eu-2.nexmo.com', 'api-eu.nexmo.com', 'api.nexmo.com', 'api-eu.vonage.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+          secondary: ['api.nexmocn.com']
+        authorization: 'csips-authorization'
+      euc1:
+        host:
+          primary: ['api-eu-1.nexmo.com', 'api-eu-2.nexmo.com', 'api-eu.nexmo.com', 'api.nexmo.com', 'api-eu.vonage.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+          secondary: ['api.nexmocn.com']
+        authorization: 'csips-authorization'
+      apse1:
+        host:
+          primary: ['api-sg-1.nexmo.com', 'api.nexmo.com', 'api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+          secondary: ['api.nexmocn.com']
+        authorization: 'csips-authorization'
+      apse2:
+        host:
+          primary: ['api-sg-1.nexmo.com', 'api.nexmo.com', 'api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+          secondary: ['api.nexmocn.com']
+        authorization: 'csips-authorization'
+      use1:
+        host:
+          primary: ['api-us-1.nexmo.com', 'api-us-2.nexmo.com', 'api-us.nexmo.com', 'api.nexmo.com', 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+          secondary: ['api.nexmocn.com']
+        authorization: 'csips-authorization'
+      usw2:
+        host:
+          primary: ['api-us-1.nexmo.com', 'api-us-2.nexmo.com', 'api-us.nexmo.com', 'api.nexmo.com', 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+          secondary: ['api.nexmocn.com']
+        authorization: 'csips-authorization'
+
+    push:
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+
+    phub-prov:
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+
+    phub-pools:
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+
+    accounts-secrets:
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+
+    reports:
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+
+    partnerapi:
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+
+    vapi_payment_controller:
+      euw1:
+        host:
+          primary: ['api-eu-1.nexmo.com', 'api-eu-2.nexmo.com', 'api-eu.nexmo.com', 'api.nexmo.com', 'api-eu.vonage.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+          secondary: ['api.nexmocn.com', 'api-vcp.vonage.com']
+      euc1:
+        host:
+          primary: ['api-eu-1.nexmo.com', 'api-eu-2.nexmo.com', 'api-eu.nexmo.com', 'api.nexmo.com', 'api-eu.vonage.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+          secondary: ['api.nexmocn.com', 'api-vcp.vonage.com']
+      apse1:
+        host:
+          primary: ['api-sg-1.nexmo.com', 'api.nexmo.com', 'api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+          secondary: ['api.nexmocn.com', 'api-vcp.vonage.com']
+      apse2:
+        host:
+          primary: ['api-sg-1.nexmo.com', 'api.nexmo.com', 'api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+          secondary: ['api.nexmocn.com', 'api-vcp.vonage.com']
+      use1:
+        host:
+          primary: ['api-us-1.nexmo.com', 'api-us-2.nexmo.com', 'api-us.nexmo.com', 'api.nexmo.com', 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+          secondary: ['api.nexmocn.com', 'api-vcp.vonage.com']
+      usw2:
+        host:
+          primary: ['api-us-1.nexmo.com', 'api-us-2.nexmo.com', 'api-us.nexmo.com', 'api.nexmo.com', 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+          secondary: ['api.nexmocn.com', 'api-vcp.vonage.com']
+
+    vapi:
+      euw1:
+        host:
+          primary: ['api-eu-1.nexmo.com', 'api-eu-2.nexmo.com', 'api-eu.nexmo.com', 'api.nexmo.com', 'api-eu.vonage.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+          secondary: ['api.nexmocn.com']
+        app_routing: #token with application routing enable to euw1
+          authorization: 'vapi-appRouting-authorization-euw1'
+      euc1:
+        host:
+          primary: ['api-eu-1.nexmo.com', 'api-eu-2.nexmo.com', 'api-eu.nexmo.com', 'api.nexmo.com', 'api-eu.vonage.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+          secondary: ['api.nexmocn.com']
+        app_routing: #token with application routing enable to euc1
+            authorization: 'vapi-appRouting-authorization-euc1'
+      apse1:
+        host:
+          primary: ['api-sg-1.nexmo.com', 'api.nexmo.com', 'api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+          secondary: ['api.nexmocn.com']
+        app_routing: #token with application routing enable to apse1
+            authorization: 'vapi-appRouting-authorization-apse1'
+      apse2:
+        host:
+          primary: ['api-sg-1.nexmo.com', 'api.nexmo.com', 'api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+          secondary: ['api.nexmocn.com']
+        app_routing: #token with application routing enable to apse2
+            authorization: 'vapi-appRouting-authorization-apse2'
+      use1:
+        host:
+          primary: ['api-us-1.nexmo.com', 'api-us-2.nexmo.com', 'api-us.nexmo.com', 'api.nexmo.com', 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+          secondary: ['api.nexmocn.com']
+        app_routing: #token with application routing enable to use1
+            authorization: 'vapi-appRouting-authorization-use1'
+      usw2:
+        host:
+          primary: ['api-us-1.nexmo.com', 'api-us-2.nexmo.com', 'api-us.nexmo.com', 'api.nexmo.com', 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+          secondary: ['api.nexmocn.com']
+        app_routing: #token with application routing enable to usw2
+            authorization: 'vapi-appRouting-authorization-usw2'
+
+    tts:
+      euw1:
+        host:
+          primary: ['api-eu.nexmo.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+          secondary: ['api-eu-1.nexmo.com', 'api.nexmo.com', 'api.nexmocn.com', 'api-eu.vonage.com', 'api-vcp.vonage.com']
+      euc1:
+        host:
+          primary: ['api-eu.nexmo.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+          secondary: ['api-eu-1.nexmo.com', 'api.nexmo.com', 'api.nexmocn.com', 'api-eu.vonage.com', 'api-vcp.vonage.com']
+      apse1:
+        host:
+          primary: ['api-sg-1.nexmo.com', 'api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+          secondary: ['api.nexmo.com', 'api.nexmocn.com', 'api-vcp.vonage.com']
+      apse2:
+        host:
+          primary: ['api-sg-1.nexmo.com', 'api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+          secondary: ['api.nexmo.com', 'api.nexmocn.com', 'api-vcp.vonage.com']
+      use1:
+        host:
+          primary: ['api-us-2.nexmo.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+          secondary: ['api-us-1.nexmo.com', 'api-us.nexmo.com', 'api.nexmo.com', 'api.nexmocn.com', 'api-us.vonage.com', 'api-vcp.vonage.com']
+      usw2:
+        host:
+          primary: ['api-us-2.nexmo.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+          secondary: ['api-us-1.nexmo.com', 'api-us.nexmo.com', 'api.nexmo.com', 'api.nexmocn.com', 'api-us.vonage.com', 'api-vcp.vonage.com']
+
+    domains_service:
+      euw1:
+        host:
+          primary: ['api-eu.vonage.com', 'api.nexmo.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['api-eu.vonage.com', 'api.nexmo.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['api-ap.vonage.com', 'api.nexmo.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['api-ap.vonage.com', 'api.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api-us.vonage.com', 'api.nexmo.com']
+          secondary: []
+      usw2:
+        host:
+          primary: ['api-us.vonage.com', 'api.nexmo.com']
+          secondary: []
+    address-prov:
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api-us.vonage.com', 'api.nexmo.com']
+          secondary: ['api-us-3.vonage.com']
+      usw2:
+        host:
+          primary: ['api-us.vonage.com', 'api.nexmo.com']
+          secondary: ['api-us-4.vonage.com']
+
+    emergency-number-addr-prov:
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api-us.vonage.com', 'api.nexmo.com']
+          secondary: ['api-us-3.vonage.com']
+      usw2:
+        host:
+          primary: ['api-us.vonage.com', 'api.nexmo.com']
+          secondary: ['api-us-4.vonage.com']
+
+    media:
+      euc1:
+        host:
+          primary: ['api-eu-1.nexmo.com']# failing -> , 'api.nexmo.com']
+          secondary: ['api-eu.nexmo.com', 'api-eu.vonage.com', 'api.nexmocn.com']
+        authorization: 'media-authorization'
+        testAccount: 'media-testAccount'
+        testPassword: 'media-testPassword'
+      euw1:
+        host:
+          primary: ['api-eu-1.nexmo.com']# failing -> , 'api.nexmo.com']
+          secondary: ['api-eu.nexmo.com', 'api-eu.vonage.com', 'api.nexmocn.com']
+        authorization: 'media-authorization'
+        testAccount: 'media-testAccount'
+        testPassword: 'media-testPassword'
+      use1:
+        host:
+          primary: ['api-us-1.nexmo.com', 'api-us-2.nexmo.com', 'api-us.nexmo.com']# failing -> , 'api.nexmo.com']
+          secondary: ['api-us.vonage.com', 'api.nexmocn.com']
+        authorization: 'media-authorization'
+        testAccount: 'media-testAccount'
+        testPassword: 'media-testPassword'
+      usw2:
+        host:
+          primary: ['api-us-1.nexmo.com', 'api-us-2.nexmo.com', 'api-us.nexmo.com']# failing -> , 'api.nexmo.com']
+          secondary: ['api-us.vonage.com', 'api.nexmocn.com']
+        authorization: 'media-authorization'
+        testAccount: 'media-testAccount'
+        testPassword: 'media-testPassword'
+      apse1:
+        host:
+          primary: ['api-sg-1.nexmo.com']# failing ->, 'api.nexmo.com']
+          secondary: ['api-ap.vonage.com', 'api.nexmocn.com']
+        authorization: 'media-authorization'
+        testAccount: 'media-testAccount'
+        testPassword: 'media-testPassword'
+      apse2:
+        host:
+          primary: ['api-sg-1.nexmo.com']# failing ->, 'api.nexmo.com']
+          secondary: ['api-ap.vonage.com', 'api.nexmocn.com']
+        authorization: 'media-authorization'
+        testAccount: 'media-testAccount'
+        testPassword: 'media-testPassword'
+
+    boost:
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+
+    camara:
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+
+    numberInsight:
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+
+    verify:
+      use1:
+        host:
+          primary: [ 'api.nexmo.com']
+          secondary: [ 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com', 'api.nexmocn.com']
+      usw2:
+        host:
+          primary: [ 'api.nexmo.com']
+          secondary: [ 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com', 'api.nexmocn.com']
+      euc1:
+        host:
+          primary: ['api-eu-1.nexmo.com', 'api.nexmo.com']
+          secondary: ['api-eu.nexmo.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com', 'api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api-eu-1.nexmo.com', 'api.nexmo.com']
+          secondary: ['api-eu.nexmo.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com', 'api.nexmocn.com']
+      apse1:
+        host:
+          primary: ['api-sg-1.nexmo.com', 'api.nexmo.com']
+          secondary: ['api-ap-3.vonage.com', 'api-ap-4.vonage.com', 'api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api-sg-1.nexmo.com', 'api.nexmo.com']
+          secondary: ['api-ap-3.vonage.com', 'api-ap-4.vonage.com', 'api.nexmocn.com']
+
+    verify_v2:
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-eu-3.vonage.com']
+      euc1:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ 'api-eu-3.vonage.com' ]
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-us-3.vonage.com']
+      usw2:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ 'api-us-3.vonage.com' ]
+      apse1:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ ]
+      apse2:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ ]
+
+    verify_v2_provisioning:
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-eu-3.vonage.com']
+      euc1:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ 'api-eu-3.vonage.com' ]
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-us-3.vonage.com']
+      usw2:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ 'api-us-3.vonage.com' ]
+      apse1:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ ]
+      apse2:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ ]
+
+    chatapp_orchestrator:
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      use1:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      usw2:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      apse1:
+        host:
+          primary: [ 'api-ap.vonage.com' ]
+      apse2:
+        host:
+          primary: [ 'api-ap.vonage.com' ]
+
+    network_api_reg:
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+
+    velocity_rules:
+      euw1:
+        host:
+          primary: [ 'api-eu-1.nexmo.com', 'api.nexmo.com' ]
+          secondary: [ 'api-eu.nexmo.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com', 'api.nexmocn.com' ]
+      euc1:
+        host:
+          primary: [ 'api-eu-1.nexmo.com', 'api.nexmo.com' ]
+          secondary: [ 'api-eu.nexmo.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com', 'api.nexmocn.com' ]
+      use1:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com', 'api.nexmocn.com' ]
+      usw2:
+        host:
+          primary: [ 'api.nexmo.com' ]
+          secondary: [ 'api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com', 'api.nexmocn.com' ]
+      apse1:
+        host:
+          primary: [ 'api-sg-1.nexmo.com', 'api.nexmo.com' ]
+          secondary: [ 'api-ap-3.vonage.com', 'api-ap-4.vonage.com', 'api.nexmocn.com' ]
+      apse2:
+        host:
+          primary: [ 'api-sg-1.nexmo.com', 'api.nexmo.com' ]
+          secondary: [ 'api-ap-3.vonage.com', 'api-ap-4.vonage.com', 'api.nexmocn.com' ]
+
+    silent_auth:
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+
+    utilities:
+      host:
+        euw1:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        euc1:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        use1:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        usw2:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        apse1:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+        apse2:
+          host:
+            primary: ['api.nexmo.com']
+            secondary: ['api.nexmocn.com']
+
+    docs:
+      euw1:
+        host:
+          primary: ['docs.nexmo.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['docs.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['docs.nexmo.com']
+          secondary: []
+      usw2:
+        host:
+          primary: ['docs.nexmo.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['docs.nexmo.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['docs.nexmo.com']
+          secondary: []
+
+    blog:
+      euw1:
+        host:
+          primary: ['blog.nexmo.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['blog.nexmo.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['blog.nexmo.com']
+          secondary: []
+      usw2:
+        host:
+          primary: ['blog.nexmo.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['blog.nexmo.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['blog.nexmo.com']
+          secondary: []
+
+    devapi_rest:
+      euc1:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com', 'rest-eu.nexmo.com']# failing -> 'api.prod.v1.vonagenetworks.net']
+        testAccount: 'devapi-testAccount'
+        testPassword: 'devapi-testPassword'
+        testAccountAlt: 'devapi-testAccount'
+        testPasswordAlt: 'devapi-testPassword'
+      euw1:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com', 'rest-eu.nexmo.com']# failing -> 'api.prod.v1.vonagenetworks.net']
+        testAccount: 'devapi-testAccount'
+        testPassword: 'devapi-testPassword'
+        testAccountAlt: 'devapi-testAccount'
+        testPasswordAlt: 'devapi-testPassword'
+      use1:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com', 'rest-us.nexmo.com']# failing -> 'api.prod.v1.vonagenetworks.net']
+        testAccount: 'devapi-testAccount'
+        testPassword: 'devapi-testPassword'
+        testAccountAlt: 'devapi-testAccount'
+        testPasswordAlt: 'devapi-testPassword'
+      usw2:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com', 'rest-us.nexmo.com']# failing -> 'api.prod.v1.vonagenetworks.net']
+        testAccount: 'devapi-testAccount'
+        testPassword: 'devapi-testPassword'
+        testAccountAlt: 'devapi-testAccount'
+        testPasswordAlt: 'devapi-testPassword'
+      apse1:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com', 'rest-ap.nexmo.com']# failing -> 'api.prod.v1.vonagenetworks.net']
+        testAccount: 'devapi-testAccount'
+        testPassword: 'devapi-testPassword'
+        testAccountAlt: 'devapi-testAccount'
+        testPasswordAlt: 'devapi-testPassword'
+      apse2:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com', 'rest-ap.nexmo.com']# failing -> 'api.prod.v1.vonagenetworks.net']
+        testAccount: 'devapi-testAccount'
+        testPassword: 'devapi-testPassword'
+        testAccountAlt: 'devapi-testAccount'
+        testPasswordAlt: 'devapi-testPassword'
+
+    meetings:
+      use1:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      usw2:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+
+    vbc_meetings:
+      use1:
+        host:
+          primary: ['guest-api.vonagebusiness.com']
+
+    vcp_bulk:
+      domains:
+        regions:
+          euw1:
+            - 'api-eu.vonage.com'
+          euc1:
+            - 'api-eu.vonage.com'
+
+    chat:
+      use1:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      usw2:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+
+    chat-media:
+      use1:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      usw2:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+
+    chat-widget:
+      use1:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      usw2:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+
+    chat-guest:
+      use1:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      usw2:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+    
+    email:
+      use1:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+
+    bus:
+      use1:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      usw2:
+        host:
+          primary: [ 'api-us.vonage.com' ]
+      euc1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+      euw1:
+        host:
+          primary: [ 'api-eu.vonage.com' ]
+
+    ni:
+      euc1:
+        host:
+          primary: ['api-eu-1.nexmo.com']# failing -> , 'api.nexmo.com']
+          secondary: ['api-eu.nexmo.com', 'api-eu.vonage.com', 'api.nexmocn.com']
+      euw1:
+        host:
+          primary: ['api-eu-1.nexmo.com']# failing -> , 'api.nexmo.com']
+          secondary: ['api-eu.nexmo.com', 'api-eu.vonage.com', 'api.nexmocn.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api.nexmocn.com']          
+
+    ni_rest:
+      euc1:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com']# failing -> 'api.prod.v1.vonagenetworks.net']
+      euw1:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com']# failing -> 'api.prod.v1.vonagenetworks.net']
+      use1:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com']# failing -> 'api.prod.v1.vonagenetworks.net']
+      usw2:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com']# failing -> 'api.prod.v1.vonagenetworks.net']
+      apse1:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com']
+      apse2:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com']
+    
+    ni_v3:
+      euc1:
+        host:
+          primary: ['api-global.vonage.com']
+          secondary: []
+      euw1:
+        host:
+          primary: ['api-global.vonage.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api-global.vonage.com']
+          secondary: []
+      usw2:
+        host:
+          primary: ['api-global.vonage.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['api-global.vonage.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['api-global.vonage.com']
+          secondary: []
+
+    sms_rest:
+      legacyAccount: 'smsRest-legacyAccount'
+      legacyAccountPassword: 'smsRest-legacyAccountPassword'
+      splitFe01PercentAccount: 'smsRest-splitFE-01PercentAccount'
+      splitFe01PercentPassword: 'smsRest-splitFE-01PercentPassword'
+      splitFe05PercentAccount: 'smsRest-splitFE-05PercentAccount'
+      splitFe05PercentPassword: 'smsRest-splitFE-05PercentPassword'
+      splitFe25PercentAccount: 'smsRest-splitFE-25PercentAccount'
+      splitFe25PercentPassword: 'smsRest-splitFE-25PercentPassword'
+      legacyAndSplitFeAccount: 'smsRest-legacyAndSplitFEAccount'
+      legacyAndSplitFePassword: 'smsRest-legacyAndSplitFEPassword'
+      euc1:
+        host:
+          primary: ['rest-eu.nexmo.com', 'rest-gb.nexmo.com', 'rest.nexmo.com']
+          secondary: ['api-eu.vonage.com', 'rest.nexmocn.com']# failing -> , 'api.prod.v1.vonagenetworks.net']
+      euw1:
+        host:
+          primary: ['rest-eu.nexmo.com', 'rest-gb.nexmo.com', 'rest.nexmo.com']
+          secondary: ['api-eu.vonage.com', 'rest.nexmocn.com']# failing -> , 'api.prod.v1.vonagenetworks.net']
+      use1:
+        host:
+          primary: ['rest-us.nexmo.com']
+          secondary: ['rest.nexmo.com', 'api-us.vonage.com', 'rest.nexmocn.com', 'api-us-3.vonage.com']# failing -> , 'api.prod.v1.vonagenetworks.net']
+      usw2:
+        host:
+          primary: ['rest-us.nexmo.com']
+          secondary: ['rest.nexmo.com', 'api-us.vonage.com', 'rest.nexmocn.com', 'api-us-4.vonage.com']# failing -> , 'api.prod.v1.vonagenetworks.net']
+      apse1:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest-ap.nexmo.com', 'rest.nexmocn.com', 'api-ap-3.vonage.com']# failing -> 'api.prod.v1.vonagenetworks.net', 'api-ap.vonage.com']
+      apse2:
+        host:
+          primary: ['rest.nexmo.com']
+          secondary: ['rest.nexmocn.com', 'api-ap-4.vonage.com']# failing -> 'api.prod.v1.vonagenetworks.net', 'api-ap.vonage.com']
+      apse3:
+        host:
+          primary: ['idn.api.vonage.com' ]
+      mec1:
+        host:
+          primary: ['are.api.vonage.com']
+
+    sms_rest_throttling:
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: [ ]
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: [ ]
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: [ ]
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: [ ]
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: [ ]
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: [ ]
+
+    sms_api:
+      euc1:
+        host:
+          primary: ['api-eu-2.vonage.com', 'api-eugb.vonage.com', 'api-gb-1.vonage.com']
+          secondary: []
+      euw1:
+        host:
+          primary: ['api-eu-2.vonage.com', 'api-eugb.vonage.com', 'api-gb-1.vonage.com']
+          secondary: []
+
+    mqm:
+      rateLimitPerSecond: 1
+      use1:
+        host:
+          primary: ['api.nexmo.com', 'api-us.vonage.com']
+          secondary: []
+      usw2:
+        host:
+          primary: ['api.nexmo.com', 'api-us.vonage.com']
+          secondary: []
+      euw1:
+        host:
+          primary: ['api.nexmo.com', 'api-eu.vonage.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['api.nexmo.com', 'api-eu.vonage.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['api.nexmo.com', 'api-ap.vonage.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['api.nexmo.com', 'api-ap.vonage.com']
+          secondary: []
+    credentials:
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-ap.vonage.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-ap.vonage.com']
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-eu.vonage.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-eu.vonage.com']
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-us.vonage.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-us.vonage.com']
+
+    fd-alerts-generator:
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-eu.vonage.com']
+
+    enforcer-service:
+      use1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-us.vonage.com']
+      usw2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-us.vonage.com']
+      euw1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-eu.vonage.com']
+      euc1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-eu.vonage.com']
+      apse1:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-ap.vonage.com']
+      apse2:
+        host:
+          primary: ['api.nexmo.com']
+          secondary: ['api-ap.vonage.com']
+
+    vgai-rag-api:
+      euw1:
+        host:
+          primary: ['api-eu.ai.vonage.com']
+          secondary: ['api-eu-3.vonage.com']
+      euc1:
+        host:
+          primary: ['api-eu.ai.vonage.com']
+          secondary: ['api-eu-4.vonage.com']
+      use1:
+        host:
+          primary: ['api-us.ai.vonage.com']
+          secondary: ['api-us-3.vonage.com']
+
+
+    number-inventory:
+      use1:
+        host:
+          primary: ['api.management.vonage.com']
+          secondary: []
+      usw2:
+        host:
+          primary: ['api.management.vonage.com']
+          secondary: []
+      euw1:
+        host:
+          primary: [ 'api.management.vonage.com', 'api-eu-4.vonage.com', api-eu-3.vonage.com ]
+          secondary: [ 'api-eu.vonage.com']
+      euc1:
+        host:
+          primary: [ 'api.management.vonage.com', 'api-eu-4.vonage.com', api-eu-3.vonage.com ]
+          secondary: [ 'api-eu.vonage.com']
+      apse1:
+        host:
+          primary: ['api.management.vonage.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['api.management.vonage.com']
+          secondary: []
+
+    rtc:
+      euw1:
+        host:
+          primary: ['api-eu.vonage.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['api-eu.vonage.com', 'api-eu-3.vonage.com', 'api-eu-4.vonage.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['api-ap.vonage.com', 'api-ap-3.vonage.com', 'api-ap-4.vonage.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+          secondary: []
+      usw2:
+        host:
+          primary: ['api-us.vonage.com', 'api-us-3.vonage.com', 'api-us-4.vonage.com']
+          secondary: []
+
+  api-cc:
+    msTeamsAdapter:
+      euw1:
+        host:
+          primary: ['api-eu.cc.vonage.com']
+          secondary: []
+      euc1:
+        host:
+          primary: ['api-eu.cc.vonage.com']
+          secondary: []
+      use1:
+        host:
+          primary: ['api-us.cc.vonage.com']
+          secondary: []
+      usw2:
+        host:
+          primary: ['api-us.cc.vonage.com']
+          secondary: []
+      apse1:
+        host:
+          primary: ['api-ap.cc.vonage.com']
+          secondary: []
+      apse2:
+        host:
+          primary: ['api-ap.cc.vonage.com']
+          secondary: []
+
+  api-uc:
+    domains:
+      global:
+        - 'guest-api.vonagebusiness.com'
+
+      rateLimitPerMinute: 150
+      rateLimitPerSecond: 20
+

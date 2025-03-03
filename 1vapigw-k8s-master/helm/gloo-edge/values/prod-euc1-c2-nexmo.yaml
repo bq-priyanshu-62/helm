@@ -1,0 +1,18 @@
+ingress:
+  targetGroupBindings:
+    - targetGroupBindingName: nexmo-gw-external-tgb-1vapi-2 # TG for C2 to service ALB
+      targetGroupARN: arn:aws:elasticloadbalancing:eu-central-1:275313334716:targetgroup/api-gw-1vapi-2-3x8NwEaB/af6ee8ea78a0b894
+    - targetGroupBindingName: nexmo-gw-external-sanity-tgb-1vapi-2 # TG for C2 to sanity ALB
+      targetGroupARN: arn:aws:elasticloadbalancing:eu-central-1:275313334716:targetgroup/api-gw-1vapi-2-aFNDaGgq/aad70041b7491c7b
+
+gloo-ee:
+  gloo: 
+    gatewayProxies:
+      gatewayProxy: 
+        podTemplate:
+          resources:
+            requests: 
+              cpu: 4           
+        kind: 
+          deployment:
+            replicas: 3

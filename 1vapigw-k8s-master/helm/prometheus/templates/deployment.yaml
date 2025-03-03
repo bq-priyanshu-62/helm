@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: prometheus-server
+        {{- if .Values.podLabels }}
+        {{- range $key, $value := .Values.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/config-map.yaml") . | sha256sum }}
+    spec:
+      initContainers:
+        - name: volume-permissions
+          command:
+            - sh
+            - -c
+            - chmod -R a+wx /prometheus
+          image: busybox
+          volumeMounts:
+            - mountPath: /prometheus/
+              name: prometheus-storage-volume
+      containers:
+        - name: prometheus
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus/
+            - --web.route-prefix=/
+# todo: define r53
+#            - --web.external-url=https://eks-2-eu-west-1-prometheus.nexmo.xxx
+          image: prom/prometheus:v{{ .Values.prometheus.imageVersion }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9090
+              protocol: TCP
+              name: prometheus
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /etc/prometheus/
+              name: prometheus-config-volume
+            - mountPath: /prometheus/
+              name: prometheus-storage-volume
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: prometheus-server-conf-{{ .Chart.Version }}
+          name: prometheus-config-volume
+        - name: prometheus-storage-volume
+          persistentVolumeClaim:
+            claimName: prometheus-volclaim

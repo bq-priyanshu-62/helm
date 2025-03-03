@@ -1,0 +1,3 @@
+lobDelegateVirtualService:
+  auth:
+    authority: identity-apse3-c2.api-ap.prod.v1.vonagenetworks.net

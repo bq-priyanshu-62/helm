@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  ga_endpoints.json: {{ .Values.configMap.gaEndpoints.GA_ENDPOINTS_JSON | quote }}
+  s3_bucket_name: {{ .Values.configMap.s3BucketName.S3_BUCKET_NAME | quote }}

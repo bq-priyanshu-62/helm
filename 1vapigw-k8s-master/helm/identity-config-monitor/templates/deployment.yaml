@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-config-monitor
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: identity-config-monitor
+  template:
+    metadata:
+      labels:
+        app: identity-config-monitor
+        vonage_app: identity-monitor
+        account: {{ .Values.accountName }}
+        aws_account_id: {{ .Values.accountId | quote }}
+        cluster_id: {{ .Values.clusterName }}
+        k8s-app: identityMonitor
+        logging: "true"
+        region: {{ .Values.region }}
+        role: identityMonitor
+        team: {{ .Values.teamTag }}
+        application_1v: 'true'
+    spec:           
+      serviceAccountName: identity-config-monitor
+      containers:
+        - name: identity-config-monitor
+          # always pull from use1
+          image: {{ .Values.accountId }}.dkr.ecr.us-east-1.amazonaws.com/{{ .Values.aws.ecr.repo }}:{{ .Values.aws.ecr.tag }}
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: ENDPOINTS
+              value: {{ join "," .Values.endpoints }}
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 4
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3000
+            initialDelaySeconds: 1
+            periodSeconds: 5
+            failureThreshold: 3
+

@@ -1,0 +1,25 @@
+scenarios:
+  - name: identity-pod-failure
+    file: scenarios/identity-pod-failure-simulation.yaml
+    marker: identity_pod_failure
+    duration: 300
+  - name: identity-pod-kill
+    file: scenarios/identity-pod-kill-simulation.yaml
+    marker: identity_pod_kill
+    duration: 180
+  - name: identity-container-kill
+    file: scenarios/identity-container-kill-simulation.yaml
+    marker: identity_container_kill
+    duration: 180
+  - name: gw-proxy-pod-failure
+    file: scenarios/gw-proxy-pod-failure-simulation.yaml
+    marker: gw_proxy_pod_failure
+    duration: 300
+  - name: gw-proxy-pod-kill
+    file: scenarios/gw-proxy-pod-kill-simulation.yaml
+    marker: gw_proxy_pod_kill
+    duration: 180
+  - name: gw-proxy-container-kill
+    file: scenarios/gw_proxy-container-kill-simulation.yaml
+    marker: gw_proxy_container_kill
+    duration: 180

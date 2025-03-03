@@ -1,0 +1,3250 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 1,
+    "id": 1493,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "collapsed": true,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "v6LOzn44z"
+        },
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 35,
+        "panels": [
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 0,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 1
+            },
+            "hiddenSeries": false,
+            "id": 26,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": true,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "count by (envoy_cluster_name) (envoy_cluster_membership_healthy{aws_account=~\"$aws_account\", job=\"kubernetes-pods\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"})",
+                "interval": "",
+                "legendFormat": "{{envoy_cluster_name}}",
+                "refId": "A"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Healthy upstreams",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "description": "",
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 1
+            },
+            "hiddenSeries": false,
+            "id": 49,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "min(identity_configdb_healthy_gauge{aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"})[1m]",
+                "interval": "",
+                "legendFormat": "ConfigDB Health",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "min(identity_numbers_healthy_gauge{aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"})[1m]",
+                "hide": false,
+                "interval": "",
+                "legendFormat": "Numbers Health",
+                "refId": "B"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "min(identity_kafka_healthy_gauge{aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"})[1m]",
+                "hide": false,
+                "interval": "",
+                "legendFormat": "Kafka Health",
+                "refId": "C"
+              }
+            ],
+            "thresholds": [
+              {
+                "colorMode": "critical",
+                "fill": true,
+                "line": true,
+                "op": "lt",
+                "value": 1,
+                "yaxis": "left"
+              }
+            ],
+            "timeRegions": [],
+            "title": "Identity Dependencies Health",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "label": "Healthy Instance",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 0,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 9
+            },
+            "hiddenSeries": false,
+            "id": 12,
+            "interval": "",
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "connected",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(irate(envoy_http_downstream_rq_xx{aws_account=~\"$aws_account\", envoy_response_code_class=\"2\",app=\"gloo\", job=\"kubernetes-service-endpoints\", envoy_http_conn_manager_prefix=\"http\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[5m])) / sum( irate(envoy_http_downstream_rq_total{app=\"gloo\", job=\"kubernetes-service-endpoints\", envoy_http_conn_manager_prefix=\"http\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[5m]))",
+                "interval": "",
+                "legendFormat": "2xx",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(irate(envoy_http_downstream_rq_xx{aws_account=~\"$aws_account\", envoy_response_code_class=\"4\",app=\"gloo\", job=\"kubernetes-service-endpoints\", envoy_http_conn_manager_prefix=\"http\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[5m])) / sum( irate(envoy_http_downstream_rq_total{app=\"gloo\", job=\"kubernetes-service-endpoints\", envoy_http_conn_manager_prefix=\"http\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[5m]))",
+                "interval": "",
+                "legendFormat": "4xx",
+                "refId": "B"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(irate(envoy_http_downstream_rq_xx{aws_account=~\"$aws_account\", envoy_response_code_class=\"5\",app=\"gloo\", job=\"kubernetes-service-endpoints\", envoy_http_conn_manager_prefix=\"http\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[5m])) / sum( irate(envoy_http_downstream_rq_total{app=\"gloo\", job=\"kubernetes-service-endpoints\", envoy_http_conn_manager_prefix=\"http\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[5m])) ",
+                "interval": "",
+                "legendFormat": "5xx",
+                "refId": "C"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Percent Response Code per Second",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "percentunit",
+                "logBase": 1,
+                "max": "1",
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 0,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 9
+            },
+            "hiddenSeries": false,
+            "id": 22,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "hideEmpty": true,
+              "hideZero": true,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sort(count by (envoy_cluster_name) (envoy_cluster_health_check_healthy{aws_account=~\"$aws_account\", job=\"kubernetes-service-endpoints\",kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m] < 1))",
+                "interval": "",
+                "legendFormat": "{{envoy_cluster_name}}",
+                "refId": "B"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Failed Upstream Health Check",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "decimals": 0,
+                "format": "short",
+                "label": "failures",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "label": "success",
+                "logBase": 1,
+                "min": "0",
+                "show": false
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 17
+            },
+            "hiddenSeries": false,
+            "id": 24,
+            "interval": "",
+            "legend": {
+              "alignAsTable": true,
+              "avg": true,
+              "current": true,
+              "max": true,
+              "min": true,
+              "show": true,
+              "total": false,
+              "values": true
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.99, sum(rate(envoy_cluster_proxy_latency_rq_proxy_latency_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", gateway_proxy_id=\"gateway-proxy\", job=\"kubernetes-pods\"}[1m])) by (envoy_cluster_name, le))",
+                "legendFormat": "req  99% {{envoy_cluster_name}}",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.95, sum(rate(envoy_cluster_proxy_latency_rq_proxy_latency_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", gateway_proxy_id=\"gateway-proxy\", job=\"kubernetes-pods\"}[1m])) by (envoy_cluster_name, le))",
+                "legendFormat": "req  95% {{envoy_cluster_name}}",
+                "refId": "B"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.90, sum(rate(envoy_cluster_proxy_latency_rq_proxy_latency_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", gateway_proxy_id=\"gateway-proxy\", job=\"kubernetes-pods\"}[1m])) by (envoy_cluster_name, le))",
+                "legendFormat": "req  90% {{envoy_cluster_name}}",
+                "refId": "C"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.99, sum(rate(envoy_cluster_proxy_latency_resp_proxy_latency_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", gateway_proxy_id=\"gateway-proxy\", job=\"kubernetes-pods\"}[1m])) by (envoy_cluster_name, le))",
+                "legendFormat": "resp 99% {{envoy_cluster_name}}",
+                "refId": "D"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.95, sum(rate(envoy_cluster_proxy_latency_resp_proxy_latency_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", gateway_proxy_id=\"gateway-proxy\", job=\"kubernetes-pods\"}[1m])) by (envoy_cluster_name, le))",
+                "legendFormat": "resp 95% {{envoy_cluster_name}}",
+                "refId": "E"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.90, sum(rate(envoy_cluster_proxy_latency_resp_proxy_latency_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", gateway_proxy_id=\"gateway-proxy\", job=\"kubernetes-pods\"}[1m])) by (envoy_cluster_name, le))",
+                "legendFormat": "resp 90% {{envoy_cluster_name}}",
+                "refId": "F"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Envoy latency",
+            "tooltip": {
+              "shared": true,
+              "sort": 2,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "ms",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 17
+            },
+            "hiddenSeries": false,
+            "id": 10,
+            "legend": {
+              "alignAsTable": true,
+              "avg": true,
+              "current": true,
+              "max": true,
+              "min": true,
+              "show": true,
+              "total": false,
+              "values": true
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum (rate(envoy_http_downstream_rq_total{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", envoy_http_conn_manager_prefix=\"http\"}[1m]))",
+                "intervalFactor": 1,
+                "legendFormat": "Global RPM",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum (rate(envoy_http_rq_total{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", envoy_http_conn_manager_prefix=\"http\"}[1m]))",
+                "legendFormat": "Routed RPM",
+                "refId": "B"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Throughput (reqs/min)",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 0,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 25
+            },
+            "hiddenSeries": false,
+            "id": 14,
+            "legend": {
+              "alignAsTable": true,
+              "avg": true,
+              "current": true,
+              "hideEmpty": false,
+              "hideZero": false,
+              "max": true,
+              "min": true,
+              "show": true,
+              "total": false,
+              "values": true
+            },
+            "lines": true,
+            "linewidth": 1,
+            "links": [
+              {
+                "title": "OneStack | Upstream Drill-Down",
+                "url": "d/onestack-api-gateway-upstream-drill-down/onestack-api-gateway-upstream-drill-down?orgId=1&refresh=30s&${__all_variables}&${__url_time_range}"
+              }
+            ],
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "(sum(rate({__name__ =~ \"envoy_cluster_internal_upstream_rq_xx|envoy_cluster_external_upstream_rq_xx\", job=\"kubernetes-pods\", envoy_response_code_class!=\"5\", envoy_cluster_name!=\"metrics_cluster\", kubernetes_namespace=\"$namespace\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"}[5m])) by (envoy_cluster_name)) / (sum (rate({__name__ =~ \"envoy_cluster_internal_upstream_rq_xx|envoy_cluster_external_upstream_rq_xx\", job=\"kubernetes-pods\", envoy_cluster_name!=\"metrics_cluster\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[5m])) by (envoy_cluster_name))",
+                "hide": false,
+                "legendFormat": "{{envoy_cluster_name}}",
+                "refId": "B"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Success rate by upstream",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "percentunit",
+                "label": "",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "description": "90%, 95%, 99% of total roundtrip time through the gateway",
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 25
+            },
+            "hiddenSeries": false,
+            "id": 4,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "links": [],
+            "nullPointMode": "connected",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.90, sum(rate(envoy_http_downstream_rq_time_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", envoy_http_conn_manager_prefix=\"http\", gateway_proxy_id=\"gateway-proxy\"}[1m])) by (le))",
+                "hide": false,
+                "legendFormat": "90% {{$namespace}}",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.95, sum(rate(envoy_http_downstream_rq_time_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", envoy_http_conn_manager_prefix=\"http\", gateway_proxy_id=\"gateway-proxy\"}[1m])) by (le))",
+                "hide": false,
+                "legendFormat": "95% {{$namespace}}",
+                "refId": "B"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.99, sum(rate(envoy_http_downstream_rq_time_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", envoy_http_conn_manager_prefix=\"http\", gateway_proxy_id=\"gateway-proxy\"}[1m])) by (le))",
+                "hide": false,
+                "legendFormat": "99% {{$namespace}}",
+                "refId": "C"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Round Trip time Percentiles",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "ms",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 33
+            },
+            "hiddenSeries": false,
+            "id": 45,
+            "legend": {
+              "alignAsTable": true,
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "rightSide": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "connected",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+              {
+                "alias": "/4xx by target/",
+                "yaxis": 2
+              },
+              {
+                "alias": "/5xx by target/",
+                "yaxis": 2
+              },
+              {
+                "alias": "/target resp time/",
+                "yaxis": 2
+              }
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_active_connection_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "interval": "",
+                "legendFormat": "active connections ({{dimension_load_balancer}})",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_new_connection_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "new connections ({{dimension_load_balancer}})",
+                "refId": "B"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_httpcode_elb_3_xx_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "3xx elb ({{dimension_load_balancer}})",
+                "refId": "C"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_httpcode_elb_4_xx_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "4xx elb ({{dimension_load_balancer}})",
+                "refId": "D"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_httpcode_elb_5_xx_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "5xx elb ({{dimension_load_balancer}})",
+                "refId": "E"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_rejected_connection_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "rejected connections ({{dimension_load_balancer}})",
+                "refId": "F"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_rejected_connection_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "rejected connections ({{dimension_load_balancer}})",
+                "refId": "G"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_httpcode_elb_500_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "500 elb ({{dimension_load_balancer}})",
+                "refId": "H"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_httpcode_elb_502_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "502 elb ({{dimension_load_balancer}})",
+                "refId": "I"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_httpcode_elb_503_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "503 elb ({{dimension_load_balancer}})",
+                "refId": "J"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_httpcode_elb_504_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "504 elb ({{dimension_load_balancer}})",
+                "refId": "K"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_tg_request_count_sum{aws_account=~\"$aws_account\", name=~\".*:loadbalancer/.*\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "intervalFactor": 1,
+                "legendFormat": "# reqs/min ({{dimension_load_balancer}})",
+                "refId": "L"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_tg_request_count_per_target_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "# reqs/min by target ({{dimension_load_balancer}})",
+                "refId": "M"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_tg_httpcode_target_2_xx_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer, dimension_availability_zone)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "2xx by target ({{dimension_load_balancer}},{{dimension_availability_zone}}) ",
+                "refId": "N"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_tg_httpcode_target_3_xx_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "3xx by target ({{dimension_load_balancer}})",
+                "refId": "O"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_tg_httpcode_target_4_xx_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m])  by (dimension_load_balancer, dimension_availability_zone)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "4xx by target ({{dimension_load_balancer}},{{dimension_availability_zone}})",
+                "refId": "P"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_tg_httpcode_target_5_xx_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer, dimension_availability_zone)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "5xx by target ({{dimension_load_balancer}},{{dimension_availability_zone}})",
+                "refId": "Q"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_tg_target_response_time_average{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer, dimension_availability_zone)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "target resp time avg ({{dimension_load_balancer}},{{dimension_availability_zone}}) (ms)",
+                "refId": "R"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_tg_target_response_time_p95{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer, dimension_availability_zone)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "target resp time 95% ({{dimension_load_balancer}},{{dimension_availability_zone}}) (ms)",
+                "refId": "S"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_tg_target_response_time_p99{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer, dimension_availability_zone)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "target resp time 99% ({{dimension_load_balancer}},{{dimension_availability_zone}}) (ms)",
+                "refId": "T"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_tg_target_connection_error_count_sum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_load_balancer, dimension_availability_zone)",
+                "instant": false,
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "target conn errors ({{dimension_load_balancer}},{{dimension_availability_zone}}) (ms)",
+                "refId": "U"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "LoadBalancers statistics",
+            "tooltip": {
+              "shared": true,
+              "sort": 2,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "label": "",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              },
+              {
+                "decimals": 3,
+                "format": "short",
+                "label": "",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": true
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 0,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 33
+            },
+            "hiddenSeries": false,
+            "id": 27,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "connected",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": true,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sort(count by (envoy_cluster_name) (envoy_cluster_health_check_healthy{aws_account=~\"$aws_account\", job=\"kubernetes-service-endpoints\",kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m] > 0))",
+                "interval": "",
+                "legendFormat": "{{envoy_cluster_name}}",
+                "refId": "B"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Upstreams Health Check",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "decimals": 0,
+                "format": "short",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "label": "success",
+                "logBase": 1,
+                "min": "0",
+                "show": false
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 0,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 41
+            },
+            "hiddenSeries": false,
+            "id": 47,
+            "interval": "",
+            "legend": {
+              "avg": false,
+              "current": false,
+              "hideEmpty": false,
+              "hideZero": true,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "connected",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+              {
+                "alias": "/Allowed /",
+                "yaxis": 2
+              }
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_wafv2_counted_requests_sum{aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_rule, dimension_web_acl)",
+                "hide": false,
+                "interval": "",
+                "legendFormat": "Counted ({{dimension_web_acl}},{{dimension_rule}})",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_wafv2_allowed_requests_sum{aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_rule, dimension_web_acl)",
+                "hide": false,
+                "interval": "",
+                "legendFormat": "Allowed  ({{dimension_web_acl}},{{dimension_rule}})",
+                "refId": "B"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_wafv2_blocked_requests_sum{aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_rule, dimension_web_acl)",
+                "hide": false,
+                "interval": "",
+                "legendFormat": "Blocked ({{dimension_web_acl}},{{dimension_rule}})",
+                "refId": "C"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_wafv2_passed_requests_sum{aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"}[1m]) by (dimension_rule, dimension_web_acl)",
+                "hide": false,
+                "interval": "",
+                "legendFormat": "Passed ({{dimension_web_acl}},{{dimension_rule}})",
+                "refId": "D"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "WAF",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "label": "# Blocked / Counted",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "label": "# Allowed",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": true
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 0,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 41
+            },
+            "hiddenSeries": false,
+            "id": 46,
+            "interval": "",
+            "legend": {
+              "avg": false,
+              "current": false,
+              "hideEmpty": false,
+              "hideZero": true,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "connected",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+              {
+                "alias": "/Healthy count/",
+                "yaxis": 1
+              },
+              {
+                "alias": "/Unhealthy count/",
+                "yaxis": 2
+              }
+            ],
+            "spaceLength": 10,
+            "stack": true,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_tg_healthy_host_count_minimum{aws_account=~\"$aws_account\", tag_kubernetes_io_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", dimension_target_group=~\".*$cluster.*\"}[1m]) by (dimension_load_balancer, dimension_availability_zone)",
+                "hide": false,
+                "interval": "",
+                "legendFormat": "Healthy count ({{dimension_load_balancer}},{{dimension_availability_zone}})",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(aws_alb_tg_un_healthy_host_count_maximum{aws_account=~\"$aws_account\", tag_kubernetes_io_service_name=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", dimension_target_group=~\".*$cluster.*\"}[1m]) by (dimension_load_balancer, dimension_availability_zone)",
+                "hide": false,
+                "legendFormat": "Unhealthy count  ({{dimension_load_balancer}},{{dimension_availability_zone}})",
+                "refId": "B"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "LoadBalancers health",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "label": "Healthy",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "label": "Unhealthy",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": true
+            }
+          }
+        ],
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "refId": "A"
+          }
+        ],
+        "title": "Health statistics",
+        "type": "row"
+      },
+      {
+        "collapsed": true,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "v6LOzn44z"
+        },
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 1
+        },
+        "id": 39,
+        "panels": [
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 2
+            },
+            "hiddenSeries": false,
+            "id": 19,
+            "legend": {
+              "alignAsTable": true,
+              "avg": true,
+              "current": true,
+              "max": true,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": true
+            },
+            "lines": true,
+            "linewidth": 1,
+            "links": [
+              {
+                "targetBlank": true,
+                "title": "OneStack | API Gateway By Pod ",
+                "url": "d/onestack-api-gateway-by-pod/onestack-api-gateway-by-pod?orgId=1&refresh=30s&${__all_variables}&${__url_time_range}"
+              }
+            ],
+            "nullPointMode": "connected",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "aggregation": "Last",
+                "alias": "throttling",
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "decimals": 2,
+                "displayAliasType": "Warning / Critical",
+                "displayType": "Regular",
+                "displayValueWithAlias": "Never",
+                "expr": "sum by (container) (rate (container_cpu_usage_seconds_total{aws_account=~\"$aws_account\", image!=\"\", container!=\"POD\", namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}[1m]))",
+                "hide": false,
+                "interval": "10s",
+                "legendFormat": "{{container}} ({{$namespace}})",
+                "refId": "A",
+                "units": "none",
+                "valueHandler": "Number Threshold"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "CPU Usage by Container",
+            "tooltip": {
+              "shared": true,
+              "sort": 2,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "label": "Cores",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 9,
+              "w": 12,
+              "x": 12,
+              "y": 2
+            },
+            "hiddenSeries": false,
+            "id": 31,
+            "interval": "",
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "links": [
+              {
+                "targetBlank": true,
+                "title": "OneStack | API Gateway By Pod ",
+                "url": "d/onestack-api-gateway-by-pod/onestack-api-gateway-by-pod?orgId=1&refresh=30s&${__all_variables}&${__url_time_range}"
+              }
+            ],
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum (container_memory_working_set_bytes{aws_account=~\"$aws_account\", image!=\"\", container!=\"POD\", namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}) by (container)",
+                "interval": "",
+                "legendFormat": "{{container}} ({{$namespace}})",
+                "refId": "A"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Memory Usage by Container",
+            "tooltip": {
+              "shared": true,
+              "sort": 2,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "bytes",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          }
+        ],
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "refId": "A"
+          }
+        ],
+        "title": "Resources",
+        "type": "row"
+      },
+      {
+        "collapsed": true,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "v6LOzn44z"
+        },
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 2
+        },
+        "id": 37,
+        "panels": [
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 3
+            },
+            "hiddenSeries": false,
+            "id": 33,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "hideEmpty": true,
+              "hideZero": true,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum by (envoy_cluster_name) (envoy_cluster_circuit_breakers_default_cx_open{aws_account=~\"$aws_account\", job=\"kubernetes-service-endpoints\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"})",
+                "interval": "",
+                "legendFormat": "{{envoy_cluster_name}}: default",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum by (envoy_cluster_name) (envoy_cluster_circuit_breakers_high_cx_open{aws_account=~\"$aws_account\", job=\"kubernetes-service-endpoints\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}) ",
+                "interval": "",
+                "legendFormat": "{{envoy_cluster_name}}: high",
+                "refId": "B"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Connections",
+            "tooltip": {
+              "shared": true,
+              "sort": 2,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 3
+            },
+            "hiddenSeries": false,
+            "id": 40,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "hideEmpty": true,
+              "hideZero": true,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum by (envoy_cluster_name) (envoy_cluster_circuit_breakers_default_rq_open{aws_account=~\"$aws_account\", job=\"kubernetes-service-endpoints\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"})",
+                "interval": "",
+                "legendFormat": "{{envoy_cluster_name}}: default",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum by (envoy_cluster_name) (envoy_cluster_circuit_breakers_high_rq_open{aws_account=~\"$aws_account\", job=\"kubernetes-service-endpoints\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}) ",
+                "interval": "",
+                "legendFormat": "{{envoy_cluster_name}}: high",
+                "refId": "B"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Requests",
+            "tooltip": {
+              "shared": true,
+              "sort": 2,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 11
+            },
+            "hiddenSeries": false,
+            "id": 43,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "hideEmpty": true,
+              "hideZero": true,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum by (envoy_cluster_name) (envoy_cluster_circuit_breakers_default_rq_pending_open{aws_account=~\"$aws_account\", job=\"kubernetes-service-endpoints\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"})",
+                "interval": "",
+                "legendFormat": "{{envoy_cluster_name}}: default",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum by (envoy_cluster_name) (envoy_cluster_circuit_breakers_high_rq_pending_open{aws_account=~\"$aws_account\", job=\"kubernetes-service-endpoints\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"}) ",
+                "interval": "",
+                "legendFormat": "{{envoy_cluster_name}}: high",
+                "refId": "B"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Pending requests",
+            "tooltip": {
+              "shared": true,
+              "sort": 2,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 11
+            },
+            "hiddenSeries": false,
+            "id": 44,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "hideEmpty": true,
+              "hideZero": true,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum by (envoy_cluster_name) (envoy_cluster_circuit_breakers_default_rq_retry_open{aws_account=~\"$aws_account\", job=\"kubernetes-service-endpoints\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"})",
+                "interval": "",
+                "legendFormat": "{{envoy_cluster_name}}: default",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum by (envoy_cluster_name) (envoy_cluster_circuit_breakers_high_rq_retry_open{aws_account=~\"$aws_account\", job=\"kubernetes-service-endpoints\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\"})",
+                "interval": "",
+                "legendFormat": "{{envoy_cluster_name}}: high",
+                "refId": "B"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Retry requests",
+            "tooltip": {
+              "shared": true,
+              "sort": 2,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "min": "0",
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          }
+        ],
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "refId": "A"
+          }
+        ],
+        "title": "Circuit breakers",
+        "type": "row"
+      },
+      {
+        "collapsed": true,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "v6LOzn44z"
+        },
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 3
+        },
+        "id": 42,
+        "panels": [
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 4
+            },
+            "hiddenSeries": false,
+            "id": 29,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.90, sum(rate(envoy_cluster_internal_upstream_rq_time_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", gateway_proxy_id=\"gateway-proxy\", envoy_cluster_name=~\".*auth.*\"}[1m])) by (le))",
+                "legendFormat": "90% auth latency",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.95, sum(rate(envoy_cluster_internal_upstream_rq_time_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", gateway_proxy_id=\"gateway-proxy\", envoy_cluster_name=~\".*auth.*\"}[1m])) by (le))",
+                "legendFormat": "95% auth latency",
+                "refId": "B"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.99, sum(rate(envoy_cluster_internal_upstream_rq_time_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", gateway_proxy_id=\"gateway-proxy\", envoy_cluster_name=~\".*auth.*\"}[1m])) by (le))",
+                "legendFormat": "99% auth latency",
+                "refId": "C"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Auth Total Latency",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "ms",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 4
+            },
+            "hiddenSeries": false,
+            "id": 6,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "links": [
+              {
+                "targetBlank": true,
+                "title": "OneStack | API Gateway By Pod ",
+                "url": "d/onestack-api-gateway-by-pod/onestack-api-gateway-by-pod?orgId=1&refresh=30s&${__all_variables}&${__url_time_range}"
+              }
+            ],
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(increase(envoy_cluster_internal_upstream_rq{aws_account=~\"$aws_account\", envoy_response_code=\"200\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", gateway_proxy_id=\"gateway-proxy\", envoy_cluster_name=~\".*auth.*\"} [1m])) by (envoy_cluster_name)",
+                "legendFormat": "200",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(increase(envoy_cluster_internal_upstream_rq{aws_account=~\"$aws_account\", envoy_response_code=\"401\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", gateway_proxy_id=\"gateway-proxy\", envoy_cluster_name=~\".*auth.*\"}  [1m])) by (envoy_cluster_name)",
+                "legendFormat": "401",
+                "refId": "B"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "sum(increase(envoy_cluster_internal_upstream_rq{aws_account=~\"$aws_account\", envoy_response_code!=\"401\", envoy_response_code!=\"200\", kubernetes_namespace=\"$namespace\", cluster_id=\"$cluster\", region=\"$region\", gateway_proxy_id=\"gateway-proxy\", envoy_cluster_name=~\".*auth.*\"} [1m])) by (envoy_cluster_name)",
+                "legendFormat": "Other responses",
+                "refId": "C"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Auth response codes",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "description": "90%, 95%, 99% response times from the identity service",
+            "fieldConfig": {
+              "defaults": {
+                "links": []
+              },
+              "overrides": []
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 12
+            },
+            "hiddenSeries": false,
+            "id": 2,
+            "legend": {
+              "alignAsTable": true,
+              "avg": true,
+              "current": false,
+              "max": true,
+              "min": true,
+              "show": true,
+              "total": false,
+              "values": true
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.2.0",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.90, sum(rate(identity_response_timer_seconds_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"nexmo-gateway-services\", cluster_id=\"$cluster\", region=\"$region\"}[1m])) by (le)) ",
+                "legendFormat": "90% {{$namespace}}",
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.95, sum(rate(identity_response_timer_seconds_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"nexmo-gateway-services\", cluster_id=\"$cluster\", region=\"$region\"}[1m])) by (le)) ",
+                "legendFormat": "95% {{$namespace}}",
+                "refId": "B"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "expr": "histogram_quantile(0.99, sum(rate(identity_response_timer_seconds_bucket{aws_account=~\"$aws_account\", kubernetes_namespace=\"nexmo-gateway-services\", cluster_id=\"$cluster\", region=\"$region\"}[1m])) by (le)) ",
+                "legendFormat": "99% {{$namespace}}",
+                "refId": "C"
+              }
+            ],
+            "thresholds": [],
+            "timeRegions": [],
+            "title": "Identity Response time percentiles (not in use)",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": []
+            },
+            "yaxes": [
+              {
+                "format": "ms",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          }
+        ],
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "refId": "A"
+          }
+        ],
+        "title": "Auth",
+        "type": "row"
+      },
+      {
+        "collapsed": true,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 4
+        },
+        "id": 51,
+        "panels": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": [
+                {
+                  "__systemRef": "hideSeriesFrom",
+                  "matcher": {
+                    "id": "byNames",
+                    "options": {
+                      "mode": "exclude",
+                      "names": [
+                        "type.googleapis.com/envoy.config.cluster.v3.Cluster"
+                      ],
+                      "prefix": "All except:",
+                      "readOnly": true
+                    }
+                  },
+                  "properties": [
+                    {
+                      "id": "custom.hideFrom",
+                      "value": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 5
+            },
+            "id": 53,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "editorMode": "code",
+                "expr": "sum by (resource)(increase(glooe_solo_io_xds_insync{aws_account=\"$aws_account\",cluster_id=\"$cluster\",region=\"$region\", kubernetes_namespace=\"$namespace\"}))",
+                "legendFormat": "__auto",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "title": "glooe_solo_io_xds_insync",
+            "type": "timeseries"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 5
+            },
+            "id": 55,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "editorMode": "code",
+                "expr": "sum by (resource)(increase(glooe_solo_io_xds_outofsync{aws_account=\"$aws_account\", region=\"$region\", cluster=\"$cluster\", kubernetes_namespace=\"$namespace\"}))",
+                "legendFormat": "__auto",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "title": "glooe_solo_io_xds_outofsync",
+            "type": "timeseries"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": [
+                {
+                  "__systemRef": "hideSeriesFrom",
+                  "matcher": {
+                    "id": "byNames",
+                    "options": {
+                      "mode": "exclude",
+                      "names": [
+                        "type.googleapis.com/envoy.config.route.v3.RouteConfiguration"
+                      ],
+                      "prefix": "All except:",
+                      "readOnly": true
+                    }
+                  },
+                  "properties": [
+                    {
+                      "id": "custom.hideFrom",
+                      "value": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 13
+            },
+            "id": 57,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "editorMode": "code",
+                "expr": "sum by (resource)(increase(glooe_solo_io_xds_total_entities{aws_account=\"$aws_account\",region=\"$region\",cluster_id=\"$cluster\",kubernetes_namespace=\"$namespace\"}))",
+                "legendFormat": "__auto",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "title": "glooe_solo_io_xds_total_entities",
+            "type": "timeseries"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "v6LOzn44z"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 13
+            },
+            "id": 59,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "v6LOzn44z"
+                },
+                "editorMode": "code",
+                "expr": "sum by (resource) (increase(glooe_solo_io_xds_nack{aws_account=\"$aws_account\",region=\"$region\",cluster_id=\"$cluster\",kubernetes_namespace=\"$namespace\"}))",
+                "legendFormat": "__auto",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "title": "glooe_solo_io_xds_nack",
+            "type": "timeseries"
+          }
+        ],
+        "title": "Control Plane",
+        "type": "row"
+      }
+    ],
+    "refresh": "30s",
+    "schemaVersion": 39,
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "1v-apigw-dev",
+            "value": "1v-apigw-dev"
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "v6LOzn44z"
+          },
+          "definition": "label_values(gloo_solo_io_setups_run, aws_account)",
+          "hide": 0,
+          "includeAll": false,
+          "label": "aws_account",
+          "multi": false,
+          "name": "aws_account",
+          "options": [],
+          "query": {
+            "query": "label_values(gloo_solo_io_setups_run, aws_account)",
+            "refId": "StandardVariableQuery"
+          },
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "type": "query"
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "eu-west-1",
+            "value": "eu-west-1"
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "v6LOzn44z"
+          },
+          "definition": "label_values(gloo_solo_io_setups_run{aws_account=~\"$aws_account\", gloo=\"gloo\"},  region)",
+          "hide": 0,
+          "includeAll": false,
+          "label": "Region",
+          "multi": false,
+          "name": "region",
+          "options": [],
+          "query": {
+            "query": "label_values(gloo_solo_io_setups_run{aws_account=~\"$aws_account\", gloo=\"gloo\"},  region)",
+            "refId": "StandardVariableQuery"
+          },
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "1vapi-1",
+            "value": "1vapi-1"
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "v6LOzn44z"
+          },
+          "definition": "label_values(gloo_solo_io_setups_run{aws_account=~\"$aws_account\", gloo=\"gloo\", region=\"$region\"},  cluster_id)",
+          "hide": 0,
+          "includeAll": false,
+          "label": "Cluster",
+          "multi": false,
+          "name": "cluster",
+          "options": [],
+          "query": {
+            "query": "label_values(gloo_solo_io_setups_run{aws_account=~\"$aws_account\", gloo=\"gloo\", region=\"$region\"},  cluster_id)",
+            "refId": "StandardVariableQuery"
+          },
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        },
+        {
+          "current": {
+            "selected": false,
+            "text": "nexmo-gloo",
+            "value": "nexmo-gloo"
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "v6LOzn44z"
+          },
+          "definition": "label_values(gloo_solo_io_setups_run{aws_account=~\"$aws_account\", gloo=\"gloo\", region=\"$region\", cluster_id=\"$cluster\"},  kubernetes_namespace)",
+          "hide": 0,
+          "includeAll": false,
+          "label": "Namespace",
+          "multi": false,
+          "name": "namespace",
+          "options": [],
+          "query": {
+            "query": "label_values(gloo_solo_io_setups_run{aws_account=~\"$aws_account\", gloo=\"gloo\", region=\"$region\", cluster_id=\"$cluster\"},  kubernetes_namespace)",
+            "refId": "StandardVariableQuery"
+          },
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "sort": 1,
+          "tagValuesQuery": "",
+          "tagsQuery": "",
+          "type": "query",
+          "useTags": false
+        }
+      ]
+    },
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ]
+    },
+    "timezone": "",
+    "title": "API Gateways",
+    "uid": "onestack-api-gateways",
+    "version": 10,
+    "weekStart": ""
+  }

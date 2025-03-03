@@ -1,0 +1,511 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 2864,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "GA Dashboard",
+          "url": "https://grafana.pl.main0.api.nexmo.prd.euw2.vonagenetworks.net/d/global-accelerator-dashboard-tst/aws-global-accelerator-dashboard?orgId=25&var-aws_account=1v-apigw-prod&var-global_accelerator_id=All"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "v6LOzn44z"
+          },
+          "editorMode": "code",
+          "expr": "sum(aws_globalaccelerator_new_flow_count_sum{aws_account=~\"$aws_account\",region=\"us-east-1\", cluster_id=\"1vapi-1\"}) by (dimension_accelerator)",
+          "legendFormat": "{{dimension_accelerator}} - New Flows",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "New Flow Count by Accelerator",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {},
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 6,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "GA Dashboard",
+          "url": "https://grafana.pl.main0.api.nexmo.prd.euw2.vonagenetworks.net/d/global-accelerator-dashboard-tst/aws-global-accelerator-dashboard?orgId=25&var-aws_account=1v-apigw-prod&var-global_accelerator_id=All"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "v6LOzn44z"
+          },
+          "editorMode": "code",
+          "expr": "sum(aws_globalaccelerator_active_flow_count_sum{aws_account=~\"$aws_account\",region=\"us-east-1\", cluster_id=\"1vapi-1\"}) by (dimension_accelerator)",
+          "legendFormat": "{{dimension_accelerator}} - Active Flows",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Active Flow Count by Accelerator",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {},
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      },
+      "id": 4,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "GA Dashboard",
+          "url": "https://grafana.pl.main0.api.nexmo.prd.euw2.vonagenetworks.net/d/global-accelerator-dashboard-tst/aws-global-accelerator-dashboard?orgId=25&var-aws_account=1v-apigw-prod&var-global_accelerator_id=All"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "v6LOzn44z"
+          },
+          "editorMode": "code",
+          "expr": "sum(aws_globalaccelerator_processed_bytes_in_sum{aws_account=~\"$aws_account\",region=\"us-east-1\", cluster_id=\"1vapi-1\"}) by (dimension_accelerator)",
+          "legendFormat": "{{dimension_accelerator}} - Processed Bytes In",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Processed Bytes In by Accelerator",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {},
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 12,
+        "y": 14
+      },
+      "id": 5,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "GA Dashboard",
+          "url": "https://grafana.pl.main0.api.nexmo.prd.euw2.vonagenetworks.net/d/global-accelerator-dashboard-tst/aws-global-accelerator-dashboard?orgId=25&var-aws_account=1v-apigw-prod&var-global_accelerator_id=All"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "v6LOzn44z"
+          },
+          "editorMode": "code",
+          "expr": "sum(aws_globalaccelerator_processed_bytes_out_sum{aws_account=~\"$aws_account\",region=\"us-east-1\", cluster_id=\"1vapi-1\"}) by (dimension_accelerator)",
+          "legendFormat": "{{dimension_accelerator}} - Processed Bytes Out",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Processed Bytes Out by Accelerator",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [
+    "AWS",
+    "Global Accelerator "
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "1v-apigw-prod",
+          "value": "1v-apigw-prod"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "ytCXWfM4k"
+        },
+        "definition": "label_values(gloo_solo_io_setups_run{gloo=\"gloo\"},  aws_account)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "aws_account",
+        "options": [],
+        "query": {
+          "query": "label_values(gloo_solo_io_setups_run{gloo=\"gloo\"},  aws_account)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {
+    "now": true,
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "2m",
+      "5m",
+      "10m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "timeOptions": [
+      {
+        "text": "5m",
+        "value": "5m"
+      },
+      {
+        "text": "15m",
+        "value": "15m"
+      },
+      {
+        "text": "1h",
+        "value": "1h"
+      },
+      {
+        "text": "6h",
+        "value": "6h"
+      },
+      {
+        "text": "12h",
+        "value": "12h"
+      },
+      {
+        "text": "24h",
+        "value": "24h"
+      },
+      {
+        "text": "7d",
+        "value": "7d"
+      }
+    ]
+  },
+  "timezone": "",
+  "title": "AWS Global Accelerator Dashboard-All-GA",
+  "uid": "global-accelerator-dashboard-testing",
+  "version": 4,
+  "weekStart": ""
+}

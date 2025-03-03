@@ -1,0 +1,10 @@
+apiVersion: v2
+name: external-secrets
+description: Wrapper chart for external-secret
+type: application
+version: 1
+appVersion: "8.5.5"
+dependencies:
+  - name: kubernetes-external-secrets
+    version: 8.5.5
+    repository: https://external-secrets.github.io/kubernetes-external-secrets/

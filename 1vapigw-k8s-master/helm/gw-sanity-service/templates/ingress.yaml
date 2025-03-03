@@ -1,0 +1,17 @@
+{{- $root := . -}}
+
+{{ range .Values.targetGroupBindings }}
+{{- $targetGroupBinding := . }}
+---
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: {{ $targetGroupBinding.name }}-{{ $targetGroupBinding.targetGroupARN | sha1sum | trunc 5 }}
+  namespace: {{ default $root.Release.Namespace $targetGroupBinding.namespace }}
+spec:
+  serviceRef:
+    name: {{ $targetGroupBinding.serviceName }}
+    port: {{ $targetGroupBinding.servicePort }}
+  targetGroupARN: {{ $targetGroupBinding.targetGroupARN }}
+  targetType: {{ $targetGroupBinding.targetType | default "ip" }}
+{{- end }}

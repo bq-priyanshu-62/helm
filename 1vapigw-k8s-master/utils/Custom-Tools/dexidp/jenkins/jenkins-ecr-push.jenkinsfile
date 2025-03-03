@@ -1,0 +1,139 @@
+pipeline {
+    agent any
+
+    options {
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Push Docker image to ECRs') {
+            steps {
+                script {
+                    def activeEnvironment  = getActiveEnvironment(this)
+
+                    def envVars          = getEnvVars(activeEnvironment)
+                    def originAwsAccount = envVars.originAwsAccount
+                    def originRepo       = envVars.originRepo
+                    def originImage      = envVars.originImage
+                    def destAwsAccount   = envVars.destAwsAccount
+                    def destRepo         = envVars.destRepo
+                    def destImage        = envVars.destImage
+
+                    def tagsResult   = getLatestTagAndGitHash(activeEnvironment, originAwsAccount)
+                    def latestTag    = tagsResult.latestTag
+                    def gitShortHash = tagsResult.gitHash
+
+                    echo "Latest Tag: $latestTag"
+                    echo "Git Hash  : $gitShortHash"
+
+                    pushToEnvironment(originAwsAccount, originRepo, originImage, destAwsAccount, destRepo, destImage, gitShortHash)
+                }
+            }
+        }
+    }
+}
+
+def getActiveEnvironment(jenkinsScript) {
+    if (jenkinsScript.env.JENKINS_URL.contains("dev.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.dev")) {
+        return "dev"
+    } else if (jenkinsScript.env.JENKINS_URL.contains("qa.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.qa")) {
+        return "qa"
+    } else if (jenkinsScript.env.JENKINS_URL.contains("prd.nexmo") || jenkinsScript.env.JENKINS_URL.contains("nexmo.prd")) {
+        return "prd"
+    } else {
+        echo "Invalid jenkins instance."
+        exit 1
+    }
+}
+
+def getEnvVars(environment) {
+    def envVars = [originAwsAccount: "", originRepo: "", originImage: "", destAwsAccount: "", destRepo: "", destImage: ""]
+    if (environment == "dev") {
+        envVars.originAwsAccount = "684154893900"
+        envVars.originRepo       = "ghcr.io/dexidp/dex"
+        envVars.originImage      = "latest-distroless"
+        envVars.destAwsAccount   = "684154893900"
+        envVars.destRepo         = "684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-dexidp"
+        envVars.destImage        = "latest"
+    }
+      else if (environment == "qa") {
+        envVars.originAwsAccount = "684154893900"
+        envVars.originRepo       = "684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-dexidp"
+        envVars.originImage      = "latest"
+        envVars.destAwsAccount   = "507728974998"
+        envVars.destRepo         = "507728974998.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-dexidp"
+        envVars.destImage        = "latest"
+    } else if (environment == "prd") {
+        envVars.originAwsAccount = "507728974998"
+        envVars.originRepo       = "507728974998.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-dexidp"
+        envVars.originImage      = "latest"
+        envVars.destAwsAccount   = "275313334716"
+        envVars.destRepo         = "275313334716.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-dexidp"
+        envVars.destImage        = "latest"
+    } else {
+        echo "Invalid environment specified."
+        exit 1
+    }
+    return envVars
+}
+
+def getLatestTagAndGitHash(environment, originAwsAccount) {
+    def imageTags = [latestTag: "", gitHash: ""]
+    if (environment == "dev") {
+        def response = sh(script: "curl -sL -H 'Accept: application/vnd.github.v3+json' https://api.github.com/repos/dexidp/dex/tags", returnStdout: true).trim()
+        def tags     = readJSON text: response
+
+        if (tags && tags.size() > 0) {
+            imageTags.latestTag = tags[0].name
+            imageTags.gitHash   = tags[0].commit.sha.substring(0, 7)
+        } else {
+            error "Failed to retrieve the latest tag and Git hash"
+        }
+    }
+    else if (environment == "qa" || environment == "prd") {
+        response = sh(
+            script: """
+                eval \$(aws sts assume-role --role-arn arn:aws:iam::${originAwsAccount}:role/nexmo-jenkins-role  --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\n"')
+                tag=\$( aws ecr describe-images --repository-name 1v-apigw-dexidp --region us-east-1 --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[*]' | jq -r '.[]' | grep -v latest)
+                unset AWS_ACCESS_KEY_ID
+                unset AWS_SECRET_ACCESS_KEY
+                unset AWS_SESSION_TOKEN
+                echo "\$tag"
+            """,
+            returnStdout: true
+        )
+        def tags = response
+
+        if (tags && tags.size() > 0) {
+            imageTags.latestTag = "latest"
+            imageTags.gitHash   = tags
+        } else {
+            error "Failed to retrieve the latest tag and Git hash"
+        }
+    } else {
+        echo "Invalid environment specified."
+        exit 1
+    }
+    return imageTags
+}
+
+def pushToEnvironment(originAwsAccount, originRepo, originImage, destAwsAccount, destRepo, destImage, gitShortHash) {
+    sh """
+        eval \$(aws sts assume-role --role-arn arn:aws:iam::${originAwsAccount}:role/nexmo-jenkins-role  --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\n"')
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${originAwsAccount}.dkr.ecr.us-east-1.amazonaws.com
+
+        docker pull ${originRepo}:${originImage}
+        docker tag ${originRepo}:${originImage} ${destRepo}:${destImage}
+        docker tag ${originRepo}:${originImage} ${destRepo}:${gitShortHash}
+
+        unset AWS_ACCESS_KEY_ID
+        unset AWS_SECRET_ACCESS_KEY
+        unset AWS_SESSION_TOKEN
+
+        eval \$(aws sts assume-role --role-arn arn:aws:iam::${destAwsAccount}:role/nexmo-jenkins-role --role-session-name jenkins-session | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\\(.SessionToken)\n"')
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${destAwsAccount}.dkr.ecr.us-east-1.amazonaws.com
+
+        docker push ${destRepo}:latest
+        docker push ${destRepo}:${gitShortHash}
+    """
+}

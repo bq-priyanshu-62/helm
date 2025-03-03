@@ -1,0 +1,26 @@
+name: jsonnet
+
+on: [ push ]
+
+jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ^1.17.x
+      - run: go install github.com/google/go-jsonnet/cmd/jsonnetfmt@latest
+      - run: make argocd-fmt
+      - name: Check git tree status
+        shell: bash
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo
+            echo "ERROR: Please run \"make argocd-fmt\"."
+            echo
+            git status
+            echo
+            git diff --minimal
+            exit 1
+          fi

@@ -1,0 +1,7 @@
+region: eu-west-1
+
+gloo-ee:
+ redis:
+   disabled: true
+   service:
+     name: gloo-rate-limit-eu-west-1.internal.qa.v1.vonagenetworks.net

@@ -1,0 +1,9 @@
+apiVersion: v2
+name: fluentd
+description: Wrapper chart for sre/fluentd at https://github.com/Vonage/sre-k8s
+type: application
+version: "11.3.23"
+dependencies:
+  - name: fluentd
+    version: 11.3.23
+    repository: s3://fluentd-supergloo/charts

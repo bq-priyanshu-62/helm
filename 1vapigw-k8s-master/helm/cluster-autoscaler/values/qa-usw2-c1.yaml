@@ -1,0 +1,5 @@
+cluster:
+  name: 1vapi-1
+
+autoscaler:
+  role: eks-us-autoscaler-role

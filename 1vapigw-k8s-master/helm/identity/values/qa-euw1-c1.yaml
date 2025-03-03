@@ -1,0 +1,4 @@
+autoscalerConfigs:
+    minReplicas: 1
+    maxReplicas: 20
+    averageCpu: 60

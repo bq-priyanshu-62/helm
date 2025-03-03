@@ -1,0 +1,75 @@
+global:
+  extensions:
+    rateLimit:
+      deployment:
+        extraRateLimitLabels:
+          account: 1v-apigw-dev
+          aws_account_id: "684154893900"
+          region: eu-west-1
+          cluster_id: 1vapi-2
+
+    extAuth:
+      deployment:
+        extraExtAuthLabels:
+          account: 1v-apigw-dev
+          aws_account_id: "684154893900"
+          region: eu-west-1
+          cluster_id: 1vapi-2
+
+clusterName: 1vapi-2
+gloo_ui:
+  hostname: gloo-ui-c2.api0.v1.dev.euw1.vonagenetworks.net
+gloo-ee:
+  gloo:
+    gateway:
+      deployment:
+        extraGatewayLabels:
+          region: eu-west-1
+          cluster_id: 1vapi-2
+    gloo:
+      deployment:
+        extraGlooLabels:
+          region: eu-west-1
+          cluster_id: 1vapi-2
+    gatewayProxies:
+      gatewayProxy:
+        horizontalPodAutoscaler:
+          apiVersion: autoscaling/v2
+          minReplicas: 1
+          maxReplicas: 1
+          metrics:
+            - type: Resource
+              resource:
+                name: cpu
+                target:
+                  type: Utilization
+                  averageUtilization: 70
+            - type: Pods
+              pods:
+                metric:
+                  name: envoy_cluster_upstream_cx_active
+                target:
+                  type: AverageValue
+                  averageValue: 12000
+        podTemplate:
+          extraGatewayProxyLabels:
+            account: 1v-apigw-dev
+            aws_account_id: "684154893900"
+            region: eu-west-1
+            cluster_id: 1vapi-2
+          resources:
+            requests:
+              cpu: "1"
+
+autoscaler:
+  rateLimit:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 1
+    averageCpu: 70
+
+  extAuth:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 1
+    averageCpu: 70

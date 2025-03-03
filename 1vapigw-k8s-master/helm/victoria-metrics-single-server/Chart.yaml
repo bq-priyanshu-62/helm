@@ -1,0 +1,10 @@
+apiVersion: v2
+name: victoria-metrics-single-server
+description: Wrapper chart for victoria-metrics-single
+type: application
+version: 1
+appVersion: "v1.109.1"
+dependencies:
+  - name: victoria-metrics-single
+    version: 0.13.6
+    repository: https://victoriametrics.github.io/helm-charts/

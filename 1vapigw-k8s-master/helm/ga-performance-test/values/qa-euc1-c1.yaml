@@ -1,0 +1,3 @@
+configMap:
+  s3BucketName:
+    S3_BUCKET_NAME: "apigw-ga-performance-logs-qa-euc1-c1"

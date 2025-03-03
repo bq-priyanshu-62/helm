@@ -1,0 +1,14 @@
+apiVersion: executor.testkube.io/v1
+kind: Executor
+metadata:
+  name: gateway-smokes-executor
+  namespace: testkube
+spec:
+  types:
+  - apigw-smokes/pytest
+  executor_type: container
+  image: {{ .Values.smokes.executors.image }}
+  command:
+  - "pytest"
+  features:
+  - artifacts

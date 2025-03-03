@@ -1,0 +1,13 @@
+apiVersion: executor.testkube.io/v1
+kind: Webhook
+metadata:
+  name: apigw-smokes-slack-webhook
+  namespace: testkube
+spec:
+  events:
+  - end-testsuite-failed
+  - end-testsuite-aborted
+  - end-testsuite-timeout
+  uri: {{ .Values.smokes.webhooks.slackWebhookUrl }}
+  selector: "type=smokes"
+  payloadTemplate: {{ .Values.smokes.webhooks.payloadTemplate }}

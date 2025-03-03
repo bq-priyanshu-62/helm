@@ -1,0 +1,2 @@
+AWS_REGION: "ap-southeast-2"
+CLUSTER_SECRET: "prisma-prod-apse2-c2"

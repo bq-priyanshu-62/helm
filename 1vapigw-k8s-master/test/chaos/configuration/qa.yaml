@@ -1,0 +1,38 @@
+tests:
+  regions:
+    - region: eu-west-1
+      clusters:
+        - cluster: 1vapi-1
+          domain: gw-euw1.api-eu.qa.v1.vonagenetworks.net
+        - cluster: 1vapi-2
+          domain: gw-euw1-sanity.api-eu.qa.v1.vonagenetworks.net
+    - region: eu-central-1
+      clusters:
+        - cluster: 1vapi-1
+          domain: gw-euc1.api-eu.qa.v1.vonagenetworks.net
+        - cluster: 1vapi-2
+          domain: gw-euc1-sanity.api-eu.qa.v1.vonagenetworks.net
+    - region: us-east-1
+      clusters:
+        - cluster: 1vapi-1
+          domain: gw-use1.api-us.qa.v1.vonagenetworks.net
+        - cluster: 1vapi-2
+          domain: gw-use1-sanity.api-us.qa.v1.vonagenetworks.net
+    - region: us-west-2
+      clusters:
+        - cluster: 1vapi-1
+          domain: gw-usw2.api-us.qa.v1.vonagenetworks.net
+        - cluster: 1vapi-2
+          domain: gw-usw2-sanity.api-us.qa.v1.vonagenetworks.net
+    - region: ap-southeast-1
+      clusters:
+        - cluster: 1vapi-1
+          domain: gw-apse1.api-ap.qa.v1.vonagenetworks.net
+        - cluster: 1vapi-2
+          domain: gw-apse1-sanity.api-ap.qa.v1.vonagenetworks.net
+    - region: ap-southeast-2
+      clusters:
+        - cluster: 1vapi-1
+          domain: gw-apse2.api-ap.qa.v1.vonagenetworks.net
+        - cluster: 1vapi-2
+          domain: gw-apse2-sanity.api-ap.qa.v1.vonagenetworks.net

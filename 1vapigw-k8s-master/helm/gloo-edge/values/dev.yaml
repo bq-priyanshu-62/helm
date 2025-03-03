@@ -1,0 +1,105 @@
+environment: dev
+
+accountId: "684154893900"
+accountName: 1v-apigw-dev
+gloo_ui:
+  name: gloo-ui-ingress
+  privateControllerClass: nginx-privatelink
+
+global:
+  extensions:
+    extAuth:
+      requestTimeout: 20s
+      existingSecret: true
+      requestBody:
+        maxRequestBytes: 16384
+        allowPartialMessage: true
+        packAsBytes: true
+    rateLimit:
+      deployment:
+        resources:
+          requests:
+            memory: "1G"
+          limits:
+            memory: "1G"
+
+autoscaler:
+  rateLimit:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 12
+    averageCpu: 70
+
+  extAuth:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 12
+    averageCpu: 70
+
+gloo-ee:
+  gloo:
+    settings:
+      kubeResourceOverride:
+        spec:
+          namedExtauth:
+            extAuthBodyPassthrough:
+              clearRouteCache: true
+              extauthzServerRef:
+                name: anubis-nexmo-auth
+                namespace: viam
+              transportApiVersion: V3
+              grpcService:
+                authority: anubis-body-passthrough
+              requestBody:
+                maxRequestBytes: 16384
+                packAsBytes: true
+              requestTimeout: 20s
+              statusOnError: 403
+            extAuthHeadersOnly:
+              clearRouteCache: true
+              extauthzServerRef:
+                name: anubis-nexmo-auth
+                namespace: viam
+              transportApiVersion: V3
+              grpcService:
+                authority: anubis-header-only
+              requestTimeout: 20s
+              statusOnError: 403
+    gatewayProxies:
+      gatewayProxy:
+        horizontalPodAutoscaler:
+          apiVersion: autoscaling/v2
+          minReplicas: 1
+          maxReplicas: 12
+          metrics:
+            - type: Resource
+              resource:
+                name: memory
+                target:
+                  type: Utilization
+                  averageUtilization: 70
+            - type: Resource
+              resource:
+                name: cpu
+                target:
+                  type: Utilization
+                  averageUtilization: 70
+            
+        podTemplate:
+          extraGatewayProxyLabels:
+            account: 1v-apigw-dev
+            aws_account_id: "684154893900"
+          resources:
+            requests:
+              cpu: "1"
+              memory: "700M"
+    gateway:
+      deployment:
+        extraGatewayLabels:
+          account: 1v-apigw-dev
+          aws_account_id: "684154893900"
+    gloo:
+      deployment:
+        extraGlooLabels:
+          account: 1v-apigw-dev
+          aws_account_id: "684154893900"

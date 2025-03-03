@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: 'custom-metrics-rules-config'
+  namespace: {{ include "k8s-prometheus-adapter.namespace" . }}
+  {{- if .Values.customAnnotations }}
+  annotations:
+  {{- toYaml .Values.customAnnotations | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "k8s-prometheus-adapter.labels" . | indent 4 }}
+data:
+  config.yaml: |
+    rules:
+    - seriesQuery: "envoy_cluster_upstream_cx_active{container!='POD'}"
+      seriesFilters: []
+      resources:
+        overrides:
+          kubernetes_namespace:
+            resource: namespace
+          kubernetes_pod_name:
+            resource: pod
+      name:
+        as: envoy_cluster_upstream_cx_active
+        matches: envoy_cluster_upstream_cx_active
+      metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>,container!="POD"}[1m]) by (<<.GroupBy>>)

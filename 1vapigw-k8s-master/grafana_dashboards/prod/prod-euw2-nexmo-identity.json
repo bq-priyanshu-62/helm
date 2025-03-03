@@ -1,0 +1,1383 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1946,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 14,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "9.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "min(identity_configdb_healthy_gauge{aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"})",
+          "interval": "",
+          "legendFormat": "ConfigDB Health",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "min(identity_numbers_healthy_gauge{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"})",
+          "interval": "",
+          "legendFormat": "Numbers Health",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "min(identity_kafka_healthy_gauge{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"})",
+          "interval": "",
+          "legendFormat": "Kafka Health",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "min(identity_tokbox_healthy_gauge{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"})",
+          "interval": "",
+          "legendFormat": "TokBox Health",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "editorMode": "code",
+          "expr": "min(identity_quota_checker_healthy_gauge{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"})",
+          "interval": "",
+          "legendFormat": "QuotaChecker Health",
+          "range": true,
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "editorMode": "code",
+          "expr": "min(identity_accounts_healthy_gauge{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"})",
+          "hide": false,
+          "legendFormat": "Accounts Health",
+          "range": true,
+          "refId": "F"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "editorMode": "code",
+          "expr": "min(identity_applications_healthy_gauge{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"})",
+          "hide": false,
+          "legendFormat": "Applications Health",
+          "range": true,
+          "refId": "G"
+        }
+      ],
+      "title": "Identity Dependencies",
+      "type": "gauge"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "description": "Response time for Identity requests which resulted in a 200 response",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(0.90, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code=\"200\"}[1m])) by (region, le))",
+          "interval": "",
+          "legendFormat": "Response time 90%",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(0.95, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code=\"200\"}[1m])) by (region, le))",
+          "interval": "",
+          "legendFormat": "Response time 95%",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(0.99, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code=\"200\"}[1m])) by (region, le))",
+          "interval": "",
+          "legendFormat": "Response time 99%",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Response time for Successful Auth",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "s",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "description": "The Time taken for identity to respond including responses with duration > 1 second.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "hiddenSeries": false,
+      "id": 16,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(1, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code=\"200\", le=~\"([1-9]+)\\\\..*\"}[1m])) by(region, le))",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "duration >= 1 sec",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Response Time for Identity (Responses above 1s)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "s",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "description": "The Time taken for identity to respond when the result was cached",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "hiddenSeries": false,
+      "id": 5,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(0.90, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code=\"200\", is_from_cache=\"1\"}[1m])) by (le))",
+          "interval": "",
+          "legendFormat": "Cached Response time 90%",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(0.95, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code=\"200\", is_from_cache=\"1\"}[1m])) by (le))",
+          "interval": "",
+          "legendFormat": "Cached Response time 95%",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(0.99, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code=\"200\", is_from_cache=\"1\"}[1m])) by (le))",
+          "interval": "",
+          "legendFormat": "Cached Response time 99%",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Response Time for Cached Auth",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "s",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "description": "Response time for Identity requests which didn't result in a 200 response",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "hiddenSeries": false,
+      "id": 3,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(0.90, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code!=\"200\"}[1m])) by (region, le))",
+          "interval": "",
+          "legendFormat": "Response time 90%",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(0.95, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code!=\"200\"}[1m])) by (region, le))",
+          "interval": "",
+          "legendFormat": "Response time 95%",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(0.99, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code!=\"200\"}[1m])) by (region, le))",
+          "interval": "",
+          "legendFormat": "Response time 99%",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Response time for Failed Auth",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "s",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "hiddenSeries": false,
+      "id": 8,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "identity_smpp_account_cache_size_gauge{ kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\" }",
+          "interval": "",
+          "legendFormat": "Identity Cache Size",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Identity Cache Size",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "description": "The Time taken for identity to respond when the result was cached",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "hiddenSeries": false,
+      "id": 6,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(0.90, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code=\"200\", is_from_cache=\"0\"}[1m])) by (le))",
+          "interval": "",
+          "legendFormat": "Cached Response time 90%",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(0.95, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code=\"200\", is_from_cache=\"0\"}[1m])) by (le))",
+          "interval": "",
+          "legendFormat": "Cached Response time 95%",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "histogram_quantile(0.99, sum(rate(identity_response_timer_seconds_bucket{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\", status_code=\"200\", is_from_cache=\"0\"}[1m])) by (le))",
+          "interval": "",
+          "legendFormat": "Cached Response time 99%",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Response Time for DB Auth",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "s",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "hiddenSeries": false,
+      "id": 18,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "identity_db_APPS_DB_active_connections_all_users_gauge{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"}",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "APPS_DB_{{pod_name}}",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "identity_db_Config_DB_active_connections_all_users_gauge{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"}",
+          "interval": "",
+          "legendFormat": "CONFIG_DB_{{pod_name}}",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Active DB Pool connections",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "hiddenSeries": false,
+      "id": 10,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "sum(increase(identity_kafka_eviction_counter_total{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"})[24h])",
+          "interval": "",
+          "legendFormat": "Volga Cache Invalidations",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Identity Cache Invalidations",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "description": "Idle DB Pool Connections",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "hiddenSeries": false,
+      "id": 22,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "identity_db_Config_DB_idle_connections_all_users_gauge{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"}",
+          "interval": "",
+          "legendFormat": "CONFIG_DB_{{pod_name}}",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "identity_db_APPS_DB_idle_connections_all_users_gauge{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"}",
+          "interval": "",
+          "legendFormat": "APPS_DB_{{pod_name}}",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Idle DB Pool Connections",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 40
+      },
+      "hiddenSeries": false,
+      "id": 12,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "sum(increase(identity_smpp_database_lookup_counter_total{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"})[24h])",
+          "interval": "",
+          "legendFormat": "Identity DB lookups",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Identity DB Lookups",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ytCXWfM4k"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 40
+      },
+      "hiddenSeries": false,
+      "id": 20,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "identity_db_APPS_DB_unclosed_orphan_connections_all_users_gauge{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"}",
+          "interval": "",
+          "legendFormat": "APPS_DB_{{pod_name}}",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ytCXWfM4k"
+          },
+          "expr": "identity_db_Config_DB_unclosed_orphan_connections_all_users_gauge{kubernetes_namespace=\"nexmo-gateway-services\", aws_account=~\"$aws_account\", cluster_id=\"$cluster\", region=\"$region\"}",
+          "interval": "",
+          "legendFormat": "CONFIG_DB_{{pod_name}}",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Unclosed Orphaned DB Pool Connections",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "1v-apigw-prod",
+          "value": "1v-apigw-prod"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "ytCXWfM4k"
+        },
+        "definition": "label_values(gloo_solo_io_setups_run, aws_account)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "aws_account",
+        "multi": false,
+        "name": "aws_account",
+        "options": [],
+        "query": {
+          "query": "label_values(gloo_solo_io_setups_run, aws_account)",
+          "refId": "Metrics-aws_account-Variable-Query"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "ap-southeast-1",
+          "value": "ap-southeast-1"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "ytCXWfM4k"
+        },
+        "definition": "label_values(gloo_solo_io_setups_run{aws_account=~\"$aws_account\", gloo=\"gloo\"},  region)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "region",
+        "multi": false,
+        "name": "region",
+        "options": [],
+        "query": {
+          "query": "label_values(gloo_solo_io_setups_run{aws_account=~\"$aws_account\", gloo=\"gloo\"},  region)",
+          "refId": "Metrics-region-Variable-Query"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "1vapi-1",
+          "value": "1vapi-1"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "ytCXWfM4k"
+        },
+        "definition": "label_values(gloo_solo_io_setups_run{aws_account=~\"$aws_account\", gloo=\"gloo\", region=\"$region\"},  cluster_id)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "cluster",
+        "multi": false,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "query": "label_values(gloo_solo_io_setups_run{aws_account=~\"$aws_account\", gloo=\"gloo\", region=\"$region\"},  cluster_id)",
+          "refId": "Metrics-cluster-Variable-Query"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "nexmo-gloo",
+          "value": "nexmo-gloo"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "ytCXWfM4k"
+        },
+        "definition": "label_values(gloo_solo_io_setups_run{aws_account=~\"$aws_account\", gloo=\"gloo\", region=\"$region\", cluster_id=\"$cluster\"},  kubernetes_namespace)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "namespace",
+        "multi": false,
+        "name": "namespace",
+        "options": [],
+        "query": {
+          "query": "label_values(gloo_solo_io_setups_run{aws_account=~\"$aws_account\", gloo=\"gloo\", region=\"$region\", cluster_id=\"$cluster\"},  kubernetes_namespace)",
+          "refId": "Metrics-namespace-Variable-Query"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Nexmo Identity",
+  "uid": "onestack-nexmo-identity",
+  "version": 21,
+  "weekStart": ""
+}

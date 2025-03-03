@@ -1,0 +1,7 @@
+apiVersion: awspca.cert-manager.io/v1beta1
+kind: AWSPCAClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  arn: {{ .Values.pcaArn }}
+  region: {{ .Values.pcaRegion }}

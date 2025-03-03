@@ -1,0 +1,47 @@
+{{- range $v := .Values.smokes.tests }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  annotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+  labels:
+    testkube: test-suites
+    type: smokes
+  name: {{ $v.suiteName }}-test-suites
+  namespace: testkube
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          containers:
+          - args:
+            - 'curl -X POST -H "Content-Type: application/json" -d ''{}'' "http://testkube-api-server:8088/v1/test-suites/{{ $v.suiteName }}/executions"'
+            command:
+            - sh
+            - -c
+            image: curlimages/curl
+            imagePullPolicy: IfNotPresent
+            name: curlimage
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Never
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          tolerations:
+          - effect: NoSchedule
+            key: application
+            operator: Equal
+            value: testkube
+      ttlSecondsAfterFinished: 180
+  schedule: '{{ $v.schedule }}'
+  successfulJobsHistoryLimit: 3
+  suspend: false
+{{- end }}

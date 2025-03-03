@@ -1,0 +1,17 @@
+aws-load-balancer-controller:
+  fullnameOverride: aws-alb-ingress-controller
+
+  podLabels:
+    tailed_path: aws-alb-ingress-controller.log
+    role: aws-alb-ingress-controller
+    team: 1v-api-gw
+
+  autoDiscoverAwsRegion: true
+  autoDiscoverAwsVpcID: true
+  enableReadinessProbe: true
+  enableLivenessProbe: true
+  livenessProbeTimeout: 3
+  terminationGracePeriodSeconds: 60
+
+  rbac:
+    create: true

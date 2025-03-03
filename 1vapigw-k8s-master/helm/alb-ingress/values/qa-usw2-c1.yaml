@@ -1,0 +1,14 @@
+targetGroupBindings:
+  - name: "public-identity"
+    serviceName: "identity"
+    servicePort: 4150
+    targetGroupARN: "arn:aws:elasticloadbalancing:us-west-2:507728974998:targetgroup/intl-svc-c1-pub-identity/7ed610b00a486ca5"
+
+  - name: "private-identity"
+    serviceName: "identity"
+    servicePort: 4150
+    targetGroupARN: "arn:aws:elasticloadbalancing:us-west-2:507728974998:targetgroup/intl-svc-c1-priv-identity/83993d58a3700fe4"
+  - name: "private-identity-admin"
+    serviceName: "identity"
+    servicePort: 4152
+    targetGroupARN: "arn:aws:elasticloadbalancing:us-west-2:507728974998:targetgroup/intl-svc-c1-priv-identity-admin/0502b0355af29496"

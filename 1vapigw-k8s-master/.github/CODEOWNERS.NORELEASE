@@ -1,0 +1,6 @@
+* @Vonage/api-gw @AntonioMA @mcjimenez @hugobarzano
+argocd/routes @Vonage/api-gw @AntonioMA @mcjimenez @hugobarzano @vonage/api-sre-team @vonage/api-dashboard @vonage/olympus @vonage/apex @vonage/api-telco @vonage/olympus @vonage/vcp-bulk-jobs @vonage/api-data @vonage/api-rtc
+argocd/environments/dev @github-actions[bot]
+argocd/routes/dev @github-actions[bot]
+test/services/nexmo/redact @Vonage/api-gw @vonage/api-data
+test/services/nexmo/reports @Vonage/api-gw @vonage/api-data

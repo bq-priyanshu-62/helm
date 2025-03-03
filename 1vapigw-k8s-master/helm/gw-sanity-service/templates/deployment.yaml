@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gw-sanity-service
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: gw-sanity-service
+  template:
+    metadata:
+      labels:
+        app: gw-sanity-service
+        application_1v: 'true'
+    spec:
+      containers:
+        - name: sanity-service-docker
+          image: {{ .Values.ecrService.host }}/{{ .Values.ecrService.repo }}:{{ .Values.ecrService.tag }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: REGION
+              value: {{ .Values.gwSanityService.region }}
+            - name: CLUSTER_NAME
+              value: {{ .Values.gwSanityService.clusterName }}
+            - name: KEEP_ALIVE_TIMEOUT_SECONDS
+              value: {{ .Values.gwSanityService.keepAliveTimeoutSeconds | quote }}
+            {{- if ne "prod" .Values.environment }}
+            - name: ALLOW_SLEEP
+              value: "true"
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 4
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8080
+            initialDelaySeconds: 1
+            periodSeconds: 5
+            failureThreshold: 3
+{{ if .Values.gwSanityService.autoscaling.enabled }}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: gw-sanity-service-autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: gw-sanity-service
+  minReplicas: {{ .Values.gwSanityService.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.gwSanityService.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.gwSanityService.autoscaling.averageMemory }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.gwSanityService.autoscaling.averageCpu }}
+{{ end }}

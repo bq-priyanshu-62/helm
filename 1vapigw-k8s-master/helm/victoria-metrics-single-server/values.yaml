@@ -1,0 +1,26 @@
+victoria-metrics-single:
+  server:
+    fullnameOverride: victoria-metrics-single-server
+    enabled: true
+    image:
+      tag: v1.109.1
+      pullPolicy: Always
+
+    resources:
+      limits:
+        cpu: 3
+        memory: 3G
+      requests:
+        cpu: 2
+        memory: 2G
+
+    retentionPeriod: 1d
+
+    persistentVolume:
+      enabled: false
+    
+    scrape:
+      enabled: false
+
+    statefulSet:
+      enabled: false

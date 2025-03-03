@@ -1,0 +1,20 @@
+global:
+  extensions:
+    extAuth:
+      enabled: true 
+auth:
+  enabled: false
+ingress:
+  name: gloo-ingress
+  certificateArns: arn:aws:acm:eu-west-1:684154893900:certificate/9b1f4872-b84d-46f3-980e-225af3204a98
+  securityGroups: sg-0a68bbadfa6eb608a, sg-04f74a8b300b1aab7
+  healthCheckPath: /ping
+  hostnames: viam.api-eu.dev.v1.vonagenetworks.net
+gloo-ee:
+  gloo:
+    gatewayProxies:
+      gatewayProxy:
+        gatewaySettings:
+          customHttpGateway:
+            options:
+              extauth:

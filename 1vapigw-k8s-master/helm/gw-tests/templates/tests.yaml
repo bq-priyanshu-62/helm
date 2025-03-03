@@ -1,0 +1,32 @@
+{{- range $v := .Values.smokes.tests }}
+{{- range $r := $v.regions }}
+---
+apiVersion: tests.testkube.io/v3
+kind: Test
+metadata:
+  name: "{{ $v.name }}-{{ $r.name }}"
+  namespace: testkube
+  labels:
+    executor: gateway-smokes-executor
+    test-type: apigw-smokes-pytest
+spec:
+  type: apigw-smokes/pytest
+  content:
+    type: string
+  executionRequest:
+    args:
+      - "{{ $v.name }}"
+      - "-m"
+      - "trusted"
+      - "--yaml"
+      - "{{ $v.name }}/jenkins-config/{{ $.Values.environment }}.yaml"
+      - "--region"
+      - "{{ $r.name }}"
+      - "--junitxml"
+      - "junit/report.xml"
+    argsMode: append
+    activeDeadlineSeconds: {{ $v.timeOutSecs }}
+    preRunScript: "python hcio_helper.py {{ $v.name }}/jenkins-config/{{ $.Values.environment }}.yaml --region {{ $r.name }}"
+    postRunScript: "python hcio_helper.py {{ $v.name }}/jenkins-config/{{ $.Values.environment }}.yaml --region {{ $r.name }} --junitxml junit/report.xml"
+{{- end }}
+{{- end }}

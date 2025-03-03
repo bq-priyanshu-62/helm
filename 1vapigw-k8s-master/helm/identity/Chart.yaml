@@ -1,0 +1,5 @@
+# chart.yaml
+apiVersion: v2
+description: Nexmo Helm Chart for Identity Service
+name: identity
+version: 1.1.14
