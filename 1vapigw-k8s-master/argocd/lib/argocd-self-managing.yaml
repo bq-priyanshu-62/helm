@@ -8,7 +8,10 @@ spec:
   source:
     repoURL: "https://github.com/bq-priyanshu-62/helm.git"
     path: "1vapigw-k8s-master/helm/argocd"  # Ensure this path contains Chart.yaml
-    targetRevision: "task1"  # Ensure the branch exists in your repository
+    targetRevision: "task1"  # Ensure the branch exists in your repo
+    helm:
+      valueFiles:
+        - values.yaml  # Ensure this file exists in your chart
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
@@ -17,4 +20,4 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamesp
+      - CreateNamespace=true
