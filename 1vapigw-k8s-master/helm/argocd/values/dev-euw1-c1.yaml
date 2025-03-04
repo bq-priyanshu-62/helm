@@ -1,0 +1,85 @@
+# global:
+#   awsAccountId: "123456789012"  # Replace with actual AWS account ID
+#   environment: "dev"             # Derived from `local.aws_env`
+#   region: "us-east-1"            # Derived from `local.vg_region`
+#   clusterName: "1vapi-1"  
+
+# repositories:
+#   - name: "nexmoinc"
+#     type: "git"
+#     url: "https://github.com/nexmoinc"
+#   - name: "vonage"
+#     type: "git"
+#     url: "https://github.com/vonage"
+#   - name: "vonage-technology"
+#     type: "git"
+#     url: "https://github.com/vonage-technology"
+
+# repoCredentials:
+#   - name: "argocd-repo-credentials-vonage"
+#     values:
+#       externalSecret:
+#         refreshInterval: 10m
+#         secretStoreRef:
+#           name: aws-secretsmanager
+#           kind: ClusterSecretStore
+#         remoteRefKey: "api-gw/other/argocd_repo_credentials_vonage_secret" 
+#   - name: "argocd-repo-credentials-nexmoinc"
+#     values: 
+#       externalSecret:
+#         refreshInterval: 10m
+#         secretStoreRef:
+#           name: aws-secretsmanager
+#           kind: ClusterSecretStore
+#         remoteRefKey: "api-gw/other/argocd_repo_credentials_nexmoinc_secret" 
+#   - name: "argocd-repo-credentials-vonage-technology"
+#     values: 
+#       externalSecret:
+#         refreshInterval: 10m
+#         secretStoreRef:
+#           name: aws-secretsmanager
+#           kind: ClusterSecretStore
+#         remoteRefKey: "api-gw/other/argocd_repo_credentials_vonage_technology_secret"
+
+# projects:
+#   - name: "app-root-prj"
+#     description: "Project for ArgoCD root app"
+
+# applications:
+#   - name: "app-root"
+#     project: "app-root-prj"
+#     repoURL: "https://github.com/Vonage/1vapigw-k8s"
+#     path: "argocd"
+#     targetRevision: "master"
+#     namespace: "argocd"
+
+# route53:
+#   enabled: true
+#   record:
+#     name: "argocd-vpce"
+#     type: "CNAME"
+#     ttl: 300
+#     value: "vpce-0288d1f075eba4063-0qbpgvqv.vpce-svc-0dc5524d22749abd0.eu-west-1.vpce.amazonaws.com"
+
+# dex:
+#   enabled: true
+#   version: "latest"
+#   config:
+#     connectors:
+#       - type: ldap
+#         id: ldap
+#         name: LDAP
+#         config:
+#           host: "ldap.example.com"
+#           insecureNoSSL: false
+#           bindDN: "cn=admin,dc=example,dc=com"
+#           bindPW: "secret"
+#           groups:
+#             - "group1"
+#             - "group2"
+#             - "group3"
+
+# aws:
+#   accountId: "684154893900"  # Replace with actual AWS account ID
+#   jbPluginRepoAccount: "684154893900"
+#   apigwDexidpRepoAccount: "684154893900"
