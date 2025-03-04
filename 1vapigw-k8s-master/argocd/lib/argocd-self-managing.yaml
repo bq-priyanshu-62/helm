@@ -6,12 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    chart: my-project   # Replace with the actual chart name inside your repo
-    repoURL: http://localhost:8081
-    targetRevision: 0.1.0    # Change this to your Helm chart version from Chart.yaml
-    helm:
-      valueFiles:
-        - values.yaml
+    repoURL: "https://github.com/bq-priyanshu-62/helm.git"
+    path: "1vapigw-k8s-master/helm/argocd"  # Ensure this path contains Chart.yaml
+    targetRevision: "task1"  # Ensure the branch exists in your repository
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
@@ -19,3 +16,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamesp
