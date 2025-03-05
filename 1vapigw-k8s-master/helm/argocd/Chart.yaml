@@ -3,9 +3,9 @@ name: argocd
 description: A Helm chart to deploy Argo CD using the official Argo CD Helm chart as a dependency
 type: application
 version: 1.0.0
-appVersion: 6.7.7
+appVersion: 6.3.0
 
 dependencies:
   - name: argo-cd
-    version: 6.7.7
+    version: 6.3.0
     repository: https://argoproj.github.io/argo-helm
