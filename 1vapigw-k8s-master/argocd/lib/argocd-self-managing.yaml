@@ -1,23 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argocd-self-managed
-  namespace: argocd
+ name: applications
+ namespace: argocd     
 spec:
-  project: default
-  source:
-    repoURL: "https://github.com/bq-priyanshu-62/helm.git"
-    path: "1vapigw-k8s-master/helm/argocd"  # Ensure this path contains Chart.yaml
-    targetRevision: "task1"  # Ensure the branch exists in your repo
-    helm:
-      valueFiles:
-        - values.yaml  # Ensure this file exists in your chart
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: argocd
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
+ project: default
+ destination:
+   namespace: default
+   server: https://kubernetes.default.svc
+ source:
+   repoURL: https://github.com/bq-priyanshu-62/argo-hel/
+   targetRevision: HEAD
+   path: argocd
+ syncPolicy:
+   automated:
+     prune: false # Specifies if resources should be pruned during auto-syncing ( false by default ).
+     selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+     allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).  
+   syncOptions:
+     - CreateNamespace=true
