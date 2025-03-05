@@ -9,9 +9,9 @@ spec:
    namespace: default
    server: https://kubernetes.default.svc
  source:
-   repoURL: https://github.com/bq-priyanshu-62/argo-hel/
+   repoURL: https://github.com/bq-priyanshu-62/helm
    targetRevision: HEAD
-   path: argocd
+   path: 1vapigw-k8s-master/helm/argocd
  syncPolicy:
    automated:
      prune: false # Specifies if resources should be pruned during auto-syncing ( false by default ).
