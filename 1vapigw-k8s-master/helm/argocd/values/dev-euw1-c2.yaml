@@ -1,0 +1,247 @@
+USER-SUPPLIED VALUES:
+configs:
+  cm:
+    dex.config: |
+      connectors:
+      - type: ldap
+        name: ldap
+        id: ad
+        config:
+          host: ldap01.main0.api.nexmo.dev.euw1.vonagenetworks.net
+          insecureNoSSL: false
+          insecureSkipVerify: true
+          bindDN: "cn=sss,dc=nexmo,dc=com"
+          bindPW: "$argocd-ldap-secret:password"
+          usernamePrompt: Username
+          userSearch:
+            baseDN: dc=nexmo,dc=com
+            filter: "(&(objectClass=posixAccount)(|(memberOf=cn=team_gateway,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_ops,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_apex,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_appsupport,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_boa,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_chatapp,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_core,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_dashboard,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_data,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_mediabridge,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_oss,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_qa,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_rtc,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_sip,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_support,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_telco,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_vapi,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_verify,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_viam,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_voice,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_voice_tools,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_volga,ou=group,dc=nexmo,dc=com)(memberOf=cn=team_vbc_meetings,ou=group,dc=nexmo,dc=com)(memberOf=cn=vonage-gnp,ou=group,dc=nexmo,dc=com)))"
+            username: uid
+            idAttr: uid
+            emailAttr: mail
+            nameAttr: uid
+          groupSearch:
+            baseDN: dc=nexmo,dc=com
+            filter: "(objectClass=posixGroup)"
+            userAttr: DN
+            groupAttr: member
+            nameAttr: cn
+    repository.credentials: |
+      - url: https://github.com/nexmoinc
+        usernameSecret:
+          name: argocd-repo-credentials-nexmoinc
+          key: username
+        passwordSecret:
+          name: argocd-repo-credentials-nexmoinc
+          key: password
+      - url: https://github.com/vonage
+        usernameSecret:
+          name: argocd-repo-credentials-vonage
+          key: username
+        passwordSecret:
+          name: argocd-repo-credentials-vonage
+          key: password
+      - url: https://github.com/vonage-technology
+        usernameSecret:
+          name: argocd-repo-credentials-vonage-technology
+          key: username
+        passwordSecret:
+          name: argocd-repo-credentials-vonage-technology
+          key: password
+    url: https://argocd-c2.api0.v1.dev.euw1.vonagenetworks.net
+  rbac:
+    policy.csv: |
+      g, team_gateway, role:admin
+      g, team_ops, role:admin
+      g, team_viam, role:admin
+    policy.default: role:readonly
+controller:
+  podAnnotations:
+    prometheus.io/path: metrics
+    prometheus.io/port: "8082"
+    prometheus.io/scrape: "true"
+dex:
+  env:
+  - name: LDAP_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        key: password
+        name: argocd-ldap-secret
+  envFrom:
+  - secretRef:
+      name: argocd-ldap-secret
+  image:
+    imagePullPolicy: Always
+    repository: 684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-dexidp
+    tag: latest
+  volumeMounts:
+  - mountPath: /etc/dex
+    name: argocd-ca
+    readOnly: true
+  volumes:
+  - configMap:
+      name: argocd-tls-certs-cm
+    name: argocd-ca
+extraObjects:
+- apiVersion: v1
+  data:
+    plugin.yaml: "apiVersion: argoproj.io/v1alpha1\nkind: ConfigManagementPlugin\nmetadata:\n
+      \ name: jb\nspec:\n  init:\n    command: [\"/bin/sh\", \"-c\"]\n    args: [\"jb
+      update || jb install\"]\n  generate:                 \n    command: [\"/bin/sh\",
+      \"-c\"]\n    args: [\"jsonnet --yaml-stream -J vendor ${ARGOCD_ENV_JSONNET_FILENAME}
+      --ext-str appsGroup=${ARGOCD_ENV_APPS_GROUP} --ext-str routeEnv=${ARGOCD_ENV_ROUTE_ENV}
+      --ext-str routeRegion=${ARGOCD_ENV_ROUTE_REGION}\"]\n"
+  kind: ConfigMap
+  metadata:
+    name: jb-plugin
+    namespace: argocd
+- apiVersion: v1
+  data:
+    plugin.yaml: "apiVersion: argoproj.io/v1alpha1\nkind: ConfigManagementPlugin\nmetadata:\n
+      \ name: jbRoute\nspec:\n  init:\n    command: [\"/bin/sh\", \"-c\"]\n    args:
+      [\"rm -rf jsonnetfile.json jsonnetfile.lock.json vendor && echo ${ARGOCD_ENV_ROUTE_JSONNETFILE}
+      > jsonnetfile.json && jb install\"]\n  generate:                 \n    command:
+      [\"/bin/sh\", \"-c\"]\n    args: ['if awk --posix \"/${ARGOCD_ENV_ROUTE_ENV}:
+      {/ {block=1} block==1 {print; if (/}/ && !/\\{/) block=0}\" ${ARGOCD_ENV_JSONNET_FILENAME}
+      | grep -q ${ARGOCD_ENV_ROUTE_REGION};\n            then \n              jsonnet
+      --yaml-stream -J vendor ${ARGOCD_ENV_JSONNET_FILENAME} \n              --ext-str
+      appsGroup=${ARGOCD_ENV_APPS_GROUP} \n              --ext-str routeEnv=${ARGOCD_ENV_ROUTE_ENV}
+      \n              --ext-str routeRegion=${ARGOCD_ENV_ROUTE_REGION}; \n            fi']\n"
+  kind: ConfigMap
+  metadata:
+    name: jbroute-plugin
+    namespace: argocd
+global:
+  image:
+    repository: 684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-argocd/argocd
+    tag: v2.13.3
+installCRDs: false
+redis:
+  image:
+    repository: 684154893900.dkr.ecr.us-east-1.amazonaws.com/1v-apigw-argocd/redis
+repoServer:
+  env:
+  - name: HELM_S3_REGION
+    value: us-east-1
+  - name: HELM_PLUGINS
+    value: /home/argocd/.local/share/helm/plugins/
+  - name: GIT_USERNAME
+    valueFrom:
+      secretKeyRef:
+        key: username
+        name: argocd-repo-credentials-vonage
+  - name: GIT_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        key: password
+        name: argocd-repo-credentials-vonage
+  extraContainers:
+  - command:
+    - /var/run/argocd/argocd-cmp-server
+    env:
+    - name: GIT_USERNAME
+      valueFrom:
+        secretKeyRef:
+          key: username
+          name: argocd-repo-credentials-vonage
+    - name: GIT_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: argocd-repo-credentials-vonage
+    image: 684154893900.dkr.ecr.us-east-1.amazonaws.com/argo-plugin:0.0.5_202501071048
+    name: jb
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+    volumeMounts:
+    - mountPath: /var/run/argocd
+      name: var-files
+    - mountPath: /home/argocd/cmp-server/plugins
+      name: plugins
+    - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+      name: jbplugin-config
+      subPath: plugin.yaml
+    - mountPath: /tmp
+      name: cmp-tmp
+  - command:
+    - /var/run/argocd/argocd-cmp-server
+    env:
+    - name: GIT_USERNAME
+      valueFrom:
+        secretKeyRef:
+          key: username
+          name: argocd-repo-credentials-vonage
+    - name: GIT_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: argocd-repo-credentials-vonage
+    image: 684154893900.dkr.ecr.us-east-1.amazonaws.com/argo-plugin:0.0.5_202501071048
+    name: jbroute
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+    volumeMounts:
+    - mountPath: /var/run/argocd
+      name: var-files
+    - mountPath: /home/argocd/cmp-server/plugins
+      name: plugins
+    - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+      name: jbrouteplugin-config
+      subPath: plugin.yaml
+    - mountPath: /tmp
+      name: jbroute-tmp
+  initContainers:
+  - args:
+    - apk update && apk upgrade && apk add bash && helm plugin install https://github.com/hypnoglow/helm-s3.git
+      --version=0.16.2 || true
+    command:
+    - sh
+    - -c
+    image: alpine/helm:3.16.4
+    name: custom-tools
+    volumeMounts:
+    - mountPath: /root/.local/share/helm/plugins/
+      name: custom-tools
+  volumeMounts:
+  - mountPath: /home/argocd/.local/share/helm/plugins/
+    name: custom-tools
+  volumes:
+  - configMap:
+      name: jb-plugin
+    name: jbplugin-config
+  - emptyDir: {}
+    name: cmp-tmp
+  - configMap:
+      name: jbroute-plugin
+    name: jbrouteplugin-config
+  - emptyDir: {}
+    name: jbroute-tmp
+  - emptyDir: {}
+    name: custom-tools
+server:
+  extraArgs:
+  - --insecure
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: nginx-privatelink
+    enabled: true
+    extraRules:
+    - http:
+        paths:
+        - backend:
+            service:
+              name: argocd-server
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+        - backend:
+            service:
+              name: argocd-server
+              port:
+                number: 80
+          path: /*
+          pathType: Prefix
+    paths: /*
